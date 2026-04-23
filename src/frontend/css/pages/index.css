@@ -1,0 +1,128 @@
+/* Hero Section */
+.hero {
+    position: relative;
+    height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.5));
+}
+
+.hero-content {
+    width: 100%;
+    z-index: 10;
+}
+
+.search-panel {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+.search-panel h1 {
+    font-size: 2.5rem;
+    color: var(--text-dark);
+}
+
+.search-form {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.search-btn {
+    height: 48px;
+    padding: 0 32px;
+}
+
+/* Suggestions Grid */
+.suggestions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.tour-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.tour-img {
+    height: 240px;
+    position: relative;
+}
+
+.tour-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tour-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+}
+
+.tour-info {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.tour-info h3 {
+    margin-bottom: 8px;
+    font-size: 1.25rem;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-btn {
+        width: 100%;
+    }
+    .hero {
+        height: auto;
+        padding: 100px 0;
+    }
+}

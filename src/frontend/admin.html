@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/admin.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body class="admin-page">
+    
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">
+            <i class='bx bx-paper-plane'></i> SmartTravel
+        </div>
+        <nav class="admin-nav">
+            <a href="#" class="admin-nav-link active"><i class='bx bx-grid-alt'></i> Tổng quan</a>
+            <a href="#" class="admin-nav-link"><i class='bx bx-user-check'></i> Duyệt người dùng</a>
+            <a href="#" class="admin-nav-link"><i class='bx bx-map-pin'></i> Quản lý địa điểm</a>
+            <a href="#" class="admin-nav-link"><i class='bx bx-purchase-tag-alt'></i> Vouchers & Gift Cards</a>
+            <a href="#" class="admin-nav-link"><i class='bx bx-line-chart'></i> Thống kê</a>
+            <a href="index.html" class="admin-nav-link text-danger mt-4"><i class='bx bx-log-out'></i> Đăng xuất</a>
+        </nav>
+    </aside>
+
+    <!-- Admin Main Content -->
+    <main class="admin-main">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="flex items-center gap-4">
+                <button class="btn btn-icon admin-menu-btn" onclick="document.getElementById('adminSidebar').classList.toggle('active')"><i class='bx bx-menu'></i></button>
+                <h2 class="font-bold m-0" style="margin: 0;">Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <i class='bx bx-bell text-muted' style="font-size: 1.5rem;"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-avatar" style="width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: bold;">AD</div>
+            </div>
+        </header>
+
+        <div class="admin-content p-6">
+            <!-- Stats -->
+            <div class="stats-grid mb-4">
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary-color);"><i class='bx bx-user'></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Người dùng mới</p>
+                        <h3 class="font-bold text-lg">1,245</h3>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: #fef3c7; color: var(--warning);"><i class='bx bx-calendar-check'></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Tour chờ duyệt</p>
+                        <h3 class="font-bold text-lg">18</h3>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: #e0e7ff; color: #4f46e5;"><i class='bx bx-credit-card'></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Doanh thu (Tháng)</p>
+                        <h3 class="font-bold text-lg">450M ₫</h3>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: #fee2e2; color: var(--danger);"><i class='bx bx-gift'></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Voucher đang phát hành</p>
+                        <h3 class="font-bold text-lg">56</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approval Table Section -->
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4 pb-4 border-b">
+                    <h3 class="font-bold">Người dùng & Tài liệu cần duyệt</h3>
+                    <button class="btn btn-outline btn-sm">Xem tất cả</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table w-full">
+                        <thead>
+                            <tr>
+                                <th>Người dùng</th>
+                                <th>Loại yêu cầu</th>
+                                <th>Ngày tạo</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: #ccc;"></div>
+                                        <span class="font-semibold">Trần Văn B</span>
+                                    </div>
+                                </td>
+                                <td>Xác thực Hướng dẫn viên</td>
+                                <td>23/04/2026</td>
+                                <td><span class="badge badge-warning">Chờ duyệt</span></td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">Duyệt</button>
+                                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; color: var(--danger); border-color: var(--danger);">Từ chối</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: #ccc;"></div>
+                                        <span class="font-semibold">Lê Thị C</span>
+                                    </div>
+                                </td>
+                                <td>Tạo địa điểm mới (Nhà hàng)</td>
+                                <td>22/04/2026</td>
+                                <td><span class="badge badge-warning">Chờ duyệt</span></td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">Duyệt</button>
+                                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; color: var(--danger); border-color: var(--danger);">Từ chối</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Quick Add Area -->
+             <div class="card p-6 mt-4">
+                 <h3 class="font-bold mb-4">Các tác vụ nhanh</h3>
+                 <div class="flex gap-4">
+                     <button class="btn btn-outline"><i class='bx bx-plus'></i> Thêm địa điểm mới</button>
+                     <button class="btn btn-outline"><i class='bx bx-plus'></i> Tạo Voucher / Gift Card</button>
+                 </div>
+             </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

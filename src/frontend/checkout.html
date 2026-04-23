@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán & Bảo hiểm - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/checkout.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body class="bg-light">
+    <!-- Header Minimal -->
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <i class='bx bx-paper-plane'></i> SmartTravel
+            </a>
+            <div class="text-muted font-semibold"><i class='bx bx-lock-alt'></i> Thanh toán an toàn</div>
+        </div>
+    </header>
+
+    <div class="container section">
+        <div class="checkout-layout">
+            <!-- Left Column: Details -->
+            <div class="checkout-main">
+                <h2 class="font-bold mb-4">Chi tiết hành khách</h2>
+                <div class="card p-6 mb-4">
+                    <div class="form-group mb-4">
+                        <label class="form-label">Họ và tên người đại diện</label>
+                        <input type="text" class="form-control" placeholder="Nhập họ tên như trên CMND/CCCD">
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="form-group flex-1">
+                            <label class="form-label">Email liên hệ</label>
+                            <input type="email" class="form-control" placeholder="Để nhận vé và hóa đơn">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" placeholder="Để liên lạc trong quá trình đi tour">
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="font-bold mb-4">Bảo hiểm du lịch thông minh</h2>
+                <div class="card p-6 mb-4 insurance-card">
+                    <label class="flex items-start gap-4">
+                        <input type="checkbox" checked style="margin-top: 5px;">
+                        <div>
+                            <h4 class="font-bold text-primary flex items-center gap-2"><i class='bx bx-shield-quarter'></i> Gói Bảo Hiểm Toàn Diện (+150.000₫)</h4>
+                            <p class="text-muted text-sm mt-2">Bồi thường lên đến 500.000.000₫ cho các sự cố: hủy chuyến, thất lạc hành lý, tai nạn cá nhân. Hành trình an tâm - Trải nghiệm trọn vẹn.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <h2 class="font-bold mb-4">Phương thức thanh toán</h2>
+                <div class="card p-6 payment-methods">
+                    <label class="payment-option selected">
+                        <input type="radio" name="payment" checked>
+                        <div class="flex items-center gap-4 w-full">
+                            <i class='bx bx-credit-card text-primary' style="font-size: 1.5rem;"></i>
+                            <span class="font-semibold flex-1">Thẻ Tín dụng / Ghi nợ</span>
+                        </div>
+                    </label>
+                    <label class="payment-option mt-4">
+                        <input type="radio" name="payment">
+                        <div class="flex items-center gap-4 w-full">
+                            <i class='bx bx-wallet text-primary' style="font-size: 1.5rem;"></i>
+                            <span class="font-semibold flex-1">Ví điện tử MoMo / ZaloPay</span>
+                        </div>
+                    </label>
+                    <label class="payment-option mt-4">
+                        <input type="radio" name="payment">
+                        <div class="flex items-center gap-4 w-full">
+                            <i class='bx bxs-bank text-primary' style="font-size: 1.5rem;"></i>
+                            <span class="font-semibold flex-1">Chuyển khoản ngân hàng</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Right Column: Summary -->
+            <div class="checkout-sidebar">
+                <div class="card summary-card">
+                    <h3 class="font-bold mb-4">Tóm tắt đơn hàng</h3>
+                    
+                    <div class="flex gap-4 mb-4 pb-4 border-b">
+                        <img src="https://images.unsplash.com/photo-1555562479-fd33de7dd59e?auto=format&fit=crop&q=80&w=200" alt="Tour" style="width: 80px; height: 80px; border-radius: var(--radius-sm); object-fit: cover;">
+                        <div>
+                            <h4 class="font-semibold" style="font-size: 1rem;">Đà Lạt Mộng Mơ - Tour 3N2Đ</h4>
+                            <p class="text-muted text-sm mt-2"><i class='bx bx-calendar'></i> Khởi hành: 15/06/2026</p>
+                        </div>
+                    </div>
+
+                    <div class="summary-line">
+                        <span class="text-muted">Khách hàng x2</span>
+                        <span>5.600.000₫</span>
+                    </div>
+                    <div class="summary-line">
+                        <span class="text-muted">Bảo hiểm toàn diện</span>
+                        <span>300.000₫</span>
+                    </div>
+                    <div class="summary-line">
+                        <span class="text-muted">Voucher giảm giá</span>
+                        <span class="text-success">-200.000₫</span>
+                    </div>
+
+                    <div class="form-group flex gap-2 mt-4 pb-4 border-b">
+                        <input type="text" class="form-control" placeholder="Mã giảm giá">
+                        <button class="btn btn-outline">Áp dụng</button>
+                    </div>
+
+                    <div class="summary-total mb-4">
+                        <span class="font-bold text-lg">Tổng cộng</span>
+                        <span class="font-bold text-primary" style="font-size: 1.5rem;">5.700.000₫</span>
+                    </div>
+
+                    <p class="text-sm text-muted text-center mb-4">Bằng việc nhấp vào Đặt ngay, bạn đồng ý với các Điều khoản & Điều kiện.</p>
+                    <button class="btn btn-primary w-full" style="padding: 16px; font-size: 1.1rem;"><i class='bx bx-check-shield'></i> Đặt ngay và Thanh toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

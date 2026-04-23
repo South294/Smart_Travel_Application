@@ -1,0 +1,15 @@
+{
+  "name": "smart-travel-app-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Smart Travel App",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo \"Running static frontend. You can use tools like Live Server or serve this directory.\" && exit 0"
+  },
+  "keywords": [
+    "travel",
+    "frontend"
+  ],
+  "author": "",
+  "license": "ISC"
+}

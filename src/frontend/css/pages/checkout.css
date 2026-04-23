@@ -1,0 +1,88 @@
+/* Checkout specific styles */
+.bg-light {
+    background-color: #f8fafc;
+}
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 30px;
+}
+
+.p-6 {
+    padding: 24px;
+}
+
+.insurance-card {
+    border: 1px solid var(--primary-light);
+    background-color: #fafffd;
+}
+
+.insurance-card input[type="checkbox"] {
+    accent-color: var(--primary-color);
+    width: 20px;
+    height: 20px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.payment-option:hover {
+    border-color: var(--primary-light);
+    background-color: var(--bg-color);
+}
+
+.payment-option.selected {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.payment-option input[type="radio"] {
+    accent-color: var(--primary-color);
+    width: 20px;
+    height: 20px;
+}
+
+.summary-card {
+    padding: 24px;
+    position: sticky;
+    top: 90px;
+}
+
+.border-b {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+@media (max-width: 992px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+    }
+    .summary-card {
+        position: static;
+    }
+}
