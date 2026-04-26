@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Khám phá các địa điểm du lịch trên bản đồ tương tác SmartTravel. Tìm nhà hàng, khách sạn, điểm tham quan.">
     <title>Bản đồ - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/pages/map.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 </head>
-<body style="overflow: hidden;">
+<body class="map-page">
+
     <header class="header">
         <div class="container navbar">
-            <a href="index.html" class="logo">
-                <i class='bx bx-paper-plane'></i> SmartTravel
-            </a>
+            <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
+            <button class="mobile-menu-btn" aria-label="Menu"><i class="bx bx-menu"></i></button>
             <nav class="nav-links">
                 <a href="index.html" class="nav-link">Trang chủ</a>
                 <a href="tours.html" class="nav-link">Tour du lịch</a>
@@ -28,53 +29,76 @@
                 <a href="guides.html" class="nav-link">Thuê HDV</a>
             </nav>
             <div class="nav-actions">
-                <button class="btn btn-icon"><i class='bx bx-search'></i></button>
-                <div class="user-avatar" style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold; cursor: pointer;">ST</div>
+                <a href="auth.html" class="btn btn-outline">Đăng nhập</a>
+                <a href="auth.html" class="btn btn-primary">Đăng ký</a>
             </div>
         </div>
     </header>
 
     <div class="map-container">
-        <div class="map-sidebar glass-panel" style="z-index: 1000;">
+        <div class="map-sidebar glass-panel">
             <h2 class="font-bold mb-4">Tìm điểm đến quanh đây</h2>
             <div class="form-group">
-                <div style="position: relative;">
-                    <i class='bx bx-search' style="position: absolute; left: 12px; top: 12px; color: var(--text-muted); font-size: 1.2rem;"></i>
-                    <input type="text" class="form-control" placeholder="Nhập địa điểm, nhà hàng..." style="padding-left: 40px;">
+                <div class="search-input-wrap">
+                    <i class="bx bx-search"></i>
+                    <input type="text" class="form-control form-control-icon" placeholder="Nhập địa điểm, nhà hàng...">
                 </div>
             </div>
-            
-            <div class="category-tabs flex gap-4 mb-4" style="overflow-x: auto; padding-bottom: 8px;">
-                <span class="badge badge-primary" style="padding: 8px 16px; cursor: pointer;">Tất cả</span>
-                <span class="badge" style="background: var(--bg-color); color: var(--text-muted); padding: 8px 16px; cursor: pointer;"><i class='bx bx-hotel'></i> Khách sạn</span>
-                <span class="badge" style="background: var(--bg-color); color: var(--text-muted); padding: 8px 16px; cursor: pointer;"><i class='bx bx-restaurant'></i> Ăn uống</span>
+
+            <div class="category-tabs flex gap-2 mb-4">
+                <span class="map-tab active" data-category="all"><i class="bx bx-grid-alt"></i> Tất cả</span>
+                <span class="map-tab" data-category="hotel"><i class="bx bx-hotel"></i> Khách sạn</span>
+                <span class="map-tab" data-category="food"><i class="bx bx-restaurant"></i> Ăn uống</span>
+                <span class="map-tab" data-category="sight"><i class="bx bx-camera"></i> Tham quan</span>
             </div>
 
             <div class="places-list">
-                <div class="place-item flex gap-4 items-center" data-lat="10.7766" data-lng="106.6984" style="cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.3s;">
-                    <img src="https://images.unsplash.com/photo-1555562479-fd33de7dd59e?auto=format&fit=crop&q=80&w=200" alt="place" style="width: 80px; height: 80px; border-radius: var(--radius-sm); object-fit: cover;">
-                    <div>
+                <div class="place-item" data-lat="10.7766" data-lng="106.6984">
+                    <img src="https://images.unsplash.com/photo-1555562479-fd33de7dd59e?auto=format&fit=crop&q=80&w=200" alt="Nhà hàng Phố Xưa" class="place-thumb">
+                    <div class="place-info">
                         <h4 class="font-bold">Nhà hàng Phố Xưa</h4>
-                        <p class="text-warning text-sm mb-4"><i class='bx bxs-star'></i> 4.5 (234 đánh giá)</p>
-                        <p class="text-muted text-sm"><i class='bx bx-map'></i> Dinh Độc Lập</p>
+                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.5 (234 đánh giá)</p>
+                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Dinh Độc Lập, Q.1</p>
                     </div>
                 </div>
-                
-                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;">
 
-                <div class="place-item flex gap-4 items-center" data-lat="10.7735" data-lng="106.7011" style="cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.3s;">
-                    <img src="https://images.unsplash.com/photo-1583344654921-1402d33458e0?auto=format&fit=crop&q=80&w=200" alt="place" style="width: 80px; height: 80px; border-radius: var(--radius-sm); object-fit: cover;">
-                    <div>
+                <hr class="section-divider">
+
+                <div class="place-item" data-lat="10.7735" data-lng="106.7011">
+                    <img src="https://images.unsplash.com/photo-1583344654921-1402d33458e0?auto=format&fit=crop&q=80&w=200" alt="Khách sạn Biển Đảo" class="place-thumb">
+                    <div class="place-info">
                         <h4 class="font-bold">Khách sạn Biển Đảo</h4>
-                        <p class="text-warning text-sm mb-4"><i class='bx bxs-star'></i> 4.8 (1.2k đánh giá)</p>
-                        <p class="text-muted text-sm"><i class='bx bx-map'></i> Chợ Bến Thành</p>
+                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.8 (1.2k đánh giá)</p>
+                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Chợ Bến Thành, Q.1</p>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="place-item" data-lat="10.7800" data-lng="106.6950">
+                    <img src="https://images.unsplash.com/photo-1535492716301-38cb46fd7fd0?auto=format&fit=crop&q=80&w=200" alt="Nhà thờ Đức Bà" class="place-thumb">
+                    <div class="place-info">
+                        <h4 class="font-bold">Nhà thờ Đức Bà</h4>
+                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.9 (3.5k đánh giá)</p>
+                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Q.1, TP. Hồ Chí Minh</p>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="place-item" data-lat="10.7745" data-lng="106.7031">
+                    <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=200" alt="Phố đi bộ Nguyễn Huệ" class="place-thumb">
+                    <div class="place-info">
+                        <h4 class="font-bold">Phố đi bộ Nguyễn Huệ</h4>
+                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.7 (2.1k đánh giá)</p>
+                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Q.1, TP. Hồ Chí Minh</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="map-view">
-            <div id="map" style="width: 100%; height: 100%; z-index: 1;"></div>
+            <div id="map"></div>
         </div>
     </div>
 

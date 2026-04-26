@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartTravel - Đặt tour & Khám phá</title>
-    
+    <meta name="description" content="SmartTravel - Nền tảng đặt tour và khám phá du lịch thông minh hàng đầu Việt Nam. Gợi ý lộ trình cá nhân hóa bằng AI.">
+    <title>SmartTravel - Đặt tour & Khám phá thông minh</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/pages/index.css">
-    
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
-    
+
     <header class="header">
         <div class="container navbar">
             <a href="index.html" class="logo">
-                <i class='bx bx-paper-plane'></i> SmartTravel
+                <i class="bx bx-paper-plane"></i> SmartTravel
             </a>
+            <button class="mobile-menu-btn" aria-label="Menu">
+                <i class="bx bx-menu"></i>
+            </button>
             <nav class="nav-links">
                 <a href="index.html" class="nav-link active">Trang chủ</a>
                 <a href="tours.html" class="nav-link">Tour du lịch</a>
@@ -34,10 +36,9 @@
         </div>
     </header>
 
-    
     <section class="hero">
         <div class="hero-bg">
-            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=2070" alt="Travel Banner">
+            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=2070" alt="SmartTravel - Khám phá Việt Nam">
         </div>
         <div class="container hero-content">
             <div class="glass-panel search-panel">
@@ -45,100 +46,243 @@
                 <p class="text-muted mb-4">Khám phá thế giới cùng các chuyến đi được gợi ý thông minh</p>
                 <div class="search-form">
                     <div class="form-group flex-1">
-                        <label class="form-label"><i class='bx bx-map'></i> Điểm đến</label>
+                        <label class="form-label"><i class="bx bx-map"></i> Điểm đến</label>
                         <input type="text" class="form-control" placeholder="Ví dụ: Đà Nẵng, Phú Quốc...">
                     </div>
                     <div class="form-group flex-1">
-                        <label class="form-label"><i class='bx bx-calendar'></i> Ngày đi</label>
+                        <label class="form-label"><i class="bx bx-calendar"></i> Ngày đi</label>
                         <input type="date" class="form-control">
                     </div>
                     <div class="form-group flex-1">
-                        <label class="form-label"><i class='bx bx-user'></i> Hành khách</label>
+                        <label class="form-label"><i class="bx bx-user"></i> Hành khách</label>
                         <select class="form-control">
                             <option>1 người lớn</option>
                             <option>2 người lớn</option>
-                            <option>Gia đình</option>
+                            <option>Gia đình (2+2)</option>
+                            <option>Nhóm bạn (4+)</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary search-btn"><i class='bx bx-search'></i> Tìm kiếm</button>
+                    <button class="btn btn-primary search-btn"><i class="bx bx-search"></i> Tìm kiếm</button>
                 </div>
             </div>
         </div>
     </section>
 
-    
+    <section class="section container stats-section">
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Tour du lịch</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12.000+</div>
+                <div class="stat-label">Khách hàng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">63</div>
+                <div class="stat-label">Tỉnh thành</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">4.9<i class="bx bxs-star text-warning"></i></div>
+                <div class="stat-label">Đánh giá</div>
+            </div>
+        </div>
+    </section>
+
     <section class="section container">
         <div class="flex justify-between items-center mb-4">
             <h2 class="section-title mb-0">Gợi ý dành cho bạn</h2>
-            <a href="tours.html" class="text-primary font-semibold flex items-center gap-2 hover:opacity-80 transition">Xem tất cả <i class='bx bx-right-arrow-alt'></i></a>
+            <a href="tours.html" class="btn btn-ghost">Xem tất cả <i class="bx bx-right-arrow-alt"></i></a>
         </div>
-        
         <div class="grid suggestions-grid">
-            
-            <div class="card tour-card">
+            <div class="card card-interactive tour-card">
                 <div class="tour-img">
-                    <img src="https://images.unsplash.com/photo-1555562479-fd33de7dd59e?auto=format&fit=crop&q=80&w=800" alt="Đà Lạt">
-                    <div class="tour-badge badge badge-warning"><i class='bx bxs-star'></i> Đề xuất AI</div>
+                    <img src="https://images.unsplash.com/photo-1555562479-fd33de7dd59e?auto=format&fit=crop&q=80&w=800" alt="Đà Lạt Mộng Mơ">
+                    <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> Đề xuất AI</div>
                 </div>
                 <div class="tour-info">
                     <h3 class="font-bold">Đà Lạt Mộng Mơ - Tour 3N2Đ</h3>
-                    <p class="text-muted flex items-center gap-2 mt-4"><i class='bx bx-map'></i> Lâm Đồng, Việt Nam</p>
+                    <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Lâm Đồng, Việt Nam</p>
                     <div class="flex justify-between items-center mt-4">
-                        <div class="price">
-                            <span class="text-muted" style="text-decoration: line-through; font-size: 0.8rem;">3.500.000₫</span>
-                            <div class="text-primary font-bold">2.800.000₫</div>
+                        <div>
+                            <span class="price-old">3.500.000₫</span>
+                            <div class="price-large">2.800.000₫</div>
                         </div>
                         <a href="checkout.html" class="btn btn-primary">Đặt ngay</a>
                     </div>
                 </div>
             </div>
 
-            
-            <div class="card tour-card">
+            <div class="card card-interactive tour-card">
                 <div class="tour-img">
-                    <img src="https://images.unsplash.com/photo-1583344654921-1402d33458e0?auto=format&fit=crop&q=80&w=800" alt="Hạ Long">
+                    <img src="https://images.unsplash.com/photo-1583344654921-1402d33458e0?auto=format&fit=crop&q=80&w=800" alt="Vịnh Hạ Long">
+                    <div class="tour-badge badge badge-primary"><i class="bx bxs-hot"></i> Hot</div>
                 </div>
                 <div class="tour-info">
                     <h3 class="font-bold">Du thuyền Vịnh Hạ Long 5 Sao</h3>
-                    <p class="text-muted flex items-center gap-2 mt-4"><i class='bx bx-map'></i> Quảng Ninh, Việt Nam</p>
+                    <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Quảng Ninh, Việt Nam</p>
                     <div class="flex justify-between items-center mt-4">
-                        <div class="price">
-                            <div class="text-primary font-bold">4.200.000₫</div>
+                        <div>
+                            <div class="price-large">4.200.000₫</div>
                         </div>
                         <a href="tours.html" class="btn btn-outline">Chi tiết</a>
                     </div>
                 </div>
             </div>
-            
-            
-            <div class="card tour-card">
+
+            <div class="card card-interactive tour-card">
                 <div class="tour-img">
                     <img src="https://images.unsplash.com/photo-1535492716301-38cb46fd7fd0?auto=format&fit=crop&q=80&w=800" alt="Phú Quốc">
-                    <div class="tour-badge badge badge-primary">Hot</div>
+                    <div class="tour-badge badge badge-danger"><i class="bx bxs-discount"></i> -25%</div>
                 </div>
                 <div class="tour-info">
-                    <h3 class="font-bold">Combo Phú Quốc - Vinpearl</h3>
-                    <p class="text-muted flex items-center gap-2 mt-4"><i class='bx bx-map'></i> Kiên Giang, Việt Nam</p>
+                    <h3 class="font-bold">Combo Phú Quốc - Vinpearl 4N3Đ</h3>
+                    <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Kiên Giang, Việt Nam</p>
                     <div class="flex justify-between items-center mt-4">
-                        <div class="price">
-                            <div class="text-primary font-bold">5.500.000₫</div>
+                        <div>
+                            <span class="price-old">7.200.000₫</span>
+                            <div class="price-large">5.500.000₫</div>
                         </div>
-                        <a href="tours.html" class="btn btn-outline">Chi tiết</a>
+                        <a href="checkout.html" class="btn btn-primary">Đặt ngay</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    
-    <footer style="background-color: var(--white); padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border-color);">
+    <section class="section why-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-8">Vì sao chọn SmartTravel?</h2>
+            <div class="grid why-grid">
+                <div class="why-item">
+                    <div class="icon-circle icon-circle-primary mb-4">
+                        <i class="bx bx-brain"></i>
+                    </div>
+                    <h4 class="font-bold mb-2">Gợi ý bằng AI</h4>
+                    <p class="text-muted text-sm">Hệ thống phân tích sở thích và đề xuất lộ trình phù hợp nhất cho bạn.</p>
+                </div>
+                <div class="why-item">
+                    <div class="icon-circle icon-circle-success mb-4">
+                        <i class="bx bx-shield-quarter"></i>
+                    </div>
+                    <h4 class="font-bold mb-2">Đảm bảo an toàn</h4>
+                    <p class="text-muted text-sm">Bảo hiểm du lịch toàn diện. Bảo vệ hành trình mọi lúc mọi nơi.</p>
+                </div>
+                <div class="why-item">
+                    <div class="icon-circle icon-circle-warning mb-4">
+                        <i class="bx bx-medal"></i>
+                    </div>
+                    <h4 class="font-bold mb-2">Giá tốt nhất</h4>
+                    <p class="text-muted text-sm">Cam kết giá tốt nhất thị trường. Hoàn tiền nếu bạn tìm được rẻ hơn.</p>
+                </div>
+                <div class="why-item">
+                    <div class="icon-circle icon-circle-info mb-4">
+                        <i class="bx bx-headphone"></i>
+                    </div>
+                    <h4 class="font-bold mb-2">Hỗ trợ 24/7</h4>
+                    <p class="text-muted text-sm">Đội ngũ tư vấn viên luôn sẵn sàng giải đáp mọi thắc mắc của bạn.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section container">
+        <h2 class="section-title text-center mb-8">Khách hàng nói gì về chúng tôi?</h2>
+        <div class="grid testimonials-grid">
+            <div class="card testimonial-card">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="user-avatar">NL</div>
+                    <div>
+                        <h4 class="font-bold">Nguyễn Lan</h4>
+                        <p class="text-muted text-sm">Tour Đà Lạt 3N2Đ</p>
+                    </div>
+                </div>
+                <div class="stars mb-2">
+                    <i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i>
+                </div>
+                <p class="text-muted text-sm">"Trải nghiệm tuyệt vời! Hướng dẫn viên nhiệt tình, lộ trình rất hợp lý. Sẽ quay lại lần nữa."</p>
+            </div>
+            <div class="card testimonial-card">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="user-avatar">TH</div>
+                    <div>
+                        <h4 class="font-bold">Trần Hùng</h4>
+                        <p class="text-muted text-sm">Du thuyền Hạ Long 5 Sao</p>
+                    </div>
+                </div>
+                <div class="stars mb-2">
+                    <i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i>
+                </div>
+                <p class="text-muted text-sm">"Dịch vụ 5 sao thực sự. Giá rất hợp lý so với chất lượng. Đặc biệt tính năng gợi ý AI rất chính xác."</p>
+            </div>
+            <div class="card testimonial-card">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="user-avatar">MH</div>
+                    <div>
+                        <h4 class="font-bold">Mai Hương</h4>
+                        <p class="text-muted text-sm">Combo Phú Quốc</p>
+                    </div>
+                </div>
+                <div class="stars mb-2">
+                    <i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bxs-star text-warning"></i><i class="bx bx-star text-warning"></i>
+                </div>
+                <p class="text-muted text-sm">"Đặt tour rất dễ dàng, thanh toán nhanh chóng. Nhân viên hỗ trợ rất tận tình từ lúc đặt đến khi về."</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section cta-section">
         <div class="container text-center">
-            <div class="logo justify-center mb-4"><i class='bx bx-paper-plane'></i> SmartTravel</div>
-            <p class="text-muted">© 2026 Smart Travel App. Nền tảng du lịch thông minh.</p>
+            <h2 class="font-bold text-2xl mb-4 text-white">Sẵn sàng cho hành trình tiếp theo?</h2>
+            <p class="text-white mb-6" style="opacity:0.9">Khám phá hàng trăm tour du lịch hấp dẫn với mức giá ưu đãi</p>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="tours.html" class="btn btn-cta-primary">Khám phá tour</a>
+                <a href="guides.html" class="btn btn-cta-outline">Thuê hướng dẫn viên</a>
+                <a href="promotions.html" class="btn btn-cta-outline">Xem khuyến mãi</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo mb-2"><i class="bx bx-paper-plane"></i> SmartTravel</div>
+                    <p class="footer-desc">Nền tảng đặt tour và khám phá du lịch thông minh hàng đầu Việt Nam. Gợi ý lộ trình cá nhân hóa bằng AI.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">Khám phá</h4>
+                    <div class="footer-links">
+                        <a href="tours.html" class="footer-link">Tour du lịch</a>
+                        <a href="map.html" class="footer-link">Bản đồ</a>
+                        <a href="guides.html" class="footer-link">Hướng dẫn viên</a>
+                        <a href="promotions.html" class="footer-link">Khuyến mãi</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">Hỗ trợ</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Trung tâm trợ giúp</a>
+                        <a href="#" class="footer-link">Điều khoản dịch vụ</a>
+                        <a href="#" class="footer-link">Chính sách bảo mật</a>
+                        <a href="#" class="footer-link">Liên hệ</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">Liên hệ</h4>
+                    <div class="footer-links">
+                        <span class="footer-link"><i class="bx bx-phone"></i> 1900 xxxx</span>
+                        <span class="footer-link"><i class="bx bx-envelope"></i> support@smarttravel.vn</span>
+                        <span class="footer-link"><i class="bx bx-map"></i> TP. Hồ Chí Minh, Việt Nam</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 SmartTravel. Nền tảng du lịch thông minh.</p>
+            </div>
         </div>
     </footer>
 
-    
     <script src="js/main.js"></script>
 </body>
 </html>

@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý hồ sơ cá nhân, lịch sử đặt tour và mã ưu đãi tại SmartTravel.">
     <title>Hồ sơ cá nhân - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/pages/profile.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    
+
     <header class="header">
         <div class="container navbar">
-            <a href="index.html" class="logo">
-                <i class='bx bx-paper-plane'></i> SmartTravel
-            </a>
+            <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
+            <button class="mobile-menu-btn" aria-label="Menu"><i class="bx bx-menu"></i></button>
             <nav class="nav-links">
                 <a href="index.html" class="nav-link">Trang chủ</a>
                 <a href="tours.html" class="nav-link">Tour du lịch</a>
@@ -26,76 +26,107 @@
                 <a href="guides.html" class="nav-link">Thuê HDV</a>
             </nav>
             <div class="nav-actions">
-                <div class="user-avatar" style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold; cursor: pointer;">ST</div>
+                <a href="profile.html" class="user-avatar" title="Trang cá nhân">ST</a>
             </div>
         </div>
     </header>
 
     <div class="container section">
         <div class="profile-layout">
-            
+
             <div class="card profile-sidebar">
-                <div class="text-center pb-4 mb-4 border-b" style="border-bottom: 1px solid var(--border-color);">
-                    <div style="width: 80px; height: 80px; background-color: var(--primary-light); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold; font-size: 2rem; border: 2px solid var(--primary-color);">ST</div>
-                    <h3 class="font-bold">Khách Hàng</h3>
-                    <p class="text-muted text-sm mt-2">Thành viên Bạc</p>
+                <div class="profile-header text-center pb-4 mb-4 border-b">
+                    <div class="user-avatar user-avatar-lg profile-avatar">ST</div>
+                    <h3 class="font-bold mt-4">Khách Hàng</h3>
+                    <p class="text-muted text-sm mt-1">khachhang@example.com</p>
+                    <span class="badge badge-primary mt-2"><i class="bx bx-medal"></i> Thành viên Bạc</span>
                 </div>
-                
+
                 <nav class="profile-nav">
-                    <a href="#" class="profile-nav-link active"><i class='bx bx-user'></i> Thông tin cá nhân</a>
-                    <a href="#" class="profile-nav-link"><i class='bx bx-history'></i> Chuyến đi của tôi</a>
-                    <a href="#" class="profile-nav-link"><i class='bx bx-heart'></i> Đã lưu</a>
-                    <a href="#" class="profile-nav-link"><i class='bx bx-cog'></i> Cài đặt</a>
-                    <a href="auth.html" class="profile-nav-link text-danger"><i class='bx bx-log-out'></i> Đăng xuất</a>
+                    <a href="#" class="profile-nav-link active"><i class="bx bx-user"></i> Thông tin cá nhân</a>
+                    <a href="#" class="profile-nav-link"><i class="bx bx-history"></i> Chuyến đi của tôi</a>
+                    <a href="#" class="profile-nav-link"><i class="bx bx-purchase-tag-alt"></i> Mã ưu đãi</a>
+                    <a href="#" class="profile-nav-link"><i class="bx bx-heart"></i> Đã lưu</a>
+                    <a href="#" class="profile-nav-link"><i class="bx bx-cog"></i> Cài đặt</a>
+                    <a href="auth.html" class="profile-nav-link text-danger"><i class="bx bx-log-out"></i> Đăng xuất</a>
                 </nav>
             </div>
 
-            
-            <div class="card p-6 profile-main">
-                <h2 class="font-bold mb-4">Thông tin cá nhân</h2>
-                <p class="text-muted mb-4">Cập nhật thông tin của bạn để trải nghiệm dịch vụ tốt hơn.</p>
-                
-                <div class="form-group mb-4">
-                    <label class="form-label">Ảnh đại diện</label>
-                    <div class="flex items-center gap-4">
-                        <div style="width: 60px; height: 60px; background-color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold;">ST</div>
-                        <button class="btn btn-outline">Tải ảnh lên</button>
+            <div class="profile-main">
+                <div class="card p-6">
+                    <h2 class="font-bold mb-2">Thông tin cá nhân</h2>
+                    <p class="text-muted text-sm mb-6">Cập nhật thông tin của bạn để trải nghiệm dịch vụ tốt hơn.</p>
+
+                    <div class="form-group mb-6">
+                        <label class="form-label">Ảnh đại diện</label>
+                        <div class="flex items-center gap-4">
+                            <div class="user-avatar user-avatar-lg">ST</div>
+                            <div>
+                                <button class="btn btn-outline btn-sm">Tải ảnh lên</button>
+                                <p class="text-muted text-xs mt-1">JPG, PNG tối đa 2MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid params-grid">
+                        <div class="form-group">
+                            <label class="form-label">Họ và Tên</label>
+                            <input type="text" class="form-control" value="Khách Hàng">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="khachhang@example.com" disabled>
+                        </div>
+                    </div>
+
+                    <div class="grid params-grid mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" placeholder="Chưa cập nhật">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" placeholder="Nhập địa chỉ của bạn">
+                    </div>
+
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t">
+                        <button class="btn btn-primary btn-save-profile">Lưu thay đổi</button>
                     </div>
                 </div>
 
-                <div class="grid params-grid">
-                    <div class="form-group flex-1">
-                        <label class="form-label">Họ và Tên</label>
-                        <input type="text" class="form-control" value="Khách Hàng">
+                <div class="card p-6 mt-4">
+                    <h3 class="font-bold mb-4">Chuyến đi gần đây</h3>
+                    <div class="trip-item flex items-center gap-4 pb-4 border-b">
+                        <div class="icon-circle icon-circle-primary">
+                            <i class="bx bx-map-pin"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Đà Lạt Mộng Mơ - 3N2Đ</h4>
+                            <p class="text-muted text-sm">15/03/2026 - 17/03/2026</p>
+                        </div>
+                        <span class="badge badge-success">Hoàn thành</span>
                     </div>
-                    <div class="form-group flex-1">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" value="khachhang@example.com" disabled>
+                    <div class="trip-item flex items-center gap-4 pt-4">
+                        <div class="icon-circle icon-circle-warning">
+                            <i class="bx bx-map-pin"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Du thuyền Hạ Long 5 Sao</h4>
+                            <p class="text-muted text-sm">15/06/2026 - 18/06/2026</p>
+                        </div>
+                        <span class="badge badge-warning">Sắp tới</span>
                     </div>
-                </div>
-
-                <div class="grid params-grid mt-4">
-                    <div class="form-group flex-1">
-                        <label class="form-label">Số điện thoại</label>
-                        <input type="tel" class="form-control" placeholder="Chưa cập nhật">
-                    </div>
-                    <div class="form-group flex-1">
-                        <label class="form-label">Ngày sinh</label>
-                        <input type="date" class="form-control">
-                    </div>
-                </div>
-
-                <div class="form-group mt-4">
-                    <label class="form-label">Địa chỉ</label>
-                    <input type="text" class="form-control" placeholder="Nhập địa chỉ của bạn">
-                </div>
-
-                <div class="flex justify-between items-center mt-4 pt-4 border-t" style="border-top: 1px solid var(--border-color); margin-top: 30px;">
-                    <button class="btn btn-primary" style="padding: 12px 30px;">Lưu Thay Đổi</button>
-                    <span class="text-success" style="display: none;"><i class='bx bx-check-circle'></i> Đã lưu thành công</span>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

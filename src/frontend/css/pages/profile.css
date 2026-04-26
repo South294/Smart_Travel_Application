@@ -1,76 +1,85 @@
-
-.bg-light {
-    background-color: #f8fafc;
-}
-
 .profile-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 30px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 30px;
 }
 
 .profile-sidebar {
-    padding: 24px;
-    height: fit-content;
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: 90px;
+}
+
+.profile-avatar {
+  margin: 0 auto;
 }
 
 .profile-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .profile-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: var(--radius-md);
-    color: var(--text-dark);
-    font-weight: 500;
-    transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  color: var(--text-dark);
+  font-weight: 500;
+  transition: var(--transition);
+  text-decoration: none;
 }
 
 .profile-nav-link i {
-    font-size: 1.2rem;
-    color: var(--text-muted);
+  font-size: 1.2rem;
+  color: var(--text-muted);
 }
 
 .profile-nav-link:hover {
-    background-color: var(--bg-color);
+  background-color: var(--bg-color);
 }
 
 .profile-nav-link.active {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
+  background-color: var(--primary-light);
+  color: var(--primary-color);
 }
 
 .profile-nav-link.active i {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .profile-nav-link.text-danger {
-    color: var(--danger);
+  color: var(--danger);
 }
 
 .profile-nav-link.text-danger i {
-    color: var(--danger);
+  color: var(--danger);
 }
 
-.profile-main {
-    padding: 32px;
+.profile-main .card + .card {
+  margin-top: 0;
 }
 
-.params-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.trip-item {
+  transition: var(--transition);
+  padding: 12px 0;
+}
+
+.trip-item:hover {
+  padding-left: 8px;
 }
 
 @media (max-width: 768px) {
-    .profile-layout {
-        grid-template-columns: 1fr;
-    }
-    .params-grid {
-        grid-template-columns: 1fr;
-    }
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+  .profile-sidebar {
+    position: static;
+  }
+  .params-grid {
+    grid-template-columns: 1fr;
+  }
 }
