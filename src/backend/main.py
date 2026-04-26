@@ -1,14 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = FastAPI(
     title="Smart Travel API",
-    description="Hệ thống Backend cho dự án Du Lịch Thông Minh. Hỗ trợ tích hợp Google Maps, AI và quản lý dữ liệu.",
+    description="Hệ thống Backend cho dự án Du Lịch Thông Minh. Hỗ trợ tích hợp OpenStreetMap, AI và quản lý dữ liệu.",
     version="1.0.0"
 )
 

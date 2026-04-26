@@ -49,7 +49,7 @@ function initAuthState() {
         
         if (isLoggedIn) {
             container.innerHTML = (hasSearch ? `<button class="btn btn-icon"><i class='bx bx-search'></i></button>` : '') + `
-                <div class="user-avatar" title="Nhấn để đăng xuất" style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold; cursor: pointer; border: 2px solid var(--primary-color);" onclick="toggleLogin()">ST</div>
+                <div class="user-avatar" title="Trang cá nhân" style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold; cursor: pointer; border: 2px solid var(--primary-color);" onclick="window.location.href='profile.html'">ST</div>
             `;
         } else {
             container.innerHTML = (hasSearch ? `<button class="btn btn-icon"><i class='bx bx-search'></i></button>` : '') + `
@@ -58,31 +58,4 @@ function initAuthState() {
             `;
         }
     });
-
-    if (!document.getElementById('test-login-toggle')) {
-        const btn = document.createElement('button');
-        btn.id = 'test-login-toggle';
-        btn.textContent = isLoggedIn ? 'Đang Đăng Nhập (Bấm để Đăng Xuất)' : 'Đang Đăng Xuất (Bấm để Đăng Nhập)';
-        btn.style.position = 'fixed';
-        btn.style.bottom = '20px';
-        btn.style.right = '20px';
-        btn.style.zIndex = '9999';
-        btn.style.padding = '12px 20px';
-        btn.style.background = isLoggedIn ? '#dc3545' : '#10b981';
-        btn.style.color = 'white';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '30px';
-        btn.style.fontWeight = 'bold';
-        btn.style.cursor = 'pointer';
-        btn.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-        
-        btn.onclick = toggleLogin;
-        document.body.appendChild(btn);
-    }
-}
-
-function toggleLogin() {
-    const current = localStorage.getItem('isLoggedIn') === 'true';
-    localStorage.setItem('isLoggedIn', !current);
-    location.reload();
 }
