@@ -1,26 +1,26 @@
-# Smart Travel App
+# Ứng Dụng Smart Travel
 
-A comprehensive travel application featuring tour booking, maps, user management, and AI-driven recommendations.
+Một ứng dụng du lịch toàn diện cung cấp tính năng đặt tour, bản đồ, quản lý người dùng và các đề xuất dựa trên trí tuệ nhân tạo.
 
-## Structure
+## Cấu Trúc Thư Mục
 
-- `src/frontend`: Contains the frontend web application (HTML, CSS, JS, etc.)
-- `src/backend`: Contains the Python backend application (API, database integrations, AI logic).
+- src/frontend: Chứa mã nguồn giao diện người dùng (HTML, CSS, JS).
+- src/backend: Chứa mã nguồn backend viết bằng Python (API, tích hợp cơ sở dữ liệu, xử lý AI).
 
-## Getting Started
+## Hướng Dẫn Sử Dụng
 
 ### Frontend
-Check `src/frontend/README.md` (or simply open the `index.html` file in your browser).
+Vui lòng kiểm tra src/frontend/README.md hoặc đơn giản là mở file index.html bằng trình duyệt web của bạn.
 
 ### Backend
-1. Navigate to `src/backend`
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run the server: `python main.py` or `uvicorn main:app --reload` (if using FastAPI).
+1. Di chuyển đến thư mục src/backend
+2. Cài đặt các thư viện phụ thuộc: pip install -r requirements.txt
+3. Chạy máy chủ: python main.py hoặc uvicorn main:app --reload (nếu sử dụng FastAPI).
 
-## Features
-- Navigation/Maps
-- Tour Booking
-- User Management
-- Payments
-- Admin Dashboard
-- AI-driven recommendation features (planned)
+## Các Tính Năng Chính
+- Bản đồ và chỉ đường
+- Đặt tour du lịch
+- Quản lý người dùng
+- Thanh toán
+- Bảng điều khiển dành cho quản trị viên
+- Đề xuất chuyến đi thông minh (dự kiến)

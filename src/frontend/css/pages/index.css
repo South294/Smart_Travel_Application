@@ -1,4 +1,4 @@
-/* Hero Section */
+
 .hero {
     position: relative;
     height: 600px;
@@ -64,7 +64,6 @@
     padding: 0 32px;
 }
 
-/* Suggestions Grid */
 .suggestions-grid {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;

@@ -1,4 +1,4 @@
-/* Auth page styles */
+
 .auth-page {
     background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=2000');
     background-size: cover;
@@ -28,13 +28,11 @@
     color: var(--primary-color);
 }
 
-/* Sliding Container Variables */
 :root {
     --auth-width: 850px;
     --auth-height: 550px;
 }
 
-/* The main container */
 .auth-container {
     background: rgba(255, 255, 255, 1);
     border-radius: 20px;
@@ -46,7 +44,6 @@
     min-height: var(--auth-height);
 }
 
-/* Forms */
 .form-container {
     position: absolute;
     top: 0;
@@ -104,10 +101,9 @@
 .social-login a:hover {
     color: var(--primary-color);
     border-color: var(--primary-color);
-    background-color: rgba(16, 185, 129, 0.05); /* emerald green tint */
+    background-color: rgba(16, 185, 129, 0.05); 
 }
 
-/* Specific Containers */
 .sign-in-container {
     left: 0;
     width: 50%;
@@ -121,7 +117,6 @@
     z-index: 1;
 }
 
-/* The Overlay */
 .overlay-container {
     position: absolute;
     top: 0;
@@ -135,7 +130,7 @@
 
 .overlay {
     background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
-    background: url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&q=80&w=1000'); /* Emerald green beach/nature */
+    background: url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&q=80&w=1000'); 
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -151,7 +146,7 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(16, 185, 129, 0.85); /* emerald green overlay */
+    background: rgba(16, 185, 129, 0.85); 
     z-index: 0;
 }
 
@@ -206,14 +201,10 @@
     transform: translateX(0);
 }
 
-/* Animation Classes */
-
-/* Move sign-in out */
 .auth-container.right-panel-active .sign-in-container {
     transform: translateX(100%);
 }
 
-/* Move sign-up in */
 .auth-container.right-panel-active .sign-up-container {
     transform: translateX(100%);
     opacity: 1;
@@ -221,22 +212,18 @@
     animation: show 0.6s;
 }
 
-/* Move overlay container */
 .auth-container.right-panel-active .overlay-container {
     transform: translateX(-100%);
 }
 
-/* Move overlay background */
 .auth-container.right-panel-active .overlay {
     transform: translateX(50%);
 }
 
-/* Move left panel */
 .auth-container.right-panel-active .overlay-left {
     transform: translateX(0);
 }
 
-/* Move right panel */
 .auth-container.right-panel-active .overlay-right {
     transform: translateX(20%);
 }
@@ -252,7 +239,6 @@
     }
 }
 
-/* Form Elements */
 .input-with-icon {
     position: relative;
     width: 100%;
@@ -341,7 +327,6 @@
 .mt-4 { margin-top: 1.5rem; }
 .w-full { width: 100%; }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .auth-container {
         min-height: 100vh;
@@ -380,7 +365,7 @@
         transform: translateY(0);
     }
     
-    /* We'll disable the complex slide for mobile and just show simple toggle */
+    
     .overlay {
         width: 100%;
         left: 0;

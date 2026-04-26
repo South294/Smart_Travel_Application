@@ -12,7 +12,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body class="bg-light">
-    <!-- Header -->
+    
     <header class="header">
         <div class="container navbar">
             <a href="index.html" class="logo">
@@ -22,7 +22,7 @@
                 <a href="index.html" class="nav-link">Trang chủ</a>
                 <a href="tours.html" class="nav-link active">Tour du lịch</a>
                 <a href="map.html" class="nav-link">Bản đồ</a>
-                <a href="checkout.html" class="nav-link">Khuyến mãi</a>
+                <a href="promotions.html" class="nav-link">Khuyến mãi</a>
             </nav>
             <div class="nav-actions">
                 <a href="auth.html" class="btn btn-outline">Đăng nhập</a>
@@ -38,10 +38,10 @@
         </div>
     </div>
 
-    <!-- Tours Content -->
+    
     <div class="container section pt-0" style="padding-top: 40px;">
         <div class="tours-layout">
-            <!-- Sidebar / Filters -->
+            
             <aside class="filters-sidebar card">
                 <h3 class="font-bold mb-4 flex items-center gap-2"><i class='bx bx-filter-alt'></i> Bộ lọc tìm kiếm</h3>
                 
@@ -62,28 +62,23 @@
                 <div class="filter-group form-group">
                     <label class="form-label">Đánh giá</label>
                     <div class="checkbox-list">
-                        <label class="flex items-center gap-2 mt-4"><input type="checkbox"> <span class="text-warning"><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i></span> 5 sao</label>
-                        <label class="flex items-center gap-2 mt-4"><input type="checkbox"> <span class="text-warning"><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bx-star'></i></span> Trở lên</label>
+                        <label class="flex items-center gap-2 mt-4" style="cursor:pointer;"><input type="checkbox"> <span class="text-warning"><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i></span> 5 sao</label>
+                        <label class="flex items-center gap-2 mt-4" style="cursor:pointer;"><input type="checkbox"> <span class="text-warning"><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bx-star'></i></span> 4 sao trở lên</label>
+                        <label class="flex items-center gap-2 mt-4" style="cursor:pointer;"><input type="checkbox"> <span class="text-warning"><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bxs-star'></i><i class='bx bx-star'></i><i class='bx bx-star'></i></span> 3 sao trở lên</label>
                     </div>
                 </div>
 
                 <button class="btn btn-primary w-full mt-4">Áp dụng</button>
             </aside>
 
-            <!-- Tours List -->
+            
             <main class="tours-list">
                 <div class="flex justify-between items-center mb-4">
-                    <p class="text-muted">Hiển thị <strong>24</strong> kết quả</p>
-                    <select class="form-control" style="width: auto;">
-                        <option>Mới nhất</option>
-                        <option>Giá từ thấp đến cao</option>
-                        <option>Giá từ cao đến thấp</option>
-                        <option>Đánh giá cao nhất</option>
-                    </select>
+                    <p class="text-muted">Hiển thị <strong>24</strong> kết quả (Đánh giá tốt nhất)</p>
                 </div>
 
                 <div class="grid list-grid">
-                    <!-- Tour Item -->
+                    
                     <div class="card tour-card list-card">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1555562479-fd33de7dd59e?auto=format&fit=crop&q=80&w=800" alt="Đà Lạt">
@@ -102,7 +97,7 @@
                         </div>
                     </div>
 
-                    <!-- Tour Item -->
+                    
                     <div class="card tour-card list-card">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1583344654921-1402d33458e0?auto=format&fit=crop&q=80&w=800" alt="Hạ Long">
@@ -124,7 +119,7 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    
     <footer style="background-color: var(--white); padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border-color);">
         <div class="container text-center">
             <div class="logo justify-center mb-4"><i class='bx bx-paper-plane'></i> SmartTravel</div>
