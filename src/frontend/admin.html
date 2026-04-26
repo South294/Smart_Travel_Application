@@ -108,7 +108,7 @@
                                 <td><span class="badge badge-warning">Chờ duyệt</span></td>
                                 <td>
                                     <div class="flex gap-2">
-                                        <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">Duyệt</button>
+                                        <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="document.getElementById('cccdModal').style.display='flex'">Xem CCCD</button>
                                         <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; color: var(--danger); border-color: var(--danger);">Từ chối</button>
                                     </div>
                                 </td>
@@ -145,6 +145,34 @@
              </div>
         </div>
     </main>
+
+    <!-- Modal Xem CCCD -->
+    <div id="cccdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%;">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">Xác minh CCCD - Trần Văn B</h3>
+                <button onclick="document.getElementById('cccdModal').style.display='none'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <div class="grid params-grid mb-4">
+                <div>
+                    <p class="font-semibold mb-2">Mặt trước</p>
+                    <div style="background: #eee; height: 150px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #888;">
+                        [Ảnh mặt trước CCCD]
+                    </div>
+                </div>
+                <div>
+                    <p class="font-semibold mb-2">Mặt sau</p>
+                    <div style="background: #eee; height: 150px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #888;">
+                        [Ảnh mặt sau CCCD]
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6 pt-4 border-t">
+                <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="alert('Đã từ chối!'); document.getElementById('cccdModal').style.display='none'">Từ chối</button>
+                <button class="btn btn-primary" onclick="alert('Đã duyệt thành công!'); document.getElementById('cccdModal').style.display='none'">Phê duyệt</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/main.js"></script>
 </body>

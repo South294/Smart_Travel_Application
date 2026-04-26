@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký Hướng Dẫn Viên - SmartTravel</title>
+    
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .register-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+        }
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+        }
+        .upload-area p {
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <i class='bx bx-paper-plane'></i> SmartTravel
+            </a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="tours.html" class="nav-link">Tour du lịch</a>
+                <a href="map.html" class="nav-link">Bản đồ</a>
+                <a href="promotions.html" class="nav-link">Khuyến mãi</a>
+                <a href="guides.html" class="nav-link active">Thuê HDV</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-avatar" style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: bold; cursor: pointer;" onclick="window.location.href='profile.html'">ST</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container register-container">
+        <div class="card p-6">
+            <h2 class="font-bold mb-2">Trở thành Hướng Dẫn Viên Bản Địa</h2>
+            <p class="text-muted mb-6">Vui lòng cung cấp thông tin và tài liệu xác minh danh tính (CCCD/CMND) để chúng tôi phê duyệt.</p>
+            
+            <form onsubmit="event.preventDefault(); alert('Đã gửi yêu cầu phê duyệt thành công! Admin sẽ kiểm tra CCCD của bạn.'); window.location.href='guides.html';">
+                
+                <h3 class="font-bold text-lg mt-4 mb-4" style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">1. Thông tin cá nhân & Dịch vụ</h3>
+                <div class="grid params-grid">
+                    <div class="form-group flex-1">
+                        <label class="form-label">Kinh nghiệm (Năm)</label>
+                        <input type="number" class="form-control" required min="0">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label class="form-label">Mức giá thuê / Ngày (VND)</label>
+                        <input type="number" class="form-control" required min="100000">
+                    </div>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="form-label">Ngôn ngữ hỗ trợ (Cách nhau bằng dấu phẩy)</label>
+                    <input type="text" class="form-control" placeholder="VD: Tiếng Việt, Tiếng Anh" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="form-label">Giới thiệu ngắn về bản thân</label>
+                    <textarea class="form-control" rows="4" placeholder="Giới thiệu về bạn và những điểm đặc biệt trong tour của bạn..." required></textarea>
+                </div>
+
+                <h3 class="font-bold text-lg mt-6 mb-4" style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">2. Xác minh Danh tính (CCCD / CMND)</h3>
+                <div class="grid params-grid">
+                    <div class="form-group flex-1">
+                        <label class="form-label">Mặt trước CCCD</label>
+                        <div class="upload-area" onclick="document.getElementById('front-id').click()">
+                            <i class='bx bx-id-card'></i>
+                            <p>Nhấp để tải lên mặt trước</p>
+                            <input type="file" id="front-id" hidden accept="image/*" required>
+                        </div>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label class="form-label">Mặt sau CCCD</label>
+                        <div class="upload-area" onclick="document.getElementById('back-id').click()">
+                            <i class='bx bx-credit-card-front'></i>
+                            <p>Nhấp để tải lên mặt sau</p>
+                            <input type="file" id="back-id" hidden accept="image/*" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-4 mb-6" style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid var(--danger); border-radius: 4px;">
+                    <p class="text-sm m-0" style="color: var(--danger);"><i class='bx bx-error-circle'></i> <strong>Lưu ý bảo mật:</strong> Hình ảnh CCCD của bạn sẽ được mã hóa và bảo mật nghiêm ngặt. Chỉ Admin mới có quyền truy cập để duyệt hồ sơ.</p>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t" style="border-top: 1px solid var(--border-color);">
+                    <a href="guides.html" class="btn btn-outline">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">Gửi Yêu Cầu Duyệt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
