@@ -598,6 +598,27 @@
   margin: 16px 0;
 }
 
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.role-admin { background: var(--danger-light); color: var(--danger); }
+.role-guide { background: var(--info-light); color: var(--info); }
+.role-user { background: var(--bg-light); color: var(--text-muted); }
+
+.badge-pill {
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: var(--radius-full);
+}
+
 .price-large {
   font-size: 1.25rem;
   font-weight: 700;
