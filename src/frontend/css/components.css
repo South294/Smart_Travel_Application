@@ -177,3 +177,21 @@
     order: 2;
   }
 }
+
+.params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 480px) {
+  .params-grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    border-radius: var(--radius-md);
+  }
+  .section {
+    padding: 40px 0;
+  }
+}
