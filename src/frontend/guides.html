@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Thuê hướng dẫn viên bản địa tại SmartTravel. Trải nghiệm văn hóa địa phương chân thực nhất.">
+    <title>Thuê Hướng Dẫn Viên - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/guides.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
+            <button class="mobile-menu-btn" aria-label="Menu"><i class="bx bx-menu"></i></button>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="tours.html" class="nav-link">Tour du lịch</a>
+                <a href="map.html" class="nav-link">Bản đồ</a>
+                <a href="promotions.html" class="nav-link">Khuyến mãi</a>
+                <a href="guides.html" class="nav-link active">Thuê HDV</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="auth.html" class="btn btn-outline">Đăng nhập</a>
+                <a href="auth.html" class="btn btn-primary">Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1>Tìm Hướng Dẫn Viên Bản Địa</h1>
+            <p>Trải nghiệm văn hóa địa phương chân thực nhất cùng những người bạn đồng hành am hiểu</p>
+        </div>
+    </div>
+
+    <div class="container section">
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <h2 class="section-title mb-0">HDV Nổi Bật</h2>
+            <select class="form-control sort-select">
+                <option>Đánh giá cao nhất</option>
+                <option>Giá thấp đến cao</option>
+                <option>Giá cao đến thấp</option>
+            </select>
+        </div>
+
+        <div class="grid guides-grid">
+
+            <div class="guide-card">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200" alt="Nguyễn Thị Mai" class="guide-avatar">
+                <div class="guide-info">
+                    <div class="guide-header">
+                        <span class="badge badge-primary"><i class="bx bx-check-shield"></i> Đã xác minh</span>
+                        <span class="status-available">Sẵn sàng</span>
+                    </div>
+                    <h3 class="font-bold text-lg mt-2">Nguyễn Thị Mai</h3>
+                    <p class="text-muted text-sm"><i class="bx bx-map"></i> Đà Lạt, Việt Nam</p>
+
+                    <div class="guide-stats">
+                        <div class="guide-rating">
+                            <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star-half"></i>
+                            <span class="guide-rating-score">4.9</span>
+                            <span class="guide-rating-count">(120 đánh giá)</span>
+                        </div>
+                        <span><i class="bx bx-briefcase"></i> 3 năm kinh nghiệm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="lang-tag">Tiếng Việt</span>
+                        <span class="lang-tag">English</span>
+                    </div>
+
+                    <div class="guide-price mb-4">500.000₫ <span class="guide-price-unit">/ ngày</span></div>
+
+                    <button class="btn btn-primary w-full">Thuê ngay</button>
+                </div>
+            </div>
+
+            <div class="guide-card">
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200" alt="Trần Văn Hùng" class="guide-avatar">
+                <div class="guide-info">
+                    <div class="guide-header">
+                        <span class="badge badge-primary"><i class="bx bx-check-shield"></i> Đã xác minh</span>
+                        <span class="status-busy">Đang bận</span>
+                    </div>
+                    <h3 class="font-bold text-lg mt-2">Trần Văn Hùng</h3>
+                    <p class="text-muted text-sm"><i class="bx bx-map"></i> Hà Nội, Việt Nam</p>
+
+                    <div class="guide-stats">
+                        <div class="guide-rating">
+                            <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i>
+                            <span class="guide-rating-score">4.8</span>
+                            <span class="guide-rating-count">(85 đánh giá)</span>
+                        </div>
+                        <span><i class="bx bx-briefcase"></i> 5 năm kinh nghiệm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="lang-tag">Tiếng Việt</span>
+                        <span class="lang-tag">中文</span>
+                    </div>
+
+                    <div class="guide-price mb-4">600.000₫ <span class="guide-price-unit">/ ngày</span></div>
+
+                    <button class="btn btn-disabled w-full" disabled>Đang dẫn tour</button>
+                </div>
+            </div>
+
+            <div class="guide-card">
+                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200" alt="Lê Ngọc Hân" class="guide-avatar">
+                <div class="guide-info">
+                    <div class="guide-header">
+                        <span class="badge badge-primary"><i class="bx bx-check-shield"></i> Đã xác minh</span>
+                        <span class="status-available">Sẵn sàng</span>
+                    </div>
+                    <h3 class="font-bold text-lg mt-2">Lê Ngọc Hân</h3>
+                    <p class="text-muted text-sm"><i class="bx bx-map"></i> Đà Nẵng, Việt Nam</p>
+
+                    <div class="guide-stats">
+                        <div class="guide-rating">
+                            <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i>
+                            <span class="guide-rating-score">5.0</span>
+                            <span class="guide-rating-count">(200 đánh giá)</span>
+                        </div>
+                        <span><i class="bx bx-briefcase"></i> 4 năm kinh nghiệm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="lang-tag">Tiếng Việt</span>
+                        <span class="lang-tag">English</span>
+                        <span class="lang-tag">한국어</span>
+                    </div>
+
+                    <div class="guide-price mb-4">800.000₫ <span class="guide-price-unit">/ ngày</span></div>
+
+                    <button class="btn btn-primary w-full">Thuê ngay</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="register-banner">
+            <h3 class="font-bold text-xl mb-2">Bạn am hiểu địa phương của mình?</h3>
+            <p class="text-muted mb-4">Đăng ký trở thành Hướng Dẫn Viên để kiếm thêm thu nhập và gặp gỡ bạn bè quốc tế.</p>
+            <a href="guide-register.html" class="btn btn-primary">Đăng ký làm Hướng Dẫn Viên</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo mb-2"><i class="bx bx-paper-plane"></i> SmartTravel</div>
+                    <p class="footer-desc">Nền tảng đặt tour và khám phá du lịch thông minh hàng đầu Việt Nam.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">Khám phá</h4>
+                    <div class="footer-links">
+                        <a href="tours.html" class="footer-link">Tour du lịch</a>
+                        <a href="map.html" class="footer-link">Bản đồ</a>
+                        <a href="guides.html" class="footer-link">Hướng dẫn viên</a>
+                        <a href="promotions.html" class="footer-link">Khuyến mãi</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">Hỗ trợ</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Trung tâm trợ giúp</a>
+                        <a href="#" class="footer-link">Điều khoản dịch vụ</a>
+                        <a href="#" class="footer-link">Chính sách bảo mật</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">Liên hệ</h4>
+                    <div class="footer-links">
+                        <span class="footer-link"><i class="bx bx-phone"></i> 1900 xxxx</span>
+                        <span class="footer-link"><i class="bx bx-envelope"></i> support@smarttravel.vn</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 SmartTravel. Nền tảng du lịch thông minh.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

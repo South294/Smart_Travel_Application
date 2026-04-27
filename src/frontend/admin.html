@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị hệ thống - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/admin.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="admin-page">
+
+    <div class="sidebar-overlay"></div>
+
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">
+            <i class="bx bx-paper-plane"></i> SmartTravel
+        </div>
+        <nav class="admin-nav">
+            <a href="#" class="admin-nav-link active" data-view="dashboardView"><i class="bx bx-grid-alt"></i> Tổng quan</a>
+            <a href="#" class="admin-nav-link" data-view="usersView"><i class="bx bx-group"></i> Quản lý người dùng</a>
+            <a href="#" class="admin-nav-link" data-view="approvalView"><i class="bx bx-check-shield"></i> Duyệt yêu cầu <span class="badge badge-danger badge-pill ml-auto" id="pendingCount">3</span></a>
+            <a href="#" class="admin-nav-link" data-view="toursView"><i class="bx bx-map-pin"></i> Quản lý Tour</a>
+            <a href="#" class="admin-nav-link" data-view="vouchersView"><i class="bx bx-purchase-tag-alt"></i> Voucher & Gift Card</a>
+            <a href="#" class="admin-nav-link" data-view="statsView"><i class="bx bx-line-chart"></i> Thống kê báo cáo</a>
+            <a href="#" class="admin-nav-link" data-view="settingsView"><i class="bx bx-cog"></i> Cài đặt hệ thống</a>
+            <a href="index.html" class="admin-nav-link admin-logout"><i class="bx bx-log-out"></i> Quay lại User site</a>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="flex items-center gap-4">
+                <button class="btn btn-icon admin-menu-btn"><i class="bx bx-menu"></i></button>
+                <h2 class="admin-header-title" id="adminHeaderTitle">Tổng quan</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="relative">
+                    <i class="bx bx-bell admin-bell-icon"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <div class="admin-header-user">
+                    <div class="admin-header-user-info">
+                        <p class="admin-header-user-name">Admin SmartTravel</p>
+                        <span class="admin-header-user-role">Quản trị viên cấp cao</span>
+                    </div>
+                    <div class="user-avatar">AD</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-content" id="adminViews">
+
+            <div class="admin-view is-active" id="dashboardView">
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="icon-circle icon-circle-primary"><i class="bx bx-group"></i></div>
+                        <div>
+                            <div class="stat-value">2,450</div>
+                            <div class="stat-label">Tổng người dùng</div>
+                            <div class="stat-change stat-up"><i class="bx bx-trending-up"></i> +12% tháng này</div>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-circle icon-circle-success"><i class="bx bx-map-alt"></i></div>
+                        <div>
+                            <div class="stat-value">185</div>
+                            <div class="stat-label">Tour đang hoạt động</div>
+                            <div class="stat-change stat-up"><i class="bx bx-trending-up"></i> +5 tour mới</div>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-circle icon-circle-warning"><i class="bx bx-wallet"></i></div>
+                        <div>
+                            <div class="stat-value">1.2B ₫</div>
+                            <div class="stat-label">Doanh thu tháng</div>
+                            <div class="stat-change stat-down"><i class="bx bx-trending-down"></i> -2.4% so với t.trước</div>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-circle icon-circle-danger"><i class="bx bx-calendar-check"></i></div>
+                        <div>
+                            <div class="stat-value">42</div>
+                            <div class="stat-label">Booking mới hôm nay</div>
+                            <div class="stat-change stat-up"><i class="bx bx-trending-up"></i> +8% so với hôm qua</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-grid-2">
+                    <div class="card p-6">
+                        <div class="admin-card-header">
+                            <h3 class="font-bold">Biểu đồ doanh thu (7 ngày qua)</h3>
+                            <div class="admin-tab-group">
+                                <button class="admin-tab active">Tuần</button>
+                                <button class="admin-tab">Tháng</button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <i class="bx bx-bar-chart-alt-2"></i>
+                            <span>[Biểu đồ doanh thu giả lập]</span>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <div class="admin-card-header">
+                            <h3 class="font-bold">Hoạt động gần đây</h3>
+                            <button class="btn btn-ghost btn-sm">Xem tất cả</button>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-dot activity-dot-success"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">Trần Văn B đã được duyệt làm HDV</p>
+                                    <p class="activity-time">5 phút trước</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot activity-dot-info"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">Booking mới: Tour Hạ Long #BK928</p>
+                                    <p class="activity-time">12 phút trước</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot activity-dot-warning"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">Lê Thị C yêu cầu rút tiền: 2.000.000₫</p>
+                                    <p class="activity-time">45 phút trước</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot activity-dot-danger"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">Hủy booking: #BK812 - Lý do: Đổi lịch</p>
+                                    <p class="activity-time">1 giờ trước</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-view" id="usersView">
+                <div class="card p-6">
+                    <div class="admin-card-header">
+                        <h3 class="font-bold">Danh sách người dùng</h3>
+                        <div class="flex gap-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="Tìm tên, email...">
+                            <button class="btn btn-primary btn-sm"><i class="bx bx-plus"></i> Thêm User</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Người dùng</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tham gia</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="user-avatar user-avatar-sm">AN</div>
+                                            <div>
+                                                <p class="font-bold text-sm">Nguyễn Văn An</p>
+                                                <p class="text-xs text-muted">an.nguyen@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge role-admin"><i class="bx bx-shield-quarter"></i> Admin</span></td>
+                                    <td><span class="badge badge-success">Hoạt động</span></td>
+                                    <td>15/01/2026</td>
+                                    <td><button class="btn btn-icon"><i class="bx bx-dots-vertical-rounded"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="user-avatar user-avatar-sm">ML</div>
+                                            <div>
+                                                <p class="font-bold text-sm">Mai Lan</p>
+                                                <p class="text-xs text-muted">lan.mai@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge role-guide"><i class="bx bx-map-pin"></i> Guide</span></td>
+                                    <td><span class="badge badge-success">Hoạt động</span></td>
+                                    <td>20/02/2026</td>
+                                    <td><button class="btn btn-icon"><i class="bx bx-dots-vertical-rounded"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="user-avatar user-avatar-sm">TH</div>
+                                            <div>
+                                                <p class="font-bold text-sm">Trần Hùng</p>
+                                                <p class="text-xs text-muted">hung.tran@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge role-user"><i class="bx bx-user"></i> User</span></td>
+                                    <td><span class="badge badge-danger">Bị khóa</span></td>
+                                    <td>05/03/2026</td>
+                                    <td><button class="btn btn-icon"><i class="bx bx-dots-vertical-rounded"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-view" id="approvalView">
+                <div class="card p-6">
+                    <div class="admin-card-header">
+                        <h3 class="font-bold">Duyệt hồ sơ đăng ký</h3>
+                        <div class="admin-tab-group">
+                            <button class="admin-tab active">Hướng dẫn viên (2)</button>
+                            <button class="admin-tab">Địa điểm mới (1)</button>
+                            <button class="admin-tab">Tour mới (0)</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Đối tượng</th>
+                                    <th>Thông tin yêu cầu</th>
+                                    <th>Ngày gửi</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="user-avatar user-avatar-sm">TB</div>
+                                            <p class="font-bold text-sm">Trần Văn B</p>
+                                        </div>
+                                    </td>
+                                    <td>Đăng ký Hướng dẫn viên (Đà Lạt)</td>
+                                    <td>23/04/2026</td>
+                                    <td><span class="badge badge-warning">Chờ duyệt</span></td>
+                                    <td>
+                                        <div class="action-group">
+                                            <button class="btn btn-primary btn-sm" data-modal-target="cccdModal">Xem hồ sơ</button>
+                                            <button class="btn btn-danger-outline btn-sm" data-action="reject">Từ chối</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="user-avatar user-avatar-sm">LC</div>
+                                            <p class="font-bold text-sm">Lê Thị C</p>
+                                        </div>
+                                    </td>
+                                    <td>Thêm địa điểm: Nhà hàng Sen Vàng</td>
+                                    <td>22/04/2026</td>
+                                    <td><span class="badge badge-warning">Chờ duyệt</span></td>
+                                    <td>
+                                        <div class="action-group">
+                                            <button class="btn btn-primary btn-sm">Xem chi tiết</button>
+                                            <button class="btn btn-danger-outline btn-sm" data-action="reject">Từ chối</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-view" id="vouchersView">
+                <div class="admin-grid-2">
+                    <div class="card p-6">
+                        <h3 class="font-bold mb-4">Tạo Voucher mới</h3>
+                        <form id="addVoucherForm">
+                            <div class="form-group">
+                                <label class="form-label">Mã Voucher</label>
+                                <input type="text" class="form-control" placeholder="VD: SUMMER2026" required>
+                            </div>
+                            <div class="grid params-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Giảm giá (%)</label>
+                                    <input type="number" class="form-control" placeholder="VD: 20" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tối đa giảm (₫)</label>
+                                    <input type="number" class="form-control" placeholder="VD: 500000" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ngày hết hạn</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full">Tạo Voucher ngay</button>
+                        </form>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="font-bold mb-4">Voucher đang hoạt động</h3>
+                        <div class="flex flex-col gap-4">
+                            <div class="card voucher-card">
+                                <div>
+                                    <p class="voucher-code">SUMMER20</p>
+                                    <p class="text-xs text-muted mt-1">Giảm 20% - Hết hạn: 30/06/2026</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-ghost btn-sm"><i class="bx bx-edit-alt"></i></button>
+                                    <button class="btn btn-ghost btn-sm text-danger"><i class="bx bx-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="card voucher-card">
+                                <div>
+                                    <p class="voucher-code">SAFEFREE</p>
+                                    <p class="text-xs text-muted mt-1">Tặng bảo hiểm - Hết hạn: 31/12/2026</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-ghost btn-sm"><i class="bx bx-edit-alt"></i></button>
+                                    <button class="btn btn-ghost btn-sm text-danger"><i class="bx bx-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-view" id="settingsView">
+                <div class="card p-6 max-w-800">
+                    <h3 class="font-bold mb-6">Cài đặt hệ thống</h3>
+                    
+                    <div class="settings-section">
+                        <h4 class="font-semibold mb-4">Cấu hình chung</h4>
+                        <div class="settings-row">
+                            <div>
+                                <p class="font-bold">Chế độ bảo trì</p>
+                                <p class="text-xs text-muted">Khi bật, người dùng chỉ thấy trang thông báo bảo trì.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <p class="font-bold">Duyệt tự động cho Guide</p>
+                                <p class="text-xs text-muted">Nếu bật, Guide sẽ được duyệt ngay khi hoàn thành hồ sơ.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section mt-6">
+                        <h4 class="font-semibold mb-4">Thông báo Email</h4>
+                        <div class="settings-row">
+                            <div>
+                                <p class="font-bold">Gửi email khi có Booking mới</p>
+                                <p class="text-xs text-muted">Nhận thông báo qua email của Admin.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end mt-8">
+                        <button class="btn btn-primary">Lưu tất cả cài đặt</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-view" id="toursView">
+                <div class="admin-empty-state">
+                    <i class="bx bx-folder-open"></i>
+                    <p>Chức năng Quản lý Tour đang được hoàn thiện...</p>
+                    <button class="btn btn-primary mt-4">Tải lại dữ liệu</button>
+                </div>
+            </div>
+
+            <div class="admin-view" id="statsView">
+                <div class="admin-empty-state">
+                    <i class="bx bx-pie-chart-alt-2"></i>
+                    <p>Hệ thống báo cáo đang tổng hợp dữ liệu...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="cccdModal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="font-bold text-xl">Hồ sơ Guide: Trần Văn B</h3>
+                    <p class="text-xs text-muted">Yêu cầu gửi lúc 14:20 - 23/04/2026</p>
+                </div>
+                <button class="btn btn-icon" data-modal-close><i class="bx bx-x"></i></button>
+            </div>
+            
+            <div class="grid params-grid mb-6">
+                <div>
+                    <p class="cccd-info-label">Mặt trước CCCD</p>
+                    <div class="cccd-placeholder"><i class="bx bx-image"></i> [Ảnh mặt trước]</div>
+                </div>
+                <div>
+                    <p class="cccd-info-label">Mặt sau CCCD</p>
+                    <div class="cccd-placeholder"><i class="bx bx-image"></i> [Ảnh mặt sau]</div>
+                </div>
+            </div>
+
+            <div class="card bg-light p-4 mb-6">
+                <h4 class="font-bold text-sm mb-2">Thông tin đăng ký:</h4>
+                <div class="cccd-info">
+                    <div class="cccd-info-item"><strong>Kinh nghiệm:</strong> 3 năm</div>
+                    <div class="cccd-info-item"><strong>Khu vực:</strong> Đà Lạt</div>
+                    <div class="cccd-info-item"><strong>Ngôn ngữ:</strong> Tiếng Việt, English</div>
+                    <div class="cccd-info-item"><strong>Mức giá:</strong> 500,000₫ / ngày</div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-6 border-t">
+                <button class="btn btn-outline" data-modal-close>Để sau</button>
+                <button class="btn btn-danger-outline" data-action="reject" data-modal-close>Từ chối</button>
+                <button class="btn btn-primary" data-action="approve">Phê duyệt ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="rejectModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <h3 class="font-bold text-xl mb-4 text-danger">Lý do từ chối</h3>
+            <div class="form-group">
+                <label class="form-label">Chọn lý do hoặc nhập nội dung</label>
+                <textarea class="form-control" id="rejectReason" rows="3" placeholder="VD: Hình ảnh CCCD mờ, không rõ thông tin..."></textarea>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button class="btn btn-ghost" data-modal-close>Hủy</button>
+                <button class="btn btn-danger" id="confirmRejectBtn">Xác nhận từ chối</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

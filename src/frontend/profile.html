@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý hồ sơ cá nhân, lịch sử đặt tour và mã ưu đãi tại SmartTravel.">
+    <title>Hồ sơ cá nhân - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/profile.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
+            <button class="mobile-menu-btn" aria-label="Menu"><i class="bx bx-menu"></i></button>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="tours.html" class="nav-link">Tour du lịch</a>
+                <a href="map.html" class="nav-link">Bản đồ</a>
+                <a href="promotions.html" class="nav-link">Khuyến mãi</a>
+                <a href="guides.html" class="nav-link">Thuê HDV</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="profile.html" class="user-avatar profile-initials" title="Trang cá nhân">ST</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container section">
+        <div class="profile-layout">
+
+            <div class="card profile-sidebar">
+                <div class="profile-header text-center pb-4 mb-4 border-b">
+                    <div class="user-avatar user-avatar-lg profile-avatar profile-initials">ST</div>
+                    <h3 class="font-bold mt-4 profile-display-name">Khách Hàng</h3>
+                    <p class="text-muted text-sm mt-1 profile-display-email">khachhang@example.com</p>
+                    <span class="badge badge-primary mt-2"><i class="bx bx-medal"></i> Thành viên Bạc</span>
+                </div>
+
+                <nav class="profile-nav">
+                    <a href="#personal-info" class="profile-nav-link active"><i class="bx bx-user"></i> Thông tin cá nhân</a>
+                    <a href="#my-trips" class="profile-nav-link"><i class="bx bx-history"></i> Chuyến đi của tôi</a>
+                    <a href="#saved-vouchers" class="profile-nav-link"><i class="bx bx-purchase-tag-alt"></i> Voucher đã lưu</a>
+                    <a href="#travel-preferences" class="profile-nav-link"><i class="bx bx-heart"></i> Sở thích du lịch</a>
+                    <a href="#app-settings" class="profile-nav-link"><i class="bx bx-cog"></i> Cài đặt</a>
+                    <a href="#" class="profile-nav-link text-danger" data-logout><i class="bx bx-log-out"></i> Đăng xuất</a>
+                </nav>
+            </div>
+
+            <div class="profile-main">
+                <div class="card p-6" id="personal-info">
+                    <h2 class="font-bold mb-2">Thông tin cá nhân</h2>
+                    <p class="text-muted text-sm mb-6">Cập nhật thông tin của bạn để trải nghiệm dịch vụ tốt hơn.</p>
+
+                    <div class="form-group mb-6">
+                        <label class="form-label">Ảnh đại diện</label>
+                        <div class="flex items-center gap-4">
+                            <div class="user-avatar user-avatar-lg profile-initials">ST</div>
+                            <div>
+                                <button class="btn btn-outline btn-sm">Tải ảnh lên</button>
+                                <p class="text-muted text-xs mt-1">JPG, PNG tối đa 2MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid params-grid">
+                        <div class="form-group">
+                            <label class="form-label">Họ và Tên</label>
+                            <input type="text" class="form-control profile-input-name" value="Khách Hàng">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control profile-input-email" value="khachhang@example.com" disabled>
+                        </div>
+                    </div>
+
+                    <div class="grid params-grid mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control profile-input-phone" placeholder="Chưa cập nhật">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control profile-input-birth">
+                        </div>
+                    </div>
+
+                    <div class="grid params-grid mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Giới tính</label>
+                            <select class="form-control profile-input-gender">
+                                <option value="">Chọn giới tính</option>
+                                <option value="female">Nữ</option>
+                                <option value="male">Nam</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control profile-input-address" placeholder="Nhập địa chỉ của bạn">
+                    </div>
+
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t">
+                        <button class="btn btn-primary btn-save-profile">Lưu thay đổi</button>
+                    </div>
+                </div>
+
+                <div class="card p-6 mt-4" id="my-trips">
+                    <h3 class="font-bold mb-4">Chuyến đi gần đây</h3>
+                    <div class="trip-item trip-clickable flex items-center gap-4 pb-4 border-b" data-modal-target="trip-detail-dalat-modal" role="button" tabindex="0" aria-label="Xem chi tiết chuyến đi Đà Lạt Mộng Mơ">
+                        <div class="icon-circle icon-circle-primary">
+                            <i class="bx bx-map-pin"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Đà Lạt Mộng Mơ - 3N2Đ</h4>
+                            <p class="text-muted text-sm">15/03/2026 - 17/03/2026</p>
+                        </div>
+                        <i class="bx bx-info-circle trip-info-icon"></i>
+                        <span class="badge badge-success">Hoàn thành</span>
+                    </div>
+
+                    <div class="trip-item trip-clickable flex items-center gap-4 pt-4" data-modal-target="trip-detail-halong-modal" role="button" tabindex="0" aria-label="Xem chi tiết chuyến đi Du thuyền Hạ Long 5 Sao">
+                        <div class="icon-circle icon-circle-warning">
+                            <i class="bx bx-map-pin"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Du thuyền Hạ Long 5 Sao</h4>
+                            <p class="text-muted text-sm">15/06/2026 - 18/06/2026</p>
+                        </div>
+                        <i class="bx bx-info-circle trip-info-icon"></i>
+                        <span class="badge badge-warning">Sắp tới</span>
+                    </div>
+                </div>
+
+                <div class="card p-6 mt-4" id="saved-vouchers">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold mb-0">Voucher đã lưu</h3>
+                        <span class="badge badge-primary"><i class="bx bx-wallet"></i> Ví ưu đãi</span>
+                    </div>
+                    <div class="voucher-list" id="saved-vouchers-list"></div>
+                </div>
+
+                <div class="card p-6 mt-4 profile-preferences-card" id="travel-preferences">
+                    <h3 class="font-bold mb-2">Sở thích du lịch</h3>
+                    <p class="text-muted text-sm mb-4">Thông tin này giúp SmartTravel đề xuất lịch trình phù hợp hơn với bạn.</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Chủ đề bạn quan tâm</label>
+                        <div class="pref-chip-group" id="preference-tag-group">
+                            <button type="button" class="pref-chip" data-pref-tag="bien"><i class="bx bx-water"></i> Biển đảo</button>
+                            <button type="button" class="pref-chip" data-pref-tag="nui"><i class="bx bx-landscape"></i> Núi rừng</button>
+                            <button type="button" class="pref-chip" data-pref-tag="am-thuc"><i class="bx bx-restaurant"></i> Ẩm thực</button>
+                            <button type="button" class="pref-chip" data-pref-tag="van-hoa"><i class="bx bx-building-house"></i> Văn hóa</button>
+                            <button type="button" class="pref-chip" data-pref-tag="nghi-duong"><i class="bx bx-hotel"></i> Nghỉ dưỡng</button>
+                            <button type="button" class="pref-chip" data-pref-tag="phieu-luu"><i class="bx bx-compass"></i> Phiêu lưu</button>
+                            <button type="button" class="pref-chip" data-pref-tag="gia-dinh"><i class="bx bx-group"></i> Gia đình</button>
+                            <button type="button" class="pref-chip" data-pref-tag="check-in"><i class="bx bx-camera"></i> Check-in</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Ngân sách ưu tiên (chọn như từ khóa)</label>
+                        <div class="pref-chip-group" id="budget-tag-group">
+                            <button type="button" class="pref-chip" data-pref-tag="budget-tiet-kiem"><i class="bx bx-wallet"></i> Tiết kiệm</button>
+                            <button type="button" class="pref-chip" data-pref-tag="budget-tieu-chuan"><i class="bx bx-briefcase"></i> Tiêu chuẩn</button>
+                            <button type="button" class="pref-chip" data-pref-tag="budget-cao-cap"><i class="bx bx-diamond"></i> Cao cấp</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Từ khóa sở thích tùy chỉnh</label>
+                        <div class="custom-pref-input-row">
+                            <input type="text" class="form-control profile-custom-pref-input" placeholder="Ví dụ: Tránh đông người, phù hợp trẻ em...">
+                            <button type="button" class="btn btn-outline btn-sm profile-add-pref-btn">Thêm</button>
+                        </div>
+                        <div class="pref-chip-group mt-2" id="custom-pref-list"></div>
+                    </div>
+                </div>
+
+                <div class="card p-6 mt-4" id="app-settings">
+                    <h3 class="font-bold mb-2">Cài đặt trải nghiệm</h3>
+                    <p class="text-muted text-sm mb-4">Điều chỉnh thông báo và cá nhân hóa để nhận gợi ý chính xác hơn.</p>
+
+                    <div class="setting-row">
+                        <div>
+                            <h4 class="setting-title">Nhận thông báo qua Email</h4>
+                            <p class="text-muted text-sm">Cập nhật ưu đãi, tour mới và thông tin đặt chỗ.</p>
+                        </div>
+                        <input type="checkbox" class="profile-setting-email" checked>
+                    </div>
+
+                    <div class="setting-row">
+                        <div>
+                            <h4 class="setting-title">Nhận SMS nhắc lịch</h4>
+                            <p class="text-muted text-sm">Nhắc lịch khởi hành và thanh toán quan trọng.</p>
+                        </div>
+                        <input type="checkbox" class="profile-setting-sms">
+                    </div>
+
+                    <div class="setting-row">
+                        <div>
+                            <h4 class="setting-title">Cá nhân hóa gợi ý bằng AI</h4>
+                            <p class="text-muted text-sm">Sử dụng dữ liệu hồ sơ và hành vi để đề xuất trải nghiệm phù hợp.</p>
+                        </div>
+                        <input type="checkbox" class="profile-setting-ai" checked>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Ngôn ngữ hiển thị</label>
+                        <select class="form-control profile-setting-language">
+                            <option value="vi">Tiếng Việt</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="trip-detail-dalat-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold m-0">Chi tiết chuyến đi Đà Lạt Mộng Mơ</h3>
+                <button class="btn-icon" data-modal-close aria-label="Đóng"><i class="bx bx-x"></i></button>
+            </div>
+            <div class="trip-modal-grid">
+                <div class="trip-modal-item"><i class="bx bx-map"></i> Lộ trình: TP.HCM - Đà Lạt - Langbiang</div>
+                <div class="trip-modal-item"><i class="bx bx-time-five"></i> Thời lượng: 3 ngày 2 đêm</div>
+                <div class="trip-modal-item"><i class="bx bx-group"></i> Số khách: 2 người lớn</div>
+                <div class="trip-modal-item"><i class="bx bx-wallet"></i> Tổng chi phí: 5.600.000đ</div>
+                <div class="trip-modal-item"><i class="bx bx-star"></i> Đánh giá chuyến đi: 4.8/5</div>
+                <div class="trip-modal-item"><i class="bx bx-check-circle"></i> Trạng thái: Hoàn thành</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="trip-detail-halong-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold m-0">Chi tiết chuyến đi Hạ Long 5 Sao</h3>
+                <button class="btn-icon" data-modal-close aria-label="Đóng"><i class="bx bx-x"></i></button>
+            </div>
+            <div class="trip-modal-grid">
+                <div class="trip-modal-item"><i class="bx bx-map"></i> Lộ trình: Hà Nội - Hạ Long - Lan Hạ</div>
+                <div class="trip-modal-item"><i class="bx bx-time-five"></i> Thời lượng: 4 ngày 3 đêm</div>
+                <div class="trip-modal-item"><i class="bx bx-check-shield"></i> Trạng thái: Đã xác nhận đặt chỗ</div>
+                <div class="trip-modal-item"><i class="bx bx-credit-card"></i> Thanh toán: Còn 30% trước ngày đi</div>
+                <div class="trip-modal-item"><i class="bx bx-hotel"></i> Hạng phòng: Deluxe Ocean View</div>
+                <div class="trip-modal-item"><i class="bx bx-calendar-check"></i> Nhắc lịch: trước 3 ngày khởi hành</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
