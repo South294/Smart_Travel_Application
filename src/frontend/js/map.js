@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var map = L.map('map').setView([10.7766, 106.6984], 14);
+    var map = L.map('map').setView([21.0285, 105.8542], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     var locations = [
-        { lat: 10.7766, lng: 106.6984, name: "Nhà hàng Phố Xưa", desc: "Ẩm thực truyền thống", icon: "bx-restaurant" },
-        { lat: 10.7735, lng: 106.7011, name: "Khách sạn Biển Đảo", desc: "Khách sạn 4 sao", icon: "bx-hotel" },
-        { lat: 10.7800, lng: 106.6950, name: "Nhà thờ Đức Bà", desc: "Điểm tham quan", icon: "bx-camera" },
-        { lat: 10.7745, lng: 106.7031, name: "Phố đi bộ Nguyễn Huệ", desc: "Điểm tham quan", icon: "bx-walk" },
-        { lat: 10.7780, lng: 106.6900, name: "Nhà hàng chay Loving Hut", desc: "Ẩm thực chay", icon: "bx-restaurant" }
+        { lat: 21.0285, lng: 105.8542, name: "Hồ Hoàn Kiếm", desc: "Điểm tham quan", icon: "bx-camera" },
+        { lat: 21.0333, lng: 105.8500, name: "Phố cổ Hà Nội", desc: "Khu vực sầm uất", icon: "bx-walk" },
+        { lat: 21.0294, lng: 105.8355, name: "Văn Miếu Quốc Tử Giám", desc: "Di tích lịch sử", icon: "bx-book" },
+        { lat: 21.0369, lng: 105.8342, name: "Lăng Chủ tịch Hồ Chí Minh", desc: "Điểm tham quan", icon: "bx-camera" },
+        { lat: 21.0560, lng: 105.8190, name: "Hồ Tây", desc: "Điểm thư giãn", icon: "bx-water" }
     ];
 
     var leafMarkers = {};
