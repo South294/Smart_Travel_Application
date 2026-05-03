@@ -23,7 +23,7 @@ class HealthResponse(BaseModel):
     status: str
     message: str
 
-# --- Mô hình dữ liệu cho User ---
+
 class UserCreate(BaseModel):
     email: str
     password: str
@@ -33,7 +33,7 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
-# (Mock Database) - Trong thực tế sẽ dùng SQL Database
+
 fake_users_db = {}
 
 @app.get("/", tags=["General"])
@@ -46,32 +46,26 @@ async def read_root():
 
 @app.post("/api/register", tags=["Authentication"])
 async def register(user: UserCreate):
-    """
-    API Đăng ký người dùng.
-    Mật khẩu sẽ được băm (hash) trước khi lưu vào 'database'.
-    """
+
     if user.email in fake_users_db:
         raise HTTPException(status_code=400, detail="Email này đã được đăng ký.")
     
     from security import hash_password
     hashed_pwd = hash_password(user.password)
     
-    # Lưu vào DB (giả lập)
+
     fake_users_db[user.email] = {
         "email": user.email,
         "full_name": user.full_name,
         "hashed_password": hashed_pwd,
-        "role": "user" # Mặc định là user
+        "role": "user"
     }
     
     return {"message": "Đăng ký thành công!", "email": user.email}
 
 @app.post("/api/login", tags=["Authentication"])
 async def login(user: UserLogin):
-    """
-    API Đăng nhập người dùng.
-    Kiểm tra mật khẩu nhập vào với mật khẩu đã băm trong database.
-    """
+
     db_user = fake_users_db.get(user.email)
     if not db_user:
         raise HTTPException(status_code=400, detail="Email hoặc mật khẩu không chính xác.")
@@ -80,11 +74,11 @@ async def login(user: UserLogin):
     from datetime import timedelta
     import os
     
-    # Xác minh mật khẩu
+
     if not verify_password(user.password, db_user["hashed_password"]):
         raise HTTPException(status_code=400, detail="Email hoặc mật khẩu không chính xác.")
     
-    # Tạo JWT Token
+
     access_token_expires = timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")))
     access_token = create_access_token(
         data={"sub": user.email, "role": db_user["role"]}, expires_delta=access_token_expires
