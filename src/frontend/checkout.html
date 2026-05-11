@@ -130,6 +130,10 @@
                             </div>
                         </div>
                     </label>
+                    <div class="payment-note">
+                        <i class="bx bx-info-circle"></i>
+                        <p class="text-muted text-sm">Thanh toán được mô phỏng để demo, không trừ tiền thật.</p>
+                    </div>
                 </div>
             </div>
 
@@ -138,21 +142,21 @@
                     <h3 class="font-bold mb-4 flex items-center gap-2"><i class="bx bx-receipt text-primary"></i> Tóm tắt đơn hàng</h3>
 
                     <div class="flex gap-4 mb-4 pb-4 border-b">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Thacbac3.jpg/960px-Thacbac3.jpg" alt="Tour" class="summary-thumb">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Thacbac3.jpg/960px-Thacbac3.jpg" alt="Tour" class="summary-thumb" id="checkoutTourImg">
                         <div>
-                            <h4 class="font-semibold">Mộc Châu Mộng Mơ - Tour 3N2Đ</h4>
-                            <p class="text-muted text-sm mt-1"><i class="bx bx-calendar"></i> Khởi hành: 15/06/2026</p>
-                            <p class="text-muted text-sm mt-1"><i class="bx bx-time"></i> 3 ngày 2 đêm</p>
+                            <h4 class="font-semibold" id="checkoutTourTitle">Đang tải...</h4>
+                            <p class="text-muted text-sm mt-1" id="checkoutTourDate"><i class="bx bx-calendar"></i> Chọn ngày khởi hành</p>
+                            <p class="text-muted text-sm mt-1" id="checkoutTourDuration"><i class="bx bx-time"></i> --</p>
                         </div>
                     </div>
 
                     <div class="summary-line">
-                        <span class="text-muted">Người lớn x2</span>
-                        <span>5.600.000₫</span>
+                        <span class="text-muted" id="checkoutAdultLabel">Người lớn x2</span>
+                        <span id="checkoutAdultPrice">--</span>
                     </div>
                     <div class="summary-line">
-                        <span class="text-muted">Bảo hiểm toàn diện x2</span>
-                        <span>300.000₫</span>
+                        <span class="text-muted">Bảo hiểm toàn diện</span>
+                        <span id="checkoutInsurancePrice">300.000₫</span>
                     </div>
                     <div class="summary-line">
                         <span class="text-muted">Voucher giảm giá</span>
@@ -166,12 +170,34 @@
 
                     <div class="summary-total mb-4">
                         <span class="font-bold text-lg">Tổng cộng</span>
-                        <span class="font-bold price-total">5.700.000₫</span>
+                        <span class="font-bold price-total" id="checkoutTotal">--</span>
                     </div>
 
                     <p class="text-xs text-muted text-center mb-4">Bằng việc nhấp vào "Đặt ngay", bạn đồng ý với các Điều khoản & Điều kiện của SmartTravel.</p>
-                    <button class="btn btn-primary btn-lg w-full"><i class="bx bx-check-shield"></i> Đặt ngay và Thanh toán</button>
+                    <button class="btn btn-primary btn-lg w-full" id="checkoutPayBtn"><i class="bx bx-check-shield"></i> Đặt ngay và Thanh toán</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="paymentSuccessModal">
+        <div class="modal-content payment-success-modal">
+            <div class="payment-success-icon"><i class="bx bx-check-circle"></i></div>
+            <h3 class="font-bold">Thanh toán mô phỏng thành công</h3>
+            <p class="text-muted text-sm">Đơn đặt tour đã được ghi nhận. Bạn sẽ nhận xác nhận qua email trong ít phút.</p>
+            <div class="payment-success-summary">
+                <div>
+                    <span class="text-muted text-xs">Mã đơn</span>
+                    <strong id="paymentOrderCode">ST-XXXXXX</strong>
+                </div>
+                <div>
+                    <span class="text-muted text-xs">Tổng thanh toán</span>
+                    <strong id="paymentTotal">--</strong>
+                </div>
+            </div>
+            <div class="payment-success-actions">
+                <button class="btn btn-outline" data-modal-close>Đóng</button>
+                <a class="btn btn-primary" href="profile.html">Xem đơn đã đặt</a>
             </div>
         </div>
     </div>

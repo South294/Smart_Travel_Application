@@ -1,26 +1,175 @@
-document.addEventListener('DOMContentLoaded', function () {
+async function fetchApi(url, options = {}) {
+    var token = localStorage.getItem('access_token');
+    var headers = { 'Content-Type': 'application/json' };
+    if (options.headers) {
+        Object.keys(options.headers).forEach(function(k) { headers[k] = options.headers[k]; });
+    }
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    var res = await fetch('http://localhost:8000' + url, { method: options.method || 'GET', headers: headers, body: options.body });
+    if (res.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = 'auth.html';
+    }
+    return res;
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
     initViewSwitching();
     initSidebar();
     initModals();
-    initApprovalFlow();
     initVoucherActions();
     initSettingsToggles();
+    await loadDashboardStats();
+    await loadPendingGuides();
+    await loadActiveVouchers();
 });
 
-function initViewSwitching() {
-    const navLinks = document.querySelectorAll('.admin-nav-link[data-view]');
-    const views = document.querySelectorAll('.admin-view');
-    const headerTitle = document.getElementById('adminHeaderTitle');
+async function loadDashboardStats() {
+    try {
+        var res = await fetchApi('/api/admin/dashboard');
+        if (!res.ok) return;
+        var data = await res.json();
 
-    navLinks.forEach(link => {
+        var statCards = document.querySelectorAll('.stat-card .stat-value');
+        if (statCards.length >= 4) {
+            statCards[0].textContent = data.users_count;
+            statCards[1].textContent = data.tours_count;
+            statCards[2].textContent = data.bookings_count || '0';
+            statCards[3].textContent = data.pending_guides_count;
+        }
+
+        var pendingCountEl = document.getElementById('pendingCount');
+        if (pendingCountEl) {
+            pendingCountEl.textContent = data.pending_guides_count;
+            pendingCountEl.style.display = data.pending_guides_count > 0 ? 'inline-block' : 'none';
+        }
+    } catch(e) {}
+}
+
+async function loadPendingGuides() {
+    try {
+        var res = await fetchApi('/api/admin/guides/pending');
+        if (!res.ok) return;
+        var guides = await res.json();
+
+        var tbody = document.querySelector('#guidesView tbody');
+        if (!tbody) return;
+
+        var badgeEl = document.getElementById('guidePendingBadge');
+        if (badgeEl) {
+            badgeEl.textContent = guides.length + ' hồ sơ chờ duyệt';
+            badgeEl.className = guides.length > 0 ? 'badge badge-warning' : 'badge badge-success';
+            if (guides.length === 0) badgeEl.textContent = 'Không có hồ sơ chờ';
+        }
+
+        tbody.innerHTML = '';
+        if (guides.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 24px;">Không có hồ sơ chờ duyệt</td></tr>';
+            return;
+        }
+
+        guides.forEach(function(guide) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td>' +
+                '<div class="user-info-table">' +
+                '<div class="user-avatar-sm">' + guide.name.charAt(0) + '</div>' +
+                '<div><span class="font-bold">' + guide.name + '</span></div>' +
+                '</div>' +
+                '</td>' +
+                '<td>' + guide.experience_years + ' năm</td>' +
+                '<td>' + (guide.areas || []).join(', ') + '</td>' +
+                '<td><span class="badge badge-warning">Chờ duyệt</span></td>' +
+                '<td>' +
+                '<div class="action-group">' +
+                '<button class="btn btn-sm btn-outline btn-approve" data-id="' + guide.id + '">Duyệt</button>' +
+                '<button class="btn btn-sm btn-outline-danger btn-reject" data-id="' + guide.id + '">Từ chối</button>' +
+                '</div>' +
+                '</td>';
+            tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-approve').forEach(function(btn) {
+            btn.addEventListener('click', async function() {
+                var id = this.getAttribute('data-id');
+                await handleGuideAction(id, 'approve');
+            });
+        });
+
+        document.querySelectorAll('.btn-reject').forEach(function(btn) {
+            btn.addEventListener('click', async function() {
+                var id = this.getAttribute('data-id');
+                await handleGuideAction(id, 'reject');
+            });
+        });
+
+    } catch(e) {}
+}
+
+async function handleGuideAction(id, action) {
+    try {
+        var res = await fetchApi('/api/guides/' + id + '/' + action, { method: 'PATCH' });
+        if (res.ok) {
+            showToast('Đã ' + (action === 'approve' ? 'duyệt' : 'từ chối') + ' hồ sơ', 'success');
+            await loadPendingGuides();
+            await loadDashboardStats();
+        } else {
+            showToast('Lỗi khi xử lý', 'error');
+        }
+    } catch(e) {
+        showToast('Lỗi kết nối', 'error');
+    }
+}
+
+async function loadActiveVouchers() {
+    var container = document.getElementById('activeVouchersList');
+    if (!container) return;
+
+    try {
+        var res = await fetchApi('/api/vouchers');
+        if (!res.ok) {
+            container.innerHTML = '<div class="admin-empty-state"><p>Không thể tải danh sách</p></div>';
+            return;
+        }
+        var vouchers = await res.json();
+
+        if (vouchers.length === 0) {
+            container.innerHTML = '<div class="admin-empty-state"><i class="bx bx-purchase-tag-alt"></i><p>Chưa có voucher nào</p></div>';
+            return;
+        }
+
+        container.innerHTML = vouchers.map(function(v) {
+            var typeLabel = v.discount_type === 'percent' ? ('Giảm ' + v.discount_value + '%') : ('Giảm ' + new Intl.NumberFormat('vi-VN').format(v.discount_value) + '₫');
+            return '<div class="card voucher-card">' +
+                '<div>' +
+                '<p class="voucher-code">' + v.code + '</p>' +
+                '<p class="text-xs text-muted mt-1">' + typeLabel + ' - Hết hạn: ' + v.expiry_date + '</p>' +
+                '</div>' +
+                '<div class="flex gap-2">' +
+                '<span class="badge ' + (v.is_active ? 'badge-success' : 'badge-danger') + '">' + (v.is_active ? 'Active' : 'Inactive') + '</span>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+    } catch(e) {
+        container.innerHTML = '<div class="admin-empty-state"><p>Lỗi kết nối</p></div>';
+    }
+}
+
+function initViewSwitching() {
+    var navLinks = document.querySelectorAll('.admin-nav-link[data-view]');
+    var views = document.querySelectorAll('.admin-view');
+    var headerTitle = document.getElementById('adminHeaderTitle');
+
+    navLinks.forEach(function(link) {
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            const viewId = this.getAttribute('data-view');
+            var viewId = this.getAttribute('data-view');
 
-            navLinks.forEach(l => l.classList.remove('active'));
+            navLinks.forEach(function(l) { l.classList.remove('active'); });
             this.classList.add('active');
 
-            views.forEach(v => {
+            views.forEach(function(v) {
                 v.classList.remove('is-active');
                 if (v.id === viewId) v.classList.add('is-active');
             });
@@ -35,12 +184,12 @@ function initViewSwitching() {
 }
 
 function initSidebar() {
-    const menuBtn = document.querySelector('.admin-menu-btn');
-    const sidebar = document.getElementById('adminSidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
+    var menuBtn = document.querySelector('.admin-menu-btn');
+    var sidebar = document.getElementById('adminSidebar');
+    var overlay = document.querySelector('.sidebar-overlay');
 
     if (menuBtn) {
-        menuBtn.addEventListener('click', () => {
+        menuBtn.addEventListener('click', function() {
             sidebar.classList.add('active');
             overlay.classList.add('is-active');
         });
@@ -52,146 +201,130 @@ function initSidebar() {
 }
 
 function closeSidebar() {
-    const sidebar = document.getElementById('adminSidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
+    var sidebar = document.getElementById('adminSidebar');
+    var overlay = document.querySelector('.sidebar-overlay');
     if (sidebar) sidebar.classList.remove('active');
     if (overlay) overlay.classList.remove('is-active');
 }
 
 function initModals() {
-    document.querySelectorAll('[data-modal-target]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const modalId = btn.getAttribute('data-modal-target');
-            const modal = document.getElementById(modalId);
+    document.querySelectorAll('[data-modal-target]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var modalId = btn.getAttribute('data-modal-target');
+            var modal = document.getElementById(modalId);
             if (modal) modal.classList.add('is-active');
         });
     });
 
-    document.querySelectorAll('[data-modal-close]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const modal = btn.closest('.modal-overlay');
+    document.querySelectorAll('[data-modal-close]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var modal = btn.closest('.modal-overlay');
             if (modal) modal.classList.remove('is-active');
         });
     });
 
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
+    document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+        overlay.addEventListener('click', function(e) {
             if (e.target === overlay) overlay.classList.remove('is-active');
         });
     });
 }
 
-function initApprovalFlow() {
-    let currentTargetRow = null;
-
-    document.querySelectorAll('[data-action="approve"]').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const modal = this.closest('.modal-overlay');
-            if (modal) modal.classList.remove('is-active');
-            
-            showToast('Phê duyệt thành công!', 'success');
-            updatePendingCount(-1);
-        });
-    });
-
-    document.querySelectorAll('[data-action="reject"]').forEach(btn => {
-        btn.addEventListener('click', function () {
-            currentTargetRow = this.closest('tr');
-            const rejectModal = document.getElementById('rejectModal');
-            if (rejectModal) rejectModal.classList.add('is-active');
-        });
-    });
-
-    const confirmRejectBtn = document.getElementById('confirmRejectBtn');
-    if (confirmRejectBtn) {
-        confirmRejectBtn.addEventListener('click', () => {
-            const reason = document.getElementById('rejectReason').value;
-            if (!reason) {
-                alert('Vui lòng nhập lý do từ chối');
-                return;
-            }
-
-            if (currentTargetRow) {
-                const badge = currentTargetRow.querySelector('.badge');
-                if (badge) {
-                    badge.className = 'badge badge-danger';
-                    badge.textContent = 'Đã từ chối';
-                }
-                const actions = currentTargetRow.querySelector('.action-group');
-                if (actions) actions.innerHTML = '<span class="text-danger text-sm font-semibold">Đã xử lý</span>';
-            }
-
-            const modal = document.getElementById('rejectModal');
-            if (modal) modal.classList.remove('is-active');
-            
-            showToast('Yêu cầu đã bị từ chối', 'error');
-            updatePendingCount(-1);
-        });
-    }
-}
-
-function updatePendingCount(change) {
-    const el = document.getElementById('pendingCount');
-    if (el) {
-        let count = parseInt(el.textContent) || 0;
-        count += change;
-        el.textContent = count > 0 ? count : 0;
-        if (count <= 0) el.style.display = 'none';
-    }
-}
-
 function initVoucherActions() {
-    const form = document.getElementById('addVoucherForm');
-    if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            showToast('Tạo Voucher thành công!', 'success');
-            form.reset();
-        });
-    }
+    var form = document.getElementById('addVoucherForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        var code = form.querySelector('[name="code"]').value.trim();
+        var title = form.querySelector('[name="title"]').value.trim();
+        var description = form.querySelector('[name="description"]').value.trim();
+        var discountType = form.querySelector('[name="discount_type"]').value;
+        var discountValue = parseFloat(form.querySelector('[name="discount_value"]').value);
+        var expiryDate = form.querySelector('[name="expiry_date"]').value;
+
+        if (!code || !title || !discountValue || !expiryDate) {
+            showToast('Vui lòng điền đầy đủ thông tin', 'error');
+            return;
+        }
+
+        var submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang tạo...';
+
+        try {
+            var res = await fetchApi('/api/vouchers', {
+                method: 'POST',
+                body: JSON.stringify({
+                    code: code,
+                    title: title,
+                    description: description,
+                    discount_type: discountType,
+                    discount_value: discountValue,
+                    expiry_date: expiryDate,
+                    is_active: true
+                })
+            });
+
+            if (res.ok) {
+                showToast('Tạo Voucher thành công!', 'success');
+                form.reset();
+                await loadActiveVouchers();
+            } else {
+                var err = await res.json();
+                showToast(err.detail || 'Lỗi khi tạo voucher', 'error');
+            }
+        } catch(e) {
+            showToast('Lỗi kết nối máy chủ', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Tạo Voucher ngay';
+        }
+    });
 }
 
 function initSettingsToggles() {
-    document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+    document.querySelectorAll('.toggle-switch input').forEach(function(toggle) {
         toggle.addEventListener('change', function () {
-            const state = this.checked ? 'Bật' : 'Tắt';
-            showToast(`Đã ${state} cài đặt`, 'info');
+            var state = this.checked ? 'Bật' : 'Tắt';
+            showToast('Đã ' + state + ' cài đặt', 'info');
         });
     });
 }
 
-function showToast(message, type = 'success') {
-    let container = document.querySelector('.toast-container');
+function showToast(message, type) {
+    type = type || 'success';
+    var container = document.querySelector('.toast-container');
     if (!container) {
         container = document.createElement('div');
         container.className = 'toast-container';
         document.body.appendChild(container);
     }
 
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    
-    let icon = 'bx-check-circle';
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+
+    var icon = 'bx-check-circle';
     if (type === 'error') icon = 'bx-error-circle';
     if (type === 'info') icon = 'bx-info-circle';
 
-    toast.innerHTML = `
-        <i class="bx ${icon} toast-icon"></i>
-        <span>${message}</span>
-        <button class="toast-close">&times;</button>
-    `;
+    toast.innerHTML =
+        '<i class="bx ' + icon + ' toast-icon"></i>' +
+        '<span>' + message + '</span>' +
+        '<button class="toast-close">&times;</button>';
 
     container.appendChild(toast);
 
-    toast.querySelector('.toast-close').addEventListener('click', () => {
+    toast.querySelector('.toast-close').addEventListener('click', function() {
         toast.classList.add('toast-out');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(function() { toast.remove(); }, 300);
     });
 
-    setTimeout(() => {
+    setTimeout(function() {
         if (toast.parentNode) {
             toast.classList.add('toast-out');
-            setTimeout(() => toast.remove(), 300);
+            setTimeout(function() { toast.remove(); }, 300);
         }
     }, 3000);
 }

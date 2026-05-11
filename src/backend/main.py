@@ -1,105 +1,59 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from dotenv import load_dotenv
+from app.core.config import settings
+from app.routers import auth, users, tours, bookings, vouchers, guides, admin
+from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_db
+import pymongo
 
-load_dotenv()
-
-app = FastAPI(
-    title="Smart Travel API",
-    description="Hệ thống Backend cho dự án Du Lịch Thông Minh. Hỗ trợ tích hợp OpenStreetMap, AI và quản lý dữ liệu.",
-    version="1.0.0"
-)
+app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        settings.FRONTEND_ORIGIN,
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:5501",
+        "http://127.0.0.1:5501",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-class HealthResponse(BaseModel):
-    status: str
-    message: str
+@app.on_event("startup")
+async def startup_db_client():
+    await connect_to_mongo()
+    db = get_db()
+    if db is not None:
+        await db.tours.create_index([("geo_location", pymongo.GEOSPHERE)])
+        await db.tours.create_index("slug", unique=True)
+        await db.tours.create_index("category")
+        await db.tours.create_index("is_active")
+        await db.users.create_index("email", unique=True)
+        await db.vouchers.create_index("code", unique=True)
+        await db.vouchers.create_index("is_active")
+        await db.bookings.create_index("user_id")
+        await db.bookings.create_index("tour_id")
+        await db.bookings.create_index("status")
+        await db.guides.create_index("user_id")
+        await db.guides.create_index("status")
 
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    await close_mongo_connection()
 
-class UserCreate(BaseModel):
-    email: str
-    password: str
-    full_name: str
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(users.router, prefix="/api/users", tags=["Users"])
+app.include_router(tours.router, prefix="/api/tours", tags=["Tours"])
+app.include_router(bookings.router, prefix="/api/bookings", tags=["Bookings"])
+app.include_router(vouchers.router, prefix="/api/vouchers", tags=["Vouchers"])
+app.include_router(guides.router, prefix="/api/guides", tags=["Guides"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
-class UserLogin(BaseModel):
-    email: str
-    password: str
-
-
-fake_users_db = {}
-
-@app.get("/", tags=["General"])
-async def read_root():
-    return {
-        "app": "Smart Travel API",
-        "status": "Running",
-        "message": "Chào mừng bạn đến với hệ thống API của dự án Du lịch thông minh!"
-    }
-
-@app.post("/api/register", tags=["Authentication"])
-async def register(user: UserCreate):
-
-    if user.email in fake_users_db:
-        raise HTTPException(status_code=400, detail="Email này đã được đăng ký.")
-    
-    from security import hash_password
-    hashed_pwd = hash_password(user.password)
-    
-
-    fake_users_db[user.email] = {
-        "email": user.email,
-        "full_name": user.full_name,
-        "hashed_password": hashed_pwd,
-        "role": "user"
-    }
-    
-    return {"message": "Đăng ký thành công!", "email": user.email}
-
-@app.post("/api/login", tags=["Authentication"])
-async def login(user: UserLogin):
-
-    db_user = fake_users_db.get(user.email)
-    if not db_user:
-        raise HTTPException(status_code=400, detail="Email hoặc mật khẩu không chính xác.")
-    
-    from security import verify_password, create_access_token
-    from datetime import timedelta
-    import os
-    
-
-    if not verify_password(user.password, db_user["hashed_password"]):
-        raise HTTPException(status_code=400, detail="Email hoặc mật khẩu không chính xác.")
-    
-
-    access_token_expires = timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")))
-    access_token = create_access_token(
-        data={"sub": user.email, "role": db_user["role"]}, expires_delta=access_token_expires
-    )
-    
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user_info": {
-            "email": db_user["email"],
-            "full_name": db_user["full_name"],
-            "role": db_user["role"]
-        }
-    }
-
-@app.get("/api/health", response_model=HealthResponse, tags=["System"])
-async def health_check():
-    try:
-        return HealthResponse(status="healthy", message="Tất cả các dịch vụ đang hoạt động tốt.")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Hệ thống đang gặp sự cố nội bộ.")
+@app.get("/")
+async def root():
+    return {"message": "Smart Travel API is running", "version": settings.VERSION}
 
 if __name__ == "__main__":
     import uvicorn

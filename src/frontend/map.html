@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Khám phá các địa điểm du lịch trên bản đồ tương tác SmartTravel. Tìm nhà hàng, khách sạn, điểm tham quan.">
+    <meta name="description" content="Khám phá các địa điểm du lịch, quán ăn, khách sạn trên bản đồ tương tác SmartTravel. Tìm kiếm xung quanh vị trí của bạn.">
     <title>Bản đồ - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/pages/map.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 </head>
 <body class="map-page">
 
@@ -36,74 +33,49 @@
     </header>
 
     <div class="map-container">
-        <div class="map-sidebar glass-panel">
-            <h2 class="font-bold mb-4">Tìm điểm đến quanh đây</h2>
-            <div class="form-group">
-                <div class="search-input-wrap">
-                    <i class="bx bx-search"></i>
-                    <input type="text" class="form-control form-control-icon" placeholder="Nhập địa điểm, nhà hàng...">
+        <aside class="map-sidebar glass-panel" id="mapSidebar">
+            <div class="sidebar-header">
+                <h2 class="font-bold">Danh mục trải nghiệm</h2>
+                <p class="text-muted text-sm" id="locationStatus">Chưa bật định vị</p>
+            </div>
+
+            <div class="category-tabs vertical" id="categoryTabs">
+                <button class="map-tab active" data-category="all"><i class="bx bx-grid-alt"></i> Tất cả</button>
+                <button class="map-tab" data-category="food"><i class="bx bx-restaurant"></i> Ăn uống</button>
+                <button class="map-tab" data-category="culture"><i class="bx bx-landscape"></i> Tham quan văn hóa</button>
+                <button class="map-tab" data-category="fun"><i class="bx bx-party"></i> Vui chơi</button>
+            </div>
+
+            <div class="search-input-wrap">
+                <i class="bx bx-search"></i>
+                <input type="text" class="form-control form-control-icon" placeholder="Tìm kiếm địa điểm..." id="mapSearchInput">
+            </div>
+
+            <div class="places-list" id="placesList"></div>
+        </aside>
+
+        <section class="map-detail">
+            <div class="location-gate" id="locationGate">
+                <div class="location-gate-icon"><i class="bx bx-current-location"></i></div>
+                <div class="location-gate-body">
+                    <h3 class="font-semibold" id="gateTitle">Cho phép dùng định vị</h3>
+                    <p class="text-muted text-sm" id="gateDesc">Để gợi ý điểm ăn uống, tham quan văn hóa, vui chơi quanh bạn.</p>
+                </div>
+                <div class="location-gate-actions">
+                    <button class="btn btn-outline btn-sm" id="btnSkipLocation">Bỏ qua</button>
+                    <button class="btn btn-primary btn-sm" id="btnAllowLocation">Bật định vị</button>
                 </div>
             </div>
 
-            <div class="category-tabs flex gap-2 mb-4">
-                <span class="map-tab active" data-category="all"><i class="bx bx-grid-alt"></i> Tất cả</span>
-                <span class="map-tab" data-category="hotel"><i class="bx bx-hotel"></i> Khách sạn</span>
-                <span class="map-tab" data-category="food"><i class="bx bx-restaurant"></i> Ăn uống</span>
-                <span class="map-tab" data-category="sight"><i class="bx bx-camera"></i> Tham quan</span>
-            </div>
-
-            <div class="places-list">
-                <div class="place-item" data-lat="21.0285" data-lng="105.8542">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Thap_Rua.jpg/960px-Thap_Rua.jpg" alt="Hồ Hoàn Kiếm" class="place-thumb">
-                    <div class="place-info">
-                        <h4 class="font-bold">Hồ Hoàn Kiếm</h4>
-                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.9 (5.2k đánh giá)</p>
-                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Q. Hoàn Kiếm, Hà Nội</p>
-                    </div>
-                </div>
-
-                <hr class="section-divider">
-
-                <div class="place-item" data-lat="21.0333" data-lng="105.8500">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Old_Quarter_Street_Scene_-_Hanoi_-_Vietnam_%2848256301206%29.jpg/960px-Old_Quarter_Street_Scene_-_Hanoi_-_Vietnam_%2848256301206%29.jpg" alt="Phố cổ Hà Nội" class="place-thumb">
-                    <div class="place-info">
-                        <h4 class="font-bold">Phố cổ Hà Nội</h4>
-                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.7 (3.1k đánh giá)</p>
-                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Q. Hoàn Kiếm, Hà Nội</p>
-                    </div>
-                </div>
-
-                <hr class="section-divider">
-
-                <div class="place-item" data-lat="21.0294" data-lng="105.8355">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Hanoi_Temple_of_Literature_%28cropped%29.jpg/960px-Hanoi_Temple_of_Literature_%28cropped%29.jpg" alt="Văn Miếu Quốc Tử Giám" class="place-thumb">
-                    <div class="place-info">
-                        <h4 class="font-bold">Văn Miếu Quốc Tử Giám</h4>
-                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.8 (4.5k đánh giá)</p>
-                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Q. Đống Đa, Hà Nội</p>
-                    </div>
-                </div>
-
-                <hr class="section-divider">
-
-                <div class="place-item" data-lat="21.0369" data-lng="105.8342">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/L%C4%83ng_B%C3%A1c_-_NKS.jpg/960px-L%C4%83ng_B%C3%A1c_-_NKS.jpg" alt="Lăng Chủ tịch Hồ Chí Minh" class="place-thumb">
-                    <div class="place-info">
-                        <h4 class="font-bold">Lăng Chủ tịch Hồ Chí Minh</h4>
-                        <p class="text-warning text-sm"><i class="bx bxs-star"></i> 4.9 (6.2k đánh giá)</p>
-                        <p class="text-muted text-sm"><i class="bx bx-map"></i> Q. Ba Đình, Hà Nội</p>
-                    </div>
+            <div class="detail-card" id="placeDetail">
+                <div class="detail-placeholder">
+                    <i class="bx bx-map-alt"></i>
+                    <p>Chọn một địa điểm để xem chi tiết.</p>
                 </div>
             </div>
-        </div>
-
-        <div class="map-view">
-            <div id="map"></div>
-        </div>
+        </section>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="js/main.js"></script>
     <script src="js/map.js"></script>
 </body>

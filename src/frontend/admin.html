@@ -216,61 +216,23 @@
             </div>
 
             <div class="admin-view" id="approvalView">
-                <div class="card p-6">
+                <div class="card p-6" id="guidesView">
                     <div class="admin-card-header">
-                        <h3 class="font-bold">Duyệt hồ sơ đăng ký</h3>
-                        <div class="admin-tab-group">
-                            <button class="admin-tab active">Hướng dẫn viên (2)</button>
-                            <button class="admin-tab">Địa điểm mới (1)</button>
-                            <button class="admin-tab">Tour mới (0)</button>
-                        </div>
+                        <h3 class="font-bold">Duyệt hồ sơ Hướng dẫn viên</h3>
+                        <span class="badge badge-warning" id="guidePendingBadge">Đang tải...</span>
                     </div>
                     <div class="table-responsive">
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>Đối tượng</th>
-                                    <th>Thông tin yêu cầu</th>
-                                    <th>Ngày gửi</th>
+                                    <th>Hướng dẫn viên</th>
+                                    <th>Kinh nghiệm</th>
+                                    <th>Khu vực</th>
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <div class="user-avatar user-avatar-sm">TB</div>
-                                            <p class="font-bold text-sm">Vũ Văn Sơn</p>
-                                        </div>
-                                    </td>
-                                    <td>Đăng ký Hướng dẫn viên (Mộc Châu)</td>
-                                    <td>23/04/2026</td>
-                                    <td><span class="badge badge-warning">Chờ duyệt</span></td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn btn-primary btn-sm" data-modal-target="cccdModal">Xem hồ sơ</button>
-                                            <button class="btn btn-danger-outline btn-sm" data-action="reject">Từ chối</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <div class="user-avatar user-avatar-sm">LC</div>
-                                            <p class="font-bold text-sm">Nguyễn Thanh Nam</p>
-                                        </div>
-                                    </td>
-                                    <td>Thêm địa điểm: Nhà hàng Sen Vàng</td>
-                                    <td>22/04/2026</td>
-                                    <td><span class="badge badge-warning">Chờ duyệt</span></td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn btn-primary btn-sm">Xem chi tiết</button>
-                                            <button class="btn btn-danger-outline btn-sm" data-action="reject">Từ chối</button>
-                                        </div>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -284,48 +246,40 @@
                         <form id="addVoucherForm">
                             <div class="form-group">
                                 <label class="form-label">Mã Voucher</label>
-                                <input type="text" class="form-control" placeholder="VD: SUMMER2026" required>
+                                <input type="text" name="code" class="form-control" placeholder="VD: SUMMER2026" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tiêu đề</label>
+                                <input type="text" name="title" class="form-control" placeholder="VD: Chào Hè Sôi Động" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mô tả</label>
+                                <input type="text" name="description" class="form-control" placeholder="VD: Giảm 20% tour biển" required>
                             </div>
                             <div class="grid params-grid">
                                 <div class="form-group">
-                                    <label class="form-label">Giảm giá (%)</label>
-                                    <input type="number" class="form-control" placeholder="VD: 20" required>
+                                    <label class="form-label">Loại giảm giá</label>
+                                    <select name="discount_type" class="form-control" required>
+                                        <option value="percent">Phần trăm (%)</option>
+                                        <option value="fixed">Cố định (₫)</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Tối đa giảm (₫)</label>
-                                    <input type="number" class="form-control" placeholder="VD: 500000" required>
+                                    <label class="form-label">Giá trị giảm</label>
+                                    <input type="number" name="discount_value" class="form-control" placeholder="VD: 20" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Ngày hết hạn</label>
-                                <input type="date" class="form-control" required>
+                                <input type="date" name="expiry_date" class="form-control" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-full">Tạo Voucher ngay</button>
                         </form>
                     </div>
                     <div class="card p-6">
                         <h3 class="font-bold mb-4">Voucher đang hoạt động</h3>
-                        <div class="flex flex-col gap-4">
-                            <div class="card voucher-card">
-                                <div>
-                                    <p class="voucher-code">SUMMER20</p>
-                                    <p class="text-xs text-muted mt-1">Giảm 20% - Hết hạn: 30/06/2026</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-ghost btn-sm"><i class="bx bx-edit-alt"></i></button>
-                                    <button class="btn btn-ghost btn-sm text-danger"><i class="bx bx-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="card voucher-card">
-                                <div>
-                                    <p class="voucher-code">SAFEFREE</p>
-                                    <p class="text-xs text-muted mt-1">Tặng bảo hiểm - Hết hạn: 31/12/2026</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-ghost btn-sm"><i class="bx bx-edit-alt"></i></button>
-                                    <button class="btn btn-ghost btn-sm text-danger"><i class="bx bx-trash"></i></button>
-                                </div>
-                            </div>
+                        <div class="flex flex-col gap-4" id="activeVouchersList">
+                            <div class="admin-empty-state"><p>Đang tải...</p></div>
                         </div>
                     </div>
                 </div>

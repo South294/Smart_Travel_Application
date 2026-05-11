@@ -1,8 +1,20 @@
-document.addEventListener('DOMContentLoaded', function() {
+async function fetchApi(url, options = {}) {
+    const token = localStorage.getItem('access_token');
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const res = await fetch('http://localhost:8000' + url, { ...options, headers });
+    if (res.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('isLoggedIn');
+    }
+    return res;
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
   initNavigation();
   initMobileMenu();
-  initAuthState();
-  initProfileData();
+  await initAuthState();
+  await initProfileData();
   initPreferenceChips();
   initCustomPreferenceActions();
   initTripItemModalAccess();
@@ -11,10 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
   initPaymentOptions();
   initModals();
   initUploadAreas();
-  initPromoClaim();
+  await initPromoClaim();
   initAdminSidebar();
   initProfileSave();
   initGuideRegisterForm();
+  initCheckoutData();
+  initCheckoutPayment();
 });
 
 function initNavigation() {
@@ -59,22 +73,24 @@ function initMobileMenu() {
   });
 }
 
-function initAuthState() {
+async function initAuthState() {
   var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  var profile = getStoredUserProfile();
-  var initials = getInitials(profile.fullName || profile.email || 'ST');
   var containers = document.querySelectorAll('.nav-actions');
+
+  if (!isLoggedIn) return;
+
+  var profile = await getStoredUserProfile();
+  if (!profile.email) return;
+
+  var initials = getInitials(profile.full_name || profile.email || 'ST');
 
   containers.forEach(function(container) {
     if (container.closest('.admin-page')) return;
-
-    if (isLoggedIn) {
-      container.innerHTML = '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
-    }
+    container.innerHTML = '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
   });
 }
 
-function initProfileData() {
+async function initProfileData() {
   var isProfilePage = window.location.pathname.endsWith('profile.html');
   if (!isProfilePage) return;
 
@@ -84,8 +100,8 @@ function initProfileData() {
     return;
   }
 
-  var profile = getStoredUserProfile();
-  var fullName = profile.fullName;
+  var profile = await getStoredUserProfile();
+  var fullName = profile.full_name;
   var email = profile.email;
   var initials = getInitials(fullName || email);
 
@@ -93,22 +109,22 @@ function initProfileData() {
   setTextBySelector('.profile-display-email', email);
   setInputValueBySelector('.profile-input-name', fullName);
   setInputValueBySelector('.profile-input-email', email);
-  setInputValueBySelector('.profile-input-phone', profile.phone);
-  setInputValueBySelector('.profile-input-birth', profile.birthDate);
-  setInputValueBySelector('.profile-input-address', profile.address);
-  setSelectValueBySelector('.profile-input-gender', profile.gender);
-  setSelectValueBySelector('.profile-setting-language', profile.settings.language);
-  setCheckedBySelector('.profile-setting-email', profile.settings.emailNotifications);
-  setCheckedBySelector('.profile-setting-sms', profile.settings.smsNotifications);
-  setCheckedBySelector('.profile-setting-ai', profile.settings.aiPersonalization);
+  setInputValueBySelector('.profile-input-phone', profile.phone || '');
+  setInputValueBySelector('.profile-input-birth', profile.birth_date || '');
+  setInputValueBySelector('.profile-input-address', profile.address || '');
+  setSelectValueBySelector('.profile-input-gender', profile.gender || '');
+  setSelectValueBySelector('.profile-setting-language', profile.settings?.language || 'vi');
+  setCheckedBySelector('.profile-setting-email', profile.settings?.email_notifications !== false);
+  setCheckedBySelector('.profile-setting-sms', profile.settings?.sms_notifications === true);
+  setCheckedBySelector('.profile-setting-ai', profile.settings?.ai_personalization !== false);
 
   document.querySelectorAll('.profile-initials').forEach(function(el) {
     el.textContent = initials;
   });
 
-  syncPreferenceChips(profile.preferences);
-  renderCustomPreferenceChips(profile.customPreferences || []);
-  renderSavedVouchers();
+  syncPreferenceChips(profile.preferences || []);
+  renderCustomPreferenceChips(profile.custom_preferences || []);
+  await renderSavedVouchers();
 }
 
 function initLogoutAction() {
@@ -123,104 +139,34 @@ function initLogoutAction() {
   });
 }
 
-function getStoredUserProfile() {
-  var defaultProfile = {
-    fullName: 'Khach Hang',
-    email: 'khachhang@example.com',
-    phone: '',
-    birthDate: '',
-    gender: '',
-    address: '',
-    preferences: [],
-    customPreferences: [],
-    savedVouchers: [],
-    settings: {
-      emailNotifications: true,
-      smsNotifications: false,
-      aiPersonalization: true,
-      language: 'vi'
-    }
-  };
-
+async function getStoredUserProfile() {
   try {
-    var raw = localStorage.getItem('userProfile');
-    if (!raw) return defaultProfile;
-    var parsed = JSON.parse(raw) || {};
-
-    return {
-      fullName: parsed.fullName || defaultProfile.fullName,
-      email: parsed.email || defaultProfile.email,
-      phone: parsed.phone || defaultProfile.phone,
-      birthDate: parsed.birthDate || defaultProfile.birthDate,
-      gender: parsed.gender || defaultProfile.gender,
-      address: parsed.address || defaultProfile.address,
-      preferences: Array.isArray(parsed.preferences) ? parsed.preferences : defaultProfile.preferences,
-      customPreferences: Array.isArray(parsed.customPreferences) ? parsed.customPreferences : defaultProfile.customPreferences,
-      savedVouchers: Array.isArray(parsed.savedVouchers) ? parsed.savedVouchers : defaultProfile.savedVouchers,
-      settings: {
-        emailNotifications: parsed.settings && typeof parsed.settings.emailNotifications === 'boolean'
-          ? parsed.settings.emailNotifications
-          : defaultProfile.settings.emailNotifications,
-        smsNotifications: parsed.settings && typeof parsed.settings.smsNotifications === 'boolean'
-          ? parsed.settings.smsNotifications
-          : defaultProfile.settings.smsNotifications,
-        aiPersonalization: parsed.settings && typeof parsed.settings.aiPersonalization === 'boolean'
-          ? parsed.settings.aiPersonalization
-          : defaultProfile.settings.aiPersonalization,
-        language: parsed.settings && parsed.settings.language
-          ? parsed.settings.language
-          : defaultProfile.settings.language
-      }
-    };
-  } catch (e) {
-    return defaultProfile;
-  }
-}
-
-function getStoredSavedVouchers() {
-  var profile = getStoredUserProfile();
-  var merged = [];
-
-  function pushUnique(voucher) {
-    var normalized = normalizeVoucher(voucher);
-    if (!normalized) return;
-    var exists = merged.some(function(item) { return item.code === normalized.code; });
-    if (!exists) merged.push(normalized);
-  }
-
-  try {
-    var raw = localStorage.getItem('savedVouchers');
-    if (raw) {
-      var parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) parsed.forEach(pushUnique);
+    const res = await fetchApi('/api/users/me');
+    if (res.ok) {
+      return await res.json();
     }
   } catch (e) {
-    merged = [];
   }
-
-  if (Array.isArray(profile.savedVouchers)) {
-    profile.savedVouchers.forEach(pushUnique);
-  }
-
-  return merged;
+  return {};
 }
 
-function saveVoucher(voucher) {
-  var normalized = normalizeVoucher(voucher);
-  if (!normalized) return false;
+async function getStoredSavedVouchers() {
+  try {
+    const res = await fetchApi('/api/users/me/vouchers');
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch(e) {}
+  return [];
+}
 
-  var saved = getStoredSavedVouchers();
-  var exists = saved.some(function(item) { return item.code === normalized.code; });
-  if (exists) return false;
-
-  saved.push(normalized);
-  localStorage.setItem('savedVouchers', JSON.stringify(saved));
-
-  var profile = getStoredUserProfile();
-  profile.savedVouchers = saved;
-  localStorage.setItem('userProfile', JSON.stringify(profile));
-
-  return true;
+async function saveVoucher(voucherCode) {
+  try {
+    const res = await fetchApi(`/api/vouchers/${voucherCode}/claim`, { method: 'POST' });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
 }
 
 function normalizeVoucher(voucher) {
@@ -247,11 +193,11 @@ function normalizeVoucher(voucher) {
   };
 }
 
-function renderSavedVouchers() {
+async function renderSavedVouchers() {
   var container = document.getElementById('saved-vouchers-list');
   if (!container) return;
 
-  var saved = getStoredSavedVouchers();
+  var saved = await getStoredSavedVouchers();
   if (saved.length === 0) {
     container.innerHTML =
       '<div class="empty-state">' +
@@ -270,7 +216,7 @@ function renderSavedVouchers() {
       '</div>' +
       '<p class="text-muted text-sm">' + (voucher.description || 'Uu dai da duoc luu vao vi cua ban.') + '</p>' +
       '<div class="saved-voucher-footer">' +
-      '<span class="text-sm text-warning"><i class="bx bx-time"></i> ' + (voucher.expiry || 'Con hieu luc') + '</span>' +
+      '<span class="text-sm text-warning"><i class="bx bx-time"></i> ' + (voucher.expiry_date || 'Con hieu luc') + '</span>' +
       '</div>' +
       '</div>'
     );
@@ -620,8 +566,8 @@ function initUploadAreas() {
   });
 }
 
-function initPromoClaim() {
-  var saved = getStoredSavedVouchers();
+async function initPromoClaim() {
+  var saved = await getStoredSavedVouchers();
 
   document.querySelectorAll('.btn-claim-promo').forEach(function(btn) {
     var currentCode = btn.getAttribute('data-code');
@@ -634,7 +580,7 @@ function initPromoClaim() {
       btn.disabled = true;
     }
 
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', async function() {
       var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       var code = this.getAttribute('data-code');
 
@@ -644,27 +590,51 @@ function initPromoClaim() {
         return;
       }
 
-      var promoCard = this.closest('.promo-card');
-      var titleEl = promoCard ? promoCard.querySelector('h3') : null;
-      var expiryEl = promoCard ? promoCard.querySelector('.promo-expiry') : null;
-      var descEl = promoCard ? promoCard.querySelector('.text-muted') : null;
+      var success = await saveVoucher(code);
 
-      var voucher = {
-        code: code,
-        title: titleEl ? titleEl.textContent.trim() : 'Voucher uu dai',
-        description: descEl ? descEl.textContent.trim() : '',
-        expiry: expiryEl ? expiryEl.textContent.trim() : ''
-      };
-
-      saveVoucher(voucher);
-
-      this.textContent = 'Đã lưu';
-      this.classList.remove('btn-primary');
-      this.classList.add('btn-outline', 'disabled');
-      this.disabled = true;
-      showToast('Đã lưu mã ' + code + ' vào ví của bạn', 'success');
+      if (success) {
+        this.textContent = 'Đã lưu';
+        this.classList.remove('btn-primary');
+        this.classList.add('btn-outline', 'disabled');
+        this.disabled = true;
+        showToast('Đã lưu mã ' + code + ' vào ví của bạn', 'success');
+      } else {
+        showToast('Không thể lưu mã ' + code, 'error');
+      }
     });
   });
+}
+
+function initCheckoutPayment() {
+  var btn = document.getElementById('checkoutPayBtn');
+  var modal = document.getElementById('paymentSuccessModal');
+  if (!btn || !modal) return;
+
+  btn.addEventListener('click', function() {
+    btn.classList.add('is-loading');
+    btn.disabled = true;
+
+    setTimeout(function() {
+      btn.classList.remove('is-loading');
+      btn.disabled = false;
+
+      var totalEl = document.getElementById('checkoutTotal');
+      var totalText = totalEl ? totalEl.textContent : '--';
+      var orderEl = document.getElementById('paymentOrderCode');
+      var totalModal = document.getElementById('paymentTotal');
+
+      if (orderEl) orderEl.textContent = generateOrderCode();
+      if (totalModal) totalModal.textContent = totalText;
+
+      openModal('paymentSuccessModal');
+      showToast('Thanh toán mô phỏng thành công', 'success');
+    }, 1200);
+  });
+}
+
+function generateOrderCode() {
+  var random = Math.floor(100000 + Math.random() * 900000);
+  return 'ST-' + random;
 }
 
 function initAdminSidebar() {
@@ -681,89 +651,68 @@ function initAdminSidebar() {
       sidebar.classList.remove('active');
     }
   });
-
-  document.querySelectorAll('[data-admin-approve]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var row = this.closest('tr');
-      var badge = row.querySelector('.badge');
-      if (badge) {
-        badge.className = 'badge badge-success';
-        badge.textContent = 'Đã duyệt';
-      }
-      this.textContent = 'Đã duyệt';
-      this.disabled = true;
-      this.classList.add('disabled');
-      showToast('Đã duyệt thành công', 'success');
-    });
-  });
-
-  document.querySelectorAll('[data-admin-reject]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var row = this.closest('tr');
-      var badge = row.querySelector('.badge');
-      if (badge) {
-        badge.className = 'badge badge-danger';
-        badge.textContent = 'Từ chối';
-      }
-      showToast('Đã từ chối yêu cầu', 'error');
-    });
-  });
 }
 
 function initProfileSave() {
   var saveBtn = document.querySelector('.btn-save-profile');
   if (!saveBtn) return;
 
-  saveBtn.addEventListener('click', function() {
+  saveBtn.addEventListener('click', async function() {
     var nameInput = document.querySelector('.profile-input-name');
-    var emailInput = document.querySelector('.profile-input-email');
     var phoneInput = document.querySelector('.profile-input-phone');
     var birthInput = document.querySelector('.profile-input-birth');
     var genderInput = document.querySelector('.profile-input-gender');
     var addressInput = document.querySelector('.profile-input-address');
+    
     var settingEmail = document.querySelector('.profile-setting-email');
     var settingSms = document.querySelector('.profile-setting-sms');
     var settingAi = document.querySelector('.profile-setting-ai');
     var settingLanguage = document.querySelector('.profile-setting-language');
-    var updatedName = nameInput ? nameInput.value.trim() : '';
-    var updatedEmail = emailInput ? emailInput.value.trim() : '';
-
-    var profile = getStoredUserProfile();
-    profile.fullName = updatedName || profile.fullName || 'Khach Hang';
-    profile.email = updatedEmail || profile.email || 'khachhang@example.com';
-    profile.phone = phoneInput ? phoneInput.value.trim() : profile.phone;
-    profile.birthDate = birthInput ? birthInput.value : profile.birthDate;
-    profile.gender = genderInput ? genderInput.value : profile.gender;
-    profile.address = addressInput ? addressInput.value.trim() : profile.address;
-    profile.preferences = getSelectedPreferenceTags();
-    profile.customPreferences = getCustomPreferenceKeywords();
-    profile.savedVouchers = getStoredSavedVouchers();
-    profile.settings = {
-      emailNotifications: settingEmail ? !!settingEmail.checked : true,
-      smsNotifications: settingSms ? !!settingSms.checked : false,
-      aiPersonalization: settingAi ? !!settingAi.checked : true,
-      language: settingLanguage ? settingLanguage.value : 'vi'
-    };
-
-    localStorage.setItem('userProfile', JSON.stringify(profile));
-
-    setTextBySelector('.profile-display-name', profile.fullName);
-    setTextBySelector('.profile-display-email', profile.email);
-
-    var initials = getInitials(profile.fullName || profile.email);
-    document.querySelectorAll('.profile-initials').forEach(function(el) {
-      el.textContent = initials;
-    });
 
     var btn = this;
     btn.classList.add('is-loading');
     btn.disabled = true;
 
-    setTimeout(function() {
-      btn.classList.remove('is-loading');
-      btn.disabled = false;
-      showToast('Đã lưu thay đổi thành công', 'success');
-    }, 1200);
+    try {
+        await fetchApi('/api/users/me', {
+            method: 'PUT',
+            body: JSON.stringify({
+                full_name: nameInput ? nameInput.value.trim() : null,
+                phone: phoneInput ? phoneInput.value.trim() : null,
+                birth_date: birthInput ? birthInput.value : null,
+                gender: genderInput ? genderInput.value : null,
+                address: addressInput ? addressInput.value.trim() : null
+            })
+        });
+
+        await fetchApi('/api/users/me/preferences', {
+            method: 'PUT',
+            body: JSON.stringify({
+                preferences: getSelectedPreferenceTags(),
+                custom_preferences: getCustomPreferenceKeywords()
+            })
+        });
+
+        await fetchApi('/api/users/me/settings', {
+            method: 'PUT',
+            body: JSON.stringify({
+                settings: {
+                    email_notifications: settingEmail ? !!settingEmail.checked : true,
+                    sms_notifications: settingSms ? !!settingSms.checked : false,
+                    ai_personalization: settingAi ? !!settingAi.checked : true,
+                    language: settingLanguage ? settingLanguage.value : 'vi'
+                }
+            })
+        });
+
+        showToast('Đã lưu thay đổi thành công', 'success');
+        setTimeout(() => location.reload(), 1000);
+    } catch(e) {
+        showToast('Lỗi khi lưu hồ sơ', 'error');
+    } finally {
+        btn.classList.remove('is-loading');
+        btn.disabled = false;
+    }
   });
 }
 
@@ -771,17 +720,80 @@ function initGuideRegisterForm() {
   var form = document.getElementById('guide-register-form');
   if (!form) return;
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
     var submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.classList.add('is-loading');
     submitBtn.disabled = true;
 
-    setTimeout(function() {
-      submitBtn.classList.remove('is-loading');
-      submitBtn.disabled = false;
-      showToast('Đã gửi yêu cầu phê duyệt thành công! Admin sẽ kiểm tra hồ sơ của bạn.', 'success');
-      setTimeout(function() { window.location.href = 'guides.html'; }, 2000);
-    }, 1500);
+    var data = {
+        name: document.getElementById('guideName').value,
+        experience_years: parseInt(document.getElementById('guideExp').value) || 0,
+        price_per_day: parseFloat(document.getElementById('guidePrice').value) || 0,
+        areas: Array.from(document.getElementById('guideAreas').selectedOptions).map(function(opt) { return opt.value; }),
+        languages: Array.from(document.getElementById('guideLanguages').selectedOptions).map(function(opt) { return opt.value; }),
+        bio: document.getElementById('guideBio').value
+    };
+
+    try {
+        var res = await fetchApi('/api/guides/apply', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            showToast('Đã gửi yêu cầu phê duyệt thành công!', 'success');
+            setTimeout(function() { window.location.href = 'guides.html'; }, 2000);
+        } else {
+            var err = await res.json();
+            showToast(err.detail || 'Lỗi khi gửi yêu cầu', 'error');
+        }
+    } catch(err) {
+        showToast('Lỗi kết nối máy chủ', 'error');
+    } finally {
+        submitBtn.classList.remove('is-loading');
+        submitBtn.disabled = false;
+    }
   });
+}
+
+function initCheckoutData() {
+  var isCheckout = window.location.pathname.endsWith('checkout.html');
+  if (!isCheckout) return;
+
+  var params = new URLSearchParams(window.location.search);
+  var title = params.get('title');
+  var price = parseInt(params.get('price'));
+  var originalPrice = parseInt(params.get('original'));
+  var duration = params.get('duration');
+  var img = params.get('img');
+
+  if (!title || !price) {
+    var titleEl = document.getElementById('checkoutTourTitle');
+    if (titleEl) titleEl.textContent = 'Vui lòng chọn tour từ trang Tour du lịch';
+    return;
+  }
+
+  var titleEl = document.getElementById('checkoutTourTitle');
+  var imgEl = document.getElementById('checkoutTourImg');
+  var durationEl = document.getElementById('checkoutTourDuration');
+  var adultLabel = document.getElementById('checkoutAdultLabel');
+  var adultPrice = document.getElementById('checkoutAdultPrice');
+  var insurancePrice = document.getElementById('checkoutInsurancePrice');
+  var totalEl = document.getElementById('checkoutTotal');
+
+  if (titleEl) titleEl.textContent = title;
+  if (imgEl && img) imgEl.src = img;
+  if (durationEl && duration) durationEl.innerHTML = '<i class="bx bx-time"></i> ' + duration;
+
+  var fmt = new Intl.NumberFormat('vi-VN');
+  var adults = 2;
+  var insurance = 150000;
+  var adultTotal = price * adults;
+  var insuranceTotal = insurance * adults;
+  var total = adultTotal + insuranceTotal;
+
+  if (adultLabel) adultLabel.textContent = 'Người lớn x' + adults;
+  if (adultPrice) adultPrice.textContent = fmt.format(adultTotal) + '₫';
+  if (insurancePrice) insurancePrice.textContent = fmt.format(insuranceTotal) + '₫';
+  if (totalEl) totalEl.textContent = fmt.format(total) + '₫';
 }
