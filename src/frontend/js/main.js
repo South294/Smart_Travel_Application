@@ -608,7 +608,17 @@ async function initPromoClaim() {
 function initCheckoutPayment() {
   var btn = document.getElementById('checkoutPayBtn');
   var modal = document.getElementById('paymentSuccessModal');
+  var qrModal = document.getElementById('paymentQrModal');
+  var qrConfirmBtn = document.getElementById('paymentQrConfirmBtn');
   if (!btn || !modal) return;
+
+  if (qrConfirmBtn) {
+    qrConfirmBtn.addEventListener('click', function() {
+      closeModal('paymentQrModal');
+      openModal('paymentSuccessModal');
+      showToast('Thanh toan QR mo phong thanh cong', 'success');
+    });
+  }
 
   btn.addEventListener('click', function() {
     btn.classList.add('is-loading');
@@ -622,12 +632,26 @@ function initCheckoutPayment() {
       var totalText = totalEl ? totalEl.textContent : '--';
       var orderEl = document.getElementById('paymentOrderCode');
       var totalModal = document.getElementById('paymentTotal');
+      var qrOrderEl = document.getElementById('paymentQrOrder');
+      var qrTotalEl = document.getElementById('paymentQrTotal');
+      var orderCode = generateOrderCode();
 
-      if (orderEl) orderEl.textContent = generateOrderCode();
+      if (orderEl) orderEl.textContent = orderCode;
       if (totalModal) totalModal.textContent = totalText;
+      if (qrOrderEl) qrOrderEl.textContent = orderCode;
+      if (qrTotalEl) qrTotalEl.textContent = totalText;
+
+      var selectedOption = document.querySelector('.payment-option.selected');
+      var method = selectedOption ? selectedOption.getAttribute('data-method') : '';
+
+      if (method === 'qr' && qrModal) {
+        openModal('paymentQrModal');
+        showToast('Vui long quet ma QR de thanh toan', 'success');
+        return;
+      }
 
       openModal('paymentSuccessModal');
-      showToast('Thanh toán mô phỏng thành công', 'success');
+      showToast('Thanh toan mo phong thanh cong', 'success');
     }, 1200);
   });
 }

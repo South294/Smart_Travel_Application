@@ -100,7 +100,7 @@
 
                 <div class="card p-6 payment-methods">
                     <h2 class="font-bold mb-4 flex items-center gap-2"><i class="bx bx-credit-card text-primary"></i> Phương thức thanh toán</h2>
-                    <label class="payment-option selected">
+                    <label class="payment-option selected" data-method="credit_card">
                         <input type="radio" name="payment" checked>
                         <div class="flex items-center gap-4 w-full">
                             <i class="bx bx-credit-card payment-icon"></i>
@@ -110,7 +110,7 @@
                             </div>
                         </div>
                     </label>
-                    <label class="payment-option mt-2">
+                    <label class="payment-option mt-2" data-method="e_wallet">
                         <input type="radio" name="payment">
                         <div class="flex items-center gap-4 w-full">
                             <i class="bx bx-wallet payment-icon"></i>
@@ -120,13 +120,23 @@
                             </div>
                         </div>
                     </label>
-                    <label class="payment-option mt-2">
+                    <label class="payment-option mt-2" data-method="bank_transfer">
                         <input type="radio" name="payment">
                         <div class="flex items-center gap-4 w-full">
                             <i class="bx bxs-bank payment-icon"></i>
                             <div class="flex-1">
                                 <span class="font-semibold">Chuyển khoản ngân hàng</span>
                                 <p class="text-muted text-xs">Internet Banking, QR Code</p>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="payment-option mt-2" data-method="qr">
+                        <input type="radio" name="payment">
+                        <div class="flex items-center gap-4 w-full">
+                            <i class="bx bx-qr payment-icon"></i>
+                            <div class="flex-1">
+                                <span class="font-semibold">Thanh toán QR</span>
+                                <p class="text-muted text-xs">QR nội bộ SmartTravel</p>
                             </div>
                         </div>
                     </label>
@@ -198,6 +208,38 @@
             <div class="payment-success-actions">
                 <button class="btn btn-outline" data-modal-close>Đóng</button>
                 <a class="btn btn-primary" href="profile.html">Xem đơn đã đặt</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="paymentQrModal">
+        <div class="modal-content payment-qr-modal">
+            <div class="payment-qr-header">
+                <div class="payment-qr-icon"><i class="bx bx-qr"></i></div>
+                <div>
+                    <h3 class="font-bold">Quet ma QR de thanh toan</h3>
+                    <p class="text-muted text-sm">Su dung ung dung ngan hang hoac vi dien tu.</p>
+                </div>
+            </div>
+            <div class="payment-qr-body">
+                <div class="payment-qr-code">
+                    <img src="../qrcode_349617705_f1b4d280f56516ccd9180f08a212feb1.png" alt="QR demo" class="payment-qr-image">
+                </div>
+                <div class="payment-qr-summary">
+                    <div>
+                        <span class="text-muted text-xs">Ma don</span>
+                        <strong id="paymentQrOrder">ST-XXXXXX</strong>
+                    </div>
+                    <div>
+                        <span class="text-muted text-xs">So tien</span>
+                        <strong id="paymentQrTotal">--</strong>
+                    </div>
+                </div>
+                <p class="text-xs text-muted">Sau khi chuyen khoan thanh cong, bam "Toi da thanh toan".</p>
+            </div>
+            <div class="payment-success-actions">
+                <button class="btn btn-outline" data-modal-close>Dong</button>
+                <button class="btn btn-primary" id="paymentQrConfirmBtn">Toi da thanh toan</button>
             </div>
         </div>
     </div>
