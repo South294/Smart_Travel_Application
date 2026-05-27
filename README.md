@@ -9,6 +9,38 @@ Một ứng dụng du lịch toàn diện cung cấp tính năng đặt tour, b�
 
 ## Hướng Dẫn Sử Dụng
 
+### Chạy bằng Docker (Backend + MongoDB)
+1. Đảm bảo bạn đã cài Docker Desktop và đang chạy.
+2. Chạy MongoDB bằng Docker:
+   ```powershell
+   docker pull mongo:6
+   docker run -d --name smart-travel-mongo -p 27017:27017 -v smart_travel_data:/data/db mongo:6
+   ```
+3. Thiết lập biến môi trường backend trong `src/backend/.env` (mặc định đã có):
+   ```env
+   MONGODB_URI=mongodb://localhost:27017
+   MONGODB_DB=smart_travel
+   ```
+4. Chạy backend (trong thư mục `src/backend`):
+   ```powershell
+   pip install -r requirements.txt
+   python main.py
+   ```
+   Hoặc:
+   ```powershell
+   uvicorn main:app --reload
+   ```
+
+### Kiểm tra MongoDB
+```powershell
+docker exec -it smart-travel-mongo mongosh
+```
+```javascript
+show dbs
+use smart_travel
+show collections
+```
+
 ### Frontend
 Vui lòng kiểm tra src/frontend/README.md hoặc đơn giản là mở file index.html bằng trình duyệt web của bạn.
 

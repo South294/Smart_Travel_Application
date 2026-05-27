@@ -22,8 +22,8 @@
                 <div class="form-header">
                     <h2>Tạo Tài Khoản</h2>
                     <div class="social-login">
-                        <a href="#" class="social"><i class="bx bxl-facebook"></i></a>
-                        <a href="#" class="social"><i class="bx bxl-google"></i></a>
+                        <button type="button" class="social btn-icon"><i class="bx bxl-facebook"></i></button>
+                        <button type="button" class="social btn-icon"><i class="bx bxl-google"></i></button>
                     </div>
                     <span>hoặc sử dụng email của bạn</span>
                 </div>
@@ -59,8 +59,8 @@
                 <div class="form-header">
                     <h2>Đăng Nhập</h2>
                     <div class="social-login">
-                        <a href="#" class="social"><i class="bx bxl-facebook"></i></a>
-                        <a href="#" class="social"><i class="bx bxl-google"></i></a>
+                        <button type="button" class="social btn-icon"><i class="bx bxl-facebook"></i></button>
+                        <button type="button" class="social btn-icon"><i class="bx bxl-google"></i></button>
                     </div>
                     <span>hoặc sử dụng tài khoản của bạn</span>
                 </div>
@@ -84,7 +84,7 @@
                     <label class="remember-me">
                         <input type="checkbox"> Ghi nhớ đăng nhập
                     </label>
-                    <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                    <a href="forgot-password.html" class="forgot-password">Quên mật khẩu?</a>
                 </div>
                 <button type="submit" class="btn btn-primary w-full mt-2">Đăng nhập</button>
             </form>
@@ -175,8 +175,20 @@
                         if (response.ok) {
                             localStorage.setItem('access_token', data.access_token);
                             localStorage.setItem('isLoggedIn', 'true');
+
+                            var role = data.user && data.user.role ? data.user.role : '';
+                            localStorage.setItem('userRole', role);
+
                             showToast('Đăng nhập thành công! Đang chuyển hướng...', 'success');
-                            setTimeout(function() { window.location.href = 'index.html'; }, 1500);
+                            setTimeout(function() {
+                                if (role === 'admin') {
+                                    window.location.href = 'admin/index.html';
+                                } else if (role === 'guide') {
+                                    window.location.href = 'guide-dashboard.html';
+                                } else {
+                                    window.location.href = 'index.html';
+                                }
+                            }, 1500);
                         } else {
                             showToast(data.detail || 'Đăng nhập thất bại', 'error');
                             btn.textContent = originalText;

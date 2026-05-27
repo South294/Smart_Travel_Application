@@ -43,6 +43,7 @@ h1, h2, h3, h4, h5, h6 {
 .font-bold { font-weight: 700; }
 .font-sm { font-size: 0.9rem; }
 .text-center { text-align: center; }
+.text-left { text-align: left; }
 .flex { display: flex; }
 .flex-wrap { flex-wrap: wrap; }
 .inline-flex { display: inline-flex; }
@@ -77,6 +78,7 @@ h1, h2, h3, h4, h5, h6 {
 .p-4 { padding: 1rem; }
 .p-6 { padding: 1.5rem; }
 .w-full { width: 100%; }
+.w-100 { width: 100%; }
 .h-full { height: 100%; }
 .m-0 { margin: 0; }
 .relative { position: relative; }
@@ -89,5 +91,7 @@ h1, h2, h3, h4, h5, h6 {
 .hidden { display: none; }
 
 .overflow-hidden { overflow: hidden; }
+
+.opacity-90 { opacity: 0.9; }
 
 .transition { transition: var(--transition); }

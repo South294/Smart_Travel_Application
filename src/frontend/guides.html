@@ -77,7 +77,7 @@
 
                     <div class="guide-price mb-4">500.000₫ <span class="guide-price-unit">/ ngày</span></div>
 
-                    <button class="btn btn-primary w-full">Thuê ngay</button>
+                    <button class="btn btn-primary w-full btn-hire-guide" data-guide-id="guide-demo-1">Thuê ngay</button>
                 </div>
             </div>
 
@@ -138,7 +138,7 @@
 
                     <div class="guide-price mb-4">800.000₫ <span class="guide-price-unit">/ ngày</span></div>
 
-                    <button class="btn btn-primary w-full">Thuê ngay</button>
+                    <button class="btn btn-primary w-full btn-hire-guide" data-guide-id="guide-demo-2">Thuê ngay</button>
                 </div>
             </div>
 
@@ -148,6 +148,34 @@
             <h3 class="font-bold text-xl mb-2">Bạn am hiểu địa phương của mình?</h3>
             <p class="text-muted mb-4">Đăng ký trở thành Hướng Dẫn Viên để kiếm thêm thu nhập và gặp gỡ bạn bè quốc tế.</p>
             <a href="guide-register.html" class="btn btn-primary">Đăng ký làm Hướng Dẫn Viên</a>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="hireGuideModal">
+        <div class="modal-content modal-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">Thuê hướng dẫn viên</h3>
+                <button class="btn btn-icon" data-modal-close><i class="bx bx-x"></i></button>
+            </div>
+            <form id="hireGuideForm">
+                <input type="hidden" id="hireGuideId">
+                <div class="form-group">
+                    <label class="form-label">Điểm đến</label>
+                    <input type="text" class="form-control" id="hireDestination" placeholder="VD: Sapa, Hà Giang" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ngày đi</label>
+                    <input type="date" class="form-control" id="hireTripDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ghi chú cho hướng dẫn viên</label>
+                    <textarea class="form-control" id="hireNote" rows="3" placeholder="VD: Có người lớn tuổi, cần hỗ trợ nhiều..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" class="btn btn-outline" data-modal-close>Hủy</button>
+                    <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -170,9 +198,9 @@
                 <div>
                     <h4 class="footer-title">Hỗ trợ</h4>
                     <div class="footer-links">
-                        <a href="#" class="footer-link">Trung tâm trợ giúp</a>
-                        <a href="#" class="footer-link">Điều khoản dịch vụ</a>
-                        <a href="#" class="footer-link">Chính sách bảo mật</a>
+                        <a href="help.html" class="footer-link">Trung tâm trợ giúp</a>
+                        <a href="terms.html" class="footer-link">Điều khoản dịch vụ</a>
+                        <a href="privacy.html" class="footer-link">Chính sách bảo mật</a>
                     </div>
                 </div>
                 <div>

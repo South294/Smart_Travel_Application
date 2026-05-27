@@ -84,15 +84,25 @@
 
 .list-card {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 320px 1fr;
+  gap: 0;
+  overflow: hidden;
 }
 
 .list-card .tour-img {
-  height: 100%;
+  position: relative;
+  overflow: hidden;
   min-height: 220px;
 }
 
 .list-card .tour-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
   transition: transform 0.5s ease;
 }
 
@@ -105,6 +115,51 @@
   top: 16px;
   left: 16px;
   z-index: 10;
+}
+
+.list-card .tour-info {
+  min-width: 0;
+  padding: 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-left: 1px solid var(--border-color);
+}
+
+.list-card .tour-info h3 {
+  font-size: 1.15rem;
+  line-height: 1.45;
+  margin-bottom: 0;
+  overflow-wrap: anywhere;
+}
+
+.list-card .tour-info p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.list-card .price-large {
+  white-space: nowrap;
+}
+
+.list-card .btn {
+  white-space: nowrap;
+}
+
+.tour-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tour-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 992px) {

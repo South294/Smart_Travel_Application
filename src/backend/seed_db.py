@@ -42,10 +42,12 @@ async def seed_database():
     users_count = await db.users.count_documents({})
     if users_count == 0:
         print("Seeding users...")
+        admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+        admin_email = os.getenv("ADMIN_EMAIL", "admin@smarttravel.vn")
         users = [
             {
-                "email": "admin@smarttravel.vn",
-                "password_hash": hash_pw("admin123"),
+                "email": admin_email,
+                "password_hash": hash_pw(admin_password),
                 "full_name": "Admin SmartTravel",
                 "phone": "0901000000",
                 "birth_date": "1990-01-15",
@@ -356,8 +358,10 @@ async def seed_database():
     if guides_count == 0:
         print("Seeding guides...")
         son_user = await db.users.find_one({"email": "son.vu@gmail.com"})
+        extra_user = await db.users.find_one({"email": "nam.nguyen@gmail.com"})
+        guides = []
         if son_user:
-            guide = {
+            guides.append({
                 "user_id": str(son_user["_id"]),
                 "name": "Vũ Văn Sơn",
                 "experience_years": 5,
@@ -369,11 +373,116 @@ async def seed_database():
                 "id_back_url": "",
                 "status": "pending",
                 "created_at": datetime.utcnow().isoformat()
-            }
-            await db.guides.insert_one(guide)
-            print("Guide seeded: 1 record (pending).")
+            })
+        if extra_user:
+            guides.append({
+                "user_id": str(extra_user["_id"]),
+                "name": "Nguyễn Thanh Nam",
+                "experience_years": 3,
+                "price_per_day": 600000,
+                "areas": ["Hà Nội", "Ninh Bình"],
+                "languages": ["Tiếng Việt"],
+                "bio": "Chuyên tour văn hóa và ẩm thực miền Bắc.",
+                "id_front_url": "",
+                "id_back_url": "",
+                "status": "approved",
+                "created_at": datetime.utcnow().isoformat()
+            })
+        if guides:
+            await db.guides.insert_many(guides)
+            print("Guides seeded: demo records added.")
     else:
-        print("Guides already exist.")
+        pending_count = await db.guides.count_documents({"status": "pending"})
+        if pending_count == 0:
+            son_user = await db.users.find_one({"email": "son.vu@gmail.com"})
+            if son_user:
+                existing = await db.guides.find_one({"user_id": str(son_user["_id"]), "status": "pending"})
+                if existing:
+                    print("Pending guide already exists.")
+                else:
+                    await db.guides.insert_one({
+                        "user_id": str(son_user["_id"]),
+                        "name": "Vũ Văn Sơn",
+                        "experience_years": 5,
+                        "price_per_day": 800000,
+                        "areas": ["Mộc Châu", "Sapa", "Hà Giang"],
+                        "languages": ["Tiếng Việt", "English"],
+                        "bio": "Hướng dẫn viên chuyên tour trekking Miền Bắc, 5 năm kinh nghiệm dẫn đoàn.",
+                        "id_front_url": "",
+                        "id_back_url": "",
+                        "status": "pending",
+                        "created_at": datetime.utcnow().isoformat()
+                    })
+                    print("Guide seeded: 1 record (pending).")
+
+    settings_doc = await db.settings.find_one({"key": "admin"})
+    if not settings_doc:
+        await db.settings.insert_one({
+            "key": "admin",
+            "value": {
+                "maintenance_mode": False,
+                "auto_approve_guides": True,
+                "email_new_booking": True
+            }
+        })
+
+    bookings_count = await db.bookings.count_documents({})
+    if bookings_count == 0:
+        print("Seeding bookings...")
+        user = await db.users.find_one({"email": "son.vu@gmail.com"})
+        if not user:
+            user = await db.users.find_one({})
+        tour = await db.tours.find_one({})
+        if user and tour:
+            bookings = [
+                {
+                    "tour_id": str(tour["_id"]),
+                    "travel_date": "2026-06-15",
+                    "adults": 2,
+                    "children": 1,
+                    "insurance": True,
+                    "coupon_code": "SUMMER20",
+                    "payment_method": "bank_transfer",
+                    "contact_phone": "0912345678",
+                    "note": "Yêu cầu phòng view biển",
+                    "user_id": str(user["_id"]),
+                    "status": "confirmed",
+                    "total_amount": 5200000,
+                    "created_at": datetime.utcnow().isoformat()
+                },
+                {
+                    "tour_id": str(tour["_id"]),
+                    "travel_date": "2026-07-02",
+                    "adults": 1,
+                    "children": 0,
+                    "insurance": False,
+                    "coupon_code": None,
+                    "payment_method": "credit_card",
+                    "contact_phone": "0912345678",
+                    "note": "",
+                    "user_id": str(user["_id"]),
+                    "status": "pending",
+                    "total_amount": 2500000,
+                    "created_at": datetime.utcnow().isoformat()
+                },
+                {
+                    "tour_id": str(tour["_id"]),
+                    "travel_date": "2026-08-10",
+                    "adults": 3,
+                    "children": 0,
+                    "insurance": True,
+                    "coupon_code": "NEWUSER100K",
+                    "payment_method": "e_wallet",
+                    "contact_phone": "0912345678",
+                    "note": "Không ăn hải sản",
+                    "user_id": str(user["_id"]),
+                    "status": "cancelled",
+                    "total_amount": 6300000,
+                    "created_at": datetime.utcnow().isoformat()
+                }
+            ]
+            await db.bookings.insert_many(bookings)
+            print("Bookings seeded: demo records added.")
 
     client.close()
     print("Seed completed!")

@@ -22,3 +22,10 @@ class GuideResponse(GuideBase):
     user_id: str
     status: str
     created_at: str
+
+class GuideRequestCreate(BaseModel):
+    guide_id: str = Field(min_length=1)
+    trip_date: str = Field(min_length=1)
+    destination: str = Field(min_length=1)
+    note: Optional[str] = None
+    customer_phone: Optional[str] = None

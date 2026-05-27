@@ -426,9 +426,38 @@ function setupSearch() {
 
 function openGoogleMaps(place) {
     if (!place || !place.lat || !place.lng) return;
-    var url = 'https://www.google.com/maps/search/?api=1&query=' +
-        encodeURIComponent(place.lat + ',' + place.lng);
-    window.open(url, '_blank');
+
+    var openDirections = function(originLatLng) {
+        var baseUrl = 'https://www.google.com/maps/dir/?api=1';
+        var destination = place.lat + ',' + place.lng;
+        var origin = originLatLng ? (originLatLng[0] + ',' + originLatLng[1]) : '';
+        var url = baseUrl +
+            '&destination=' + encodeURIComponent(destination) +
+            (origin ? '&origin=' + encodeURIComponent(origin) : '') +
+            '&travelmode=driving';
+        window.open(url, '_blank');
+    };
+
+    if (userLatLng && userLatLng.length === 2) {
+        openDirections(userLatLng);
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        openDirections(null);
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            var originLatLng = [position.coords.latitude, position.coords.longitude];
+            openDirections(originLatLng);
+        },
+        function() {
+            openDirections(null);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
 }
 
 function selectPlace(place) {

@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   initAdminSidebar();
   initProfileSave();
   initGuideRegisterForm();
+  initGuideHireActions();
+  await initGuideDashboard();
   initCheckoutData();
   initCheckoutPayment();
 });
@@ -501,10 +503,19 @@ function showToast(message, type) {
 
   var toast = document.createElement('div');
   toast.className = 'toast toast-' + type;
-  toast.innerHTML =
-    '<i class="bx ' + (icons[type] || icons.success) + ' toast-icon"></i>' +
-    '<span>' + message + '</span>' +
-    '<button class="toast-close">&times;</button>';
+  var iconEl = document.createElement('i');
+  iconEl.className = 'bx ' + (icons[type] || icons.success) + ' toast-icon';
+  
+  var spanEl = document.createElement('span');
+  spanEl.textContent = message;
+  
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'toast-close';
+  closeBtn.innerHTML = '&times;';
+
+  toast.appendChild(iconEl);
+  toast.appendChild(spanEl);
+  toast.appendChild(closeBtn);
 
   container.appendChild(toast);
 
@@ -751,12 +762,14 @@ function initGuideRegisterForm() {
     submitBtn.disabled = true;
 
     var data = {
-        name: document.getElementById('guideName').value,
-        experience_years: parseInt(document.getElementById('guideExp').value) || 0,
-        price_per_day: parseFloat(document.getElementById('guidePrice').value) || 0,
-        areas: Array.from(document.getElementById('guideAreas').selectedOptions).map(function(opt) { return opt.value; }),
-        languages: Array.from(document.getElementById('guideLanguages').selectedOptions).map(function(opt) { return opt.value; }),
-        bio: document.getElementById('guideBio').value
+        name: document.querySelector('input[name="guide_name"]') ? document.querySelector('input[name="guide_name"]').value : '',
+        experience_years: parseInt(document.querySelector('input[name="guide_experience"]').value, 10) || 0,
+        price_per_day: parseFloat(document.querySelector('input[name="guide_price"]').value) || 0,
+        areas: (document.querySelector('input[name="guide_areas"]').value || '').split(',').map(function(item) { return item.trim(); }).filter(Boolean),
+        languages: (document.querySelector('input[name="guide_languages"]').value || '').split(',').map(function(item) { return item.trim(); }).filter(Boolean),
+        bio: document.querySelector('textarea[name="guide_bio"]').value || '',
+        id_front_url: document.querySelector('input[name="guide_id_front"]').value || '',
+        id_back_url: document.querySelector('input[name="guide_id_back"]').value || ''
     };
 
     try {
@@ -778,6 +791,212 @@ function initGuideRegisterForm() {
         submitBtn.disabled = false;
     }
   });
+}
+
+function initGuideHireActions() {
+  var buttons = document.querySelectorAll('.btn-hire-guide');
+  if (buttons.length === 0) return;
+
+  var hireForm = document.getElementById('hireGuideForm');
+  if (hireForm) {
+    hireForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      await submitGuideHire();
+    });
+  }
+
+  buttons.forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      if (!isLoggedIn) {
+        showToast('Vui lòng đăng nhập để thuê hướng dẫn viên', 'warning');
+        setTimeout(function() { window.location.href = 'auth.html'; }, 1200);
+        return;
+      }
+
+      var guideId = btn.getAttribute('data-guide-id');
+      if (!guideId || guideId.indexOf('guide-demo') === 0) {
+        showToast('Demo: Hãy chọn hướng dẫn viên thật từ dữ liệu hệ thống', 'info');
+        return;
+      }
+      openHireGuideModal(guideId);
+    });
+  });
+}
+
+function openHireGuideModal(guideId) {
+  var modal = document.getElementById('hireGuideModal');
+  var idInput = document.getElementById('hireGuideId');
+  if (idInput) idInput.value = guideId || '';
+  if (modal) modal.classList.add('is-active');
+}
+
+async function submitGuideHire() {
+  var guideId = document.getElementById('hireGuideId').value;
+  var destination = document.getElementById('hireDestination').value.trim();
+  var tripDate = document.getElementById('hireTripDate').value;
+  var note = document.getElementById('hireNote').value.trim();
+
+  if (!guideId || !destination || !tripDate) {
+    showToast('Vui lòng nhập đầy đủ thông tin', 'error');
+    return;
+  }
+
+  var btn = document.querySelector('#hireGuideForm button[type="submit"]');
+  var originalText = btn ? btn.textContent : '';
+  if (btn) {
+    btn.textContent = 'Đang gửi...';
+    btn.disabled = true;
+  }
+
+  try {
+    var res = await fetchApi('/api/guides/requests', {
+      method: 'POST',
+      body: JSON.stringify({
+        guide_id: guideId,
+        trip_date: tripDate,
+        destination: destination,
+        note: note
+      })
+    });
+
+    if (res.ok) {
+      showToast('Đã gửi yêu cầu hướng dẫn viên', 'success');
+      closeHireModal();
+      document.getElementById('hireGuideForm').reset();
+    } else {
+      var err = await res.json();
+      showToast(err.detail || 'Không thể gửi yêu cầu', 'error');
+    }
+  } catch (e) {
+    showToast('Lỗi kết nối máy chủ', 'error');
+  } finally {
+    if (btn) {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+}
+
+function closeHireModal() {
+  var modal = document.getElementById('hireGuideModal');
+  if (modal) modal.classList.remove('is-active');
+}
+
+async function initGuideDashboard() {
+  var isGuideDashboard = window.location.pathname.endsWith('guide-dashboard.html');
+  if (!isGuideDashboard) return;
+
+  var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  if (!isLoggedIn) {
+    window.location.href = 'auth.html';
+    return;
+  }
+
+  try {
+    var meRes = await fetchApi('/api/users/me');
+    if (!meRes.ok) {
+      window.location.href = 'auth.html';
+      return;
+    }
+
+    var profile = await meRes.json();
+    if (!profile || profile.role !== 'guide') {
+      showToast('Tai khoan chua duoc duyet huong dan vien', 'warning');
+      setTimeout(function() { window.location.href = 'guides.html'; }, 1200);
+      return;
+    }
+  } catch (e) {
+    window.location.href = 'auth.html';
+    return;
+  }
+
+  try {
+    var dashboardRes = await fetchApi('/api/guides/me/dashboard');
+    if (dashboardRes.ok) {
+      var data = await dashboardRes.json();
+      setTextBySelector('#guideTripsMonth', String(data.stats && data.stats.trips_month || 0));
+      setTextBySelector('#guideEarningsMonth', formatCurrency(data.stats && data.stats.earnings_month || 0));
+      renderGuideHistory(data.history || []);
+    }
+  } catch (e) {}
+
+  try {
+    var reqRes = await fetchApi('/api/guides/me/requests');
+    if (reqRes.ok) {
+      var requests = await reqRes.json();
+      renderGuideRequests(requests || []);
+    }
+  } catch (e) {}
+}
+
+function renderGuideHistory(list) {
+  var container = document.getElementById('guideHistoryList');
+  var badge = document.getElementById('guideHistoryBadge');
+  if (!container) return;
+
+  if (!Array.isArray(list) || list.length === 0) {
+    container.innerHTML = '<div class="text-muted text-sm">Chua co chuyẹn nao.</div>';
+    if (badge) badge.textContent = '0 chuyến';
+    return;
+  }
+
+  if (badge) badge.textContent = list.length + ' chuyến';
+  container.innerHTML = list.map(function(item) {
+    return (
+      '<div class="guide-history-card">' +
+      '<h4>' + escapeHtml(item.tour_title || 'Tour') + '</h4>' +
+      '<div class="guide-meta">' +
+      '<span><i class="bx bx-map"></i> ' + escapeHtml(item.destination || '--') + '</span>' +
+      '<span><i class="bx bx-calendar"></i> ' + escapeHtml(item.trip_date || '--') + '</span>' +
+      '</div>' +
+      '<div class="guide-earn">Thu nhap: ' + formatCurrency(item.earning || 0) + '</div>' +
+      '</div>'
+    );
+  }).join('');
+}
+
+function renderGuideRequests(list) {
+  var container = document.getElementById('guideRequestsList');
+  var badge = document.getElementById('guideRequestsBadge');
+  var countEl = document.getElementById('guideRequestsCount');
+  if (!container) return;
+
+  if (!Array.isArray(list) || list.length === 0) {
+    container.innerHTML = '<div class="text-muted text-sm">Chua co yeu cau moi.</div>';
+    if (badge) {
+      badge.textContent = '0 yêu cầu';
+      badge.className = 'badge badge-success';
+    }
+    if (countEl) countEl.textContent = '0';
+    return;
+  }
+
+  if (badge) {
+    badge.textContent = list.length + ' yêu cầu';
+    badge.className = 'badge badge-warning';
+  }
+  if (countEl) countEl.textContent = String(list.length);
+
+  container.innerHTML = list.map(function(item) {
+    return (
+      '<div class="guide-request-card">' +
+      '<h4>' + escapeHtml(item.customer_name || 'Khach hang') + '</h4>' +
+      '<div class="guide-meta">' +
+      '<span><i class="bx bx-map"></i> ' + escapeHtml(item.destination || '--') + '</span>' +
+      '<span><i class="bx bx-calendar"></i> ' + escapeHtml(item.trip_date || '--') + '</span>' +
+      '</div>' +
+      '<div class="guide-meta">' +
+      '<span><i class="bx bx-phone"></i> ' + escapeHtml(item.customer_phone || '--') + '</span>' +
+      '</div>' +
+      '</div>'
+    );
+  }).join('');
+}
+
+function formatCurrency(value) {
+  if (value == null) return '--';
+  return new Intl.NumberFormat('vi-VN').format(value) + '₫';
 }
 
 function initCheckoutData() {

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang làm việc dành cho hướng dẫn viên SmartTravel.">
+    <title>Bảng điều khiển Hướng dẫn viên - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/guides.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="bg-light guide-dashboard">
+
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
+            <button class="mobile-menu-btn" aria-label="Menu"><i class="bx bx-menu"></i></button>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="tours.html" class="nav-link">Tour du lịch</a>
+                <a href="map.html" class="nav-link">Bản đồ</a>
+                <a href="promotions.html" class="nav-link">Khuyến mãi</a>
+                <a href="guides.html" class="nav-link">Thuê HDV</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="profile.html" class="user-avatar profile-initials" title="Trang cá nhân">ST</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-title-banner">
+        <div class="container">
+            <h1>Bảng điều khiển Hướng dẫn viên</h1>
+            <p class="text-muted">Quản lý chuyến đi, yêu cầu mới và thu nhập hàng tháng của bạn.</p>
+        </div>
+    </section>
+
+    <main class="container section">
+        <div class="guide-dashboard-grid">
+            <div class="card p-6">
+                <div class="dashboard-stat">
+                    <div class="icon-circle icon-circle-primary"><i class="bx bx-briefcase"></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Số chuyến đã làm trong tháng</p>
+                        <h2 class="stat-highlight" id="guideTripsMonth">0</h2>
+                        <p class="text-xs text-muted">Cập nhật theo lịch sử hoàn thành</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <div class="dashboard-stat">
+                    <div class="icon-circle icon-circle-success"><i class="bx bx-wallet"></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Thu nhập tháng này</p>
+                        <h2 class="stat-highlight" id="guideEarningsMonth">0₫</h2>
+                        <p class="text-xs text-muted">Tổng tiền đã ghi nhận</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <div class="dashboard-stat">
+                    <div class="icon-circle icon-circle-warning"><i class="bx bx-bell"></i></div>
+                    <div>
+                        <p class="text-muted text-sm">Yêu cầu chuyến mới</p>
+                        <h2 class="stat-highlight" id="guideRequestsCount">0</h2>
+                        <p class="text-xs text-muted">Cần phản hồi sớm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-dashboard-columns">
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold">Yêu cầu chuyến mới</h3>
+                    <span class="badge badge-warning" id="guideRequestsBadge">Đang tải...</span>
+                </div>
+                <div class="guide-request-list" id="guideRequestsList"></div>
+            </div>
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold">Lịch sử chuyến đã làm</h3>
+                    <span class="badge badge-info" id="guideHistoryBadge">Đang tải...</span>
+                </div>
+                <div class="guide-history-list" id="guideHistoryList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
