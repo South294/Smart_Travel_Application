@@ -47,57 +47,57 @@
 
                 <div class="filter-group">
                     <label class="form-label">Điểm đến</label>
-                    <input type="text" class="form-control" placeholder="Tìm thành phố, quốc gia...">
+                    <input type="text" class="form-control" id="tourFilterDestination" placeholder="Tìm thành phố, quốc gia...">
                 </div>
 
                 <div class="filter-group">
                     <label class="form-label">Loại tour</label>
-                    <div class="filter-chips">
-                        <span class="filter-chip active">Tất cả</span>
-                        <span class="filter-chip">Biển đảo</span>
-                        <span class="filter-chip">Núi rừng</span>
-                        <span class="filter-chip">Văn hóa</span>
-                        <span class="filter-chip">Ẩm thực</span>
-                        <span class="filter-chip">Phiêu lưu</span>
+                    <div class="filter-chips" id="tourFilterCategories">
+                        <span class="filter-chip active" data-value="Tất cả">Tất cả</span>
+                        <span class="filter-chip" data-value="Biển đảo">Biển đảo</span>
+                        <span class="filter-chip" data-value="Núi rừng">Núi rừng</span>
+                        <span class="filter-chip" data-value="Văn hóa">Văn hóa</span>
+                        <span class="filter-chip" data-value="Ẩm thực">Ẩm thực</span>
+                        <span class="filter-chip" data-value="Phiêu lưu">Phiêu lưu</span>
                     </div>
                 </div>
 
                 <div class="filter-group">
                     <label class="form-label">Khoảng giá (VNĐ)</label>
                     <div class="flex gap-4 items-center">
-                        <input type="number" class="form-control" placeholder="Từ">
+                        <input type="number" class="form-control" id="tourFilterPriceMin" placeholder="Từ">
                         <span class="text-muted">-</span>
-                        <input type="number" class="form-control" placeholder="Đến">
+                        <input type="number" class="form-control" id="tourFilterPriceMax" placeholder="Đến">
                     </div>
                 </div>
 
                 <div class="filter-group">
                     <label class="form-label">Thời gian</label>
-                    <select class="form-control">
-                        <option>Tất cả</option>
-                        <option>1-2 ngày</option>
-                        <option>3-4 ngày</option>
-                        <option>5-7 ngày</option>
-                        <option>Trên 7 ngày</option>
+                    <select class="form-control" id="tourFilterDuration">
+                        <option value="all">Tất cả</option>
+                        <option value="1-2">1-2 ngày</option>
+                        <option value="3-4">3-4 ngày</option>
+                        <option value="5-7">5-7 ngày</option>
+                        <option value="7+">Trên 7 ngày</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label class="form-label">Đánh giá</label>
-                    <div class="checkbox-list">
-                        <label class="checkbox-item"><input type="checkbox"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i></span> 5 sao</label>
-                        <label class="checkbox-item"><input type="checkbox"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bx-star"></i></span> 4 sao trở lên</label>
-                        <label class="checkbox-item"><input type="checkbox"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bx-star"></i><i class="bx bx-star"></i></span> 3 sao trở lên</label>
+                    <div class="checkbox-list" id="tourFilterRatings">
+                        <label class="checkbox-item"><input type="checkbox" value="5"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i></span> 5 sao</label>
+                        <label class="checkbox-item"><input type="checkbox" value="4"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bx-star"></i></span> 4 sao trở lên</label>
+                        <label class="checkbox-item"><input type="checkbox" value="3"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bx-star"></i><i class="bx bx-star"></i></span> 3 sao trở lên</label>
                     </div>
                 </div>
 
-                <button class="btn btn-primary w-full mt-4">Áp dụng bộ lọc</button>
-                <button class="btn btn-ghost w-full mt-2">Xóa bộ lọc</button>
+                <button class="btn btn-primary w-full mt-4" id="tourFilterApply">Áp dụng bộ lọc</button>
+                <button class="btn btn-ghost w-full mt-2" id="tourFilterReset">Xóa bộ lọc</button>
             </aside>
 
             <main class="tours-list">
                 <div class="flex justify-between items-center mb-4">
-                    <p class="text-muted">Hiển thị <strong>24</strong> kết quả</p>
+                    <p class="text-muted">Hiển thị <strong id="toursResultCount">24</strong> kết quả</p>
                     <div class="flex gap-2 items-center">
                         <select class="form-control sort-select">
                             <option>Đánh giá tốt nhất</option>
@@ -108,11 +108,11 @@
                     </div>
                 </div>
 
-                <div class="grid list-grid">
+                <div class="grid list-grid" id="toursListGrid">
 
-                    <div class="card card-interactive tour-card list-card">
+                    <div class="card card-interactive tour-card list-card" data-title="Mộc Châu Mộng Mơ - Tour 3N2Đ Siêu Cấp" data-location="Sơn La, Việt Nam" data-category="Núi rừng" data-duration="3" data-price="2800000" data-rating="4.9">
                         <div class="tour-img">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/S%E1%BB%91ng_l%C6%B0ng_kh%E1%BB%A7ng_long_T%C3%A0_X%C3%B9a.jpg/960px-S%E1%BB%91ng_l%C6%B0ng_kh%E1%BB%A7ng_long_T%C3%A0_X%C3%B9a.jpg" alt="Mộc Châu">
+                            <img src="https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=800&q=80" alt="Mộc Châu">
                             <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.9 (120)</div>
                             <div class="tour-badge-left badge badge-danger"><i class="bx bxs-hot"></i> Best Seller</div>
                         </div>
@@ -129,14 +129,14 @@
                                     <span class="price-old">3.500.000₫</span>
                                     <div class="price-large">2.800.000₫</div>
                                 </div>
-                                <a href="checkout.html?title=M%E1%BB%99c+Ch%C3%A2u+M%E1%BB%99ng+M%C6%A1+-+Tour+3N2%C4%90&price=2800000&original=3500000&duration=3N2%C4%90&img=https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/S%E1%BB%91ng_l%C6%B0ng_kh%E1%BB%A7ng_long_T%C3%A0_X%C3%B9a.jpg/960px-S%E1%BB%91ng_l%C6%B0ng_kh%E1%BB%A7ng_long_T%C3%A0_X%C3%B9a.jpg" class="btn btn-primary">Đặt ngay</a>
+                                <a href="checkout.html?title=M%E1%BB%99c+Ch%C3%A2u+M%E1%BB%99ng+M%C6%A1+-+Tour+3N2%C4%90&price=2800000&original=3500000&duration=3N2%C4%90&img=https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card card-interactive tour-card list-card">
+                    <div class="card card-interactive tour-card list-card" data-title="Du thuyền Vịnh Hạ Long 5 Sao đẳng cấp" data-location="Quảng Ninh, Việt Nam" data-category="Văn hóa" data-duration="4" data-price="4200000" data-rating="4.8">
                         <div class="tour-img">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Ha_Long_Bay_in_2019.jpg/960px-Ha_Long_Bay_in_2019.jpg" alt="Hạ Long">
+                            <img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" alt="Hạ Long">
                             <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.8 (95)</div>
                         </div>
                         <div class="tour-info">
@@ -151,14 +151,14 @@
                                 <div>
                                     <div class="price-large">4.200.000₫</div>
                                 </div>
-                                <a href="checkout.html?title=Du+thuy%E1%BB%81n+V%E1%BB%8Bnh+H%E1%BA%A1+Long+5+Sao&price=4200000&duration=4N3%C4%90&img=https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Ha_Long_Bay_in_2019.jpg/960px-Ha_Long_Bay_in_2019.jpg" class="btn btn-primary">Đặt ngay</a>
+                                <a href="checkout.html?title=Du+thuy%E1%BB%81n+V%E1%BB%8Bnh+H%E1%BA%A1+Long+5+Sao&price=4200000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card card-interactive tour-card list-card">
+                    <div class="card card-interactive tour-card list-card" data-title="Combo Cát Bà - Đảo Ngọc 4N3Đ" data-location="Hải Phòng, Việt Nam" data-category="Biển đảo" data-duration="4" data-price="5500000" data-rating="4.7">
                         <div class="tour-img">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Cat_Ba_town.JPG/960px-Cat_Ba_town.JPG" alt="Cát Bà">
+                            <img src="https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=800&q=80" alt="Cát Bà">
                             <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.7 (88)</div>
                             <div class="tour-badge-left badge badge-danger"><i class="bx bxs-discount"></i> Giảm 25%</div>
                         </div>
@@ -175,14 +175,14 @@
                                     <span class="price-old">7.200.000₫</span>
                                     <div class="price-large">5.500.000₫</div>
                                 </div>
-                                <a href="checkout.html?title=Combo+C%C3%A1t+B%C3%A0+-+%C4%90%E1%BA%A3o+Ng%E1%BB%8Dc+4N3%C4%90&price=5500000&original=7200000&duration=4N3%C4%90&img=https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Cat_Ba_town.JPG/960px-Cat_Ba_town.JPG" class="btn btn-primary">Đặt ngay</a>
+                                <a href="checkout.html?title=Combo+C%C3%A1t+B%C3%A0+-+%C4%90%E1%BA%A3o+Ng%E1%BB%8Dc+4N3%C4%90&price=5500000&original=7200000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card card-interactive tour-card list-card">
+                    <div class="card card-interactive tour-card list-card" data-title="Trekking Sapa - Chinh phục Fansipan" data-location="Lào Cai, Việt Nam" data-category="Phiêu lưu" data-duration="3" data-price="3200000" data-rating="4.9">
                         <div class="tour-img">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Thacbac3.jpg/960px-Thacbac3.jpg" alt="Sapa">
+                            <img src="https://images.unsplash.com/photo-1509060464153-44667396260f?auto=format&fit=crop&w=800&q=80" alt="Sapa">
                             <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.9 (156)</div>
                             <div class="tour-badge-left badge badge-warning"><i class="bx bxs-hot"></i> Hot</div>
                         </div>
@@ -198,14 +198,14 @@
                                 <div>
                                     <div class="price-large">3.200.000₫</div>
                                 </div>
-                                <a href="checkout.html?title=Trekking+Sapa+-+Chinh+ph%E1%BB%A5c+Fansipan&price=3200000&duration=3N2%C4%90&img=https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Thacbac3.jpg/960px-Thacbac3.jpg" class="btn btn-primary">Đặt ngay</a>
+                                <a href="checkout.html?title=Trekking+Sapa+-+Chinh+ph%E1%BB%A5c+Fansipan&price=3200000&duration=3N2%C4%90&img=https://images.unsplash.com/photo-1509060464153-44667396260f?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card card-interactive tour-card list-card">
+                    <div class="card card-interactive tour-card list-card" data-title="Tam Đảo All-Inclusive 2N1Đ" data-location="Vĩnh Phúc, Việt Nam" data-category="Nghỉ dưỡng" data-duration="2" data-price="6800000" data-rating="4.6">
                         <div class="tour-img">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Th%E1%BB%8B_tr%E1%BA%A5n_Tam_%C4%90%E1%BA%A3o_-_NKS.jpg/960px-Th%E1%BB%8B_tr%E1%BA%A5n_Tam_%C4%90%E1%BA%A3o_-_NKS.jpg" alt="Tam Đảo">
+                            <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=800&q=80" alt="Tam Đảo">
                             <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.6 (74)</div>
                         </div>
                         <div class="tour-info">
@@ -220,7 +220,7 @@
                                 <div>
                                     <div class="price-large">6.800.000₫</div>
                                 </div>
-                                <a href="checkout.html?title=Tam+%C4%90%E1%BA%A3o+All-Inclusive+2N1%C4%90&price=6800000&duration=2N1%C4%90&img=https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Th%E1%BB%8B_tr%E1%BA%A5n_Tam_%C4%90%E1%BA%A3o_-_NKS.jpg/960px-Th%E1%BB%8B_tr%E1%BA%A5n_Tam_%C4%90%E1%BA%A3o_-_NKS.jpg" class="btn btn-primary">Đặt ngay</a>
+                                <a href="checkout.html?title=Tam+%C4%90%E1%BA%A3o+All-Inclusive+2N1%C4%90&price=6800000&duration=2N1%C4%90&img=https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
                             </div>
                         </div>
                     </div>
@@ -269,5 +269,6 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/tours.js"></script>
 </body>
 </html>

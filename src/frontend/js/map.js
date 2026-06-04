@@ -17,7 +17,7 @@ var PLACES_DATA = [
         rating: 4.7,
         reviews: 1800,
         address: "Nguyễn Văn Huyên, Cầu Giấy, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Vietnam_Museum_of_Ethnology.jpg/640px-Vietnam_Museum_of_Ethnology.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Vietnam_Museum_of_Ethnology_01.jpg",
         desc: "Không gian văn hóa 54 dân tộc, kiến trúc độc đáo",
         bestMonths: "Tháng 9 - 4",
         tip: "Nên ghé sáng sớm để tránh đông và nắng." 
@@ -31,7 +31,7 @@ var PLACES_DATA = [
         rating: 4.8,
         reviews: 4500,
         address: "58 Quốc Tử Giám, Đống Đa, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Hanoi_Temple_of_Literature_%28cropped%29.jpg/640px-Hanoi_Temple_of_Literature_%28cropped%29.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Hanoi_Temple_of_Literature.jpg",
         desc: "Trường đại học đầu tiên của Việt Nam",
         bestMonths: "Tháng 10 - 3",
         tip: "Nên mang theo máy ảnh, góc chụp rất đẹp." 
@@ -45,7 +45,7 @@ var PLACES_DATA = [
         rating: 4.6,
         reviews: 3400,
         address: "19C Hoàng Diệu, Ba Đình, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Doan_Mon_Gate.jpg/640px-Doan_Mon_Gate.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Hanoi_citadel.jpg",
         desc: "Di sản Văn hóa Thế giới UNESCO",
         bestMonths: "Tháng 9 - 2",
         tip: "Dành 2-3 giờ để khám phá trọn vẹn." 
@@ -59,7 +59,7 @@ var PLACES_DATA = [
         rating: 4.5,
         reviews: 2100,
         address: "40 Nhà Chung, Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Cathedral_of_Hanoi.jpg/640px-Cathedral_of_Hanoi.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e2/St_Joseph_Cathedral_Hanoi.jpg",
         desc: "Nhà thờ kiến trúc Gothic giữa lòng Hà Nội",
         bestMonths: "Tháng 11 - 2",
         tip: "Buổi tối lên đèn rất đẹp, thích hợp dạo bộ." 
@@ -73,7 +73,7 @@ var PLACES_DATA = [
         rating: 4.9,
         reviews: 5200,
         address: "Q. Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Thap_Rua.jpg/640px-Thap_Rua.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/TurtleTower_HoanKiemLake_Hanoi.jpg",
         desc: "Phố đi bộ cuối tuần, không gian thư giãn",
         bestMonths: "Tháng 9 - 4",
         tip: "Đi chiều tối để cảm nhận nhịp sống Hà Nội." 
@@ -87,7 +87,7 @@ var PLACES_DATA = [
         rating: 4.6,
         reviews: 2600,
         address: "Time City, Hai Bà Trưng, Hà Nội",
-        image: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?auto=format&fit=crop&w=900&q=80",
+        image: "https://images.unsplash.com/photo-1508817628294-5a453fa0b8fb?auto=format&fit=crop&w=640&q=80",
         desc: "Khu vui chơi trong nhà, thủy cung lớn",
         bestMonths: "Tháng 5 - 9",
         tip: "Phù hợp gia đình, tránh nắng nóng." 
@@ -101,7 +101,7 @@ var PLACES_DATA = [
         rating: 4.4,
         reviews: 1900,
         address: "Bưởi, Ba Đình, Hà Nội",
-        image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+        image: "https://images.unsplash.com/photo-1543716627-839b54c40519?auto=format&fit=crop&w=640&q=80",
         desc: "Công viên xanh, vườn thú, khu vui chơi gia đình",
         bestMonths: "Tháng 9 - 4",
         tip: "Cuối tuần nên đi sớm để tránh đông." 
@@ -115,7 +115,7 @@ var PLACES_DATA = [
         rating: 4.7,
         reviews: 3100,
         address: "Q. Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Old_Quarter_Street_Scene_-_Hanoi_-_Vietnam_%2848256301206%29.jpg/640px-Old_Quarter_Street_Scene_-_Hanoi_-_Vietnam_%2848256301206%29.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Old_Quarter%2C_Hanoi%2C_Vietnam_%285246300582%29.jpg",
         desc: "Nhiều hoạt động vui chơi, ẩm thực, mua sắm",
         bestMonths: "Tháng 10 - 3",
         tip: "Buổi tối có phố đi bộ và chợ đêm." 
@@ -129,7 +129,7 @@ var PLACES_DATA = [
         rating: 4.4,
         reviews: 1500,
         address: "14 Chả Cá, Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Cha_Ca_La_Vong.jpg/640px-Cha_Ca_La_Vong.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Grilled_fish_%40_Cha_Ca_La_Vong.jpg",
         desc: "Món chả cá đặc sản nổi tiếng nhất Hà Nội",
         bestMonths: "Tháng 10 - 2",
         tip: "Đi nhóm đông để thưởng thức trọn vẹn." 
@@ -143,7 +143,7 @@ var PLACES_DATA = [
         rating: 4.6,
         reviews: 1800,
         address: "61 Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Pho-Beef-Noodles-2008.jpg/640px-Pho-Beef-Noodles-2008.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Beef_pho.jpg",
         desc: "Phở bò truyền thống nổi tiếng Hà Nội",
         bestMonths: "Tháng 11 - 2",
         tip: "Buổi sáng sớm là ngon nhất." 
@@ -157,7 +157,7 @@ var PLACES_DATA = [
         rating: 4.5,
         reviews: 2400,
         address: "24 Lê Văn Hưu, Hai Bà Trưng, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Bun_cha_in_Hanoi.jpg/640px-Bun_cha_in_Hanoi.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/2/25/Bun_cha.jpg",
         desc: "Quán Obama từng ghé thăm năm 2016",
         bestMonths: "Tháng 9 - 4",
         tip: "Nên đặt bàn trước giờ trưa." 
@@ -171,7 +171,7 @@ var PLACES_DATA = [
         rating: 4.3,
         reviews: 980,
         address: "66 Tô Hiến Thành, Hai Bà Trưng, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Banh_cuon_Viet_Nam.jpg/640px-Banh_cuon_Viet_Nam.jpg",
+        image: "https://upload.wikimedia.org/wikipedia/commons/7/75/Banh_Cuon.jpg",
         desc: "Bánh cuốn nóng truyền thống gia truyền",
         bestMonths: "Tháng 10 - 2",
         tip: "Hợp đi buổi sáng hoặc chiều mát." 

@@ -22,10 +22,10 @@ Một ứng dụng du lịch toàn diện cung cấp tính năng đặt tour, b�
    MONGODB_DB=smart_travel
    ```
 4. Chạy backend (trong thư mục `src/backend`):
-   ```powershell
-   pip install -r requirements.txt
-   python main.py
-   ```
+    ```powershell
+    pip install -r requirements.txt
+    python main.py
+    ```
    Hoặc:
    ```powershell
    uvicorn main:app --reload
@@ -39,6 +39,12 @@ docker exec -it smart-travel-mongo mongosh
 show dbs
 use smart_travel
 show collections
+```
+
+### Seed dữ liệu demo (khuyến nghị cho đồ án)
+Trong thư mục `src/backend`:
+```powershell
+python seed_db.py
 ```
 
 ### Frontend
@@ -56,3 +62,14 @@ Vui lòng kiểm tra src/frontend/README.md hoặc đơn giản là mở file in
 - Thanh toán
 - Bảng điều khiển dành cho quản trị viên
 - Đề xuất chuyến đi thông minh (dự kiến)
+
+## Tài khoản demo
+- Admin: lấy từ ENV `ADMIN_EMAIL` / `ADMIN_PASSWORD` (mặc định: `admin@smarttravel.vn` / `admin123`)
+- User: `son.vu@gmail.com` / `123456`
+- User: `nam.nguyen@gmail.com` / `123456`
+
+## Dữ liệu demo có sẵn
+- Tours: danh sách tour mẫu (biển, núi, văn hóa, trekking)
+- Bookings: 3 đơn mẫu (confirmed/pending/cancelled)
+- Guides: 1 pending + 1 approved
+- Settings: cấu hình admin mặc định
