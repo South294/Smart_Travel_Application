@@ -8,7 +8,7 @@ env.bak/
 venv.bak/
 
 # MongoDB local data
-db/
+/db/
 
 # Python
 __pycache__/
