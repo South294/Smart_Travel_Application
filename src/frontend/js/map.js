@@ -17,7 +17,7 @@ var PLACES_DATA = [
         rating: 4.7,
         reviews: 1800,
         address: "Nguyễn Văn Huyên, Cầu Giấy, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Vietnam_Museum_of_Ethnology_01.jpg",
+        image: "images/museum_ethnology.png",
         desc: "Không gian văn hóa 54 dân tộc, kiến trúc độc đáo",
         bestMonths: "Tháng 9 - 4",
         tip: "Nên ghé sáng sớm để tránh đông và nắng." 
@@ -31,7 +31,7 @@ var PLACES_DATA = [
         rating: 4.8,
         reviews: 4500,
         address: "58 Quốc Tử Giám, Đống Đa, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Hanoi_Temple_of_Literature.jpg",
+        image: "images/temple_literature.png",
         desc: "Trường đại học đầu tiên của Việt Nam",
         bestMonths: "Tháng 10 - 3",
         tip: "Nên mang theo máy ảnh, góc chụp rất đẹp." 
@@ -45,7 +45,7 @@ var PLACES_DATA = [
         rating: 4.6,
         reviews: 3400,
         address: "19C Hoàng Diệu, Ba Đình, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Hanoi_citadel.jpg",
+        image: "images/thang_long_citadel.png",
         desc: "Di sản Văn hóa Thế giới UNESCO",
         bestMonths: "Tháng 9 - 2",
         tip: "Dành 2-3 giờ để khám phá trọn vẹn." 
@@ -59,7 +59,7 @@ var PLACES_DATA = [
         rating: 4.5,
         reviews: 2100,
         address: "40 Nhà Chung, Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e2/St_Joseph_Cathedral_Hanoi.jpg",
+        image: "images/cathedral_hanoi.png",
         desc: "Nhà thờ kiến trúc Gothic giữa lòng Hà Nội",
         bestMonths: "Tháng 11 - 2",
         tip: "Buổi tối lên đèn rất đẹp, thích hợp dạo bộ." 
@@ -73,7 +73,7 @@ var PLACES_DATA = [
         rating: 4.9,
         reviews: 5200,
         address: "Q. Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/TurtleTower_HoanKiemLake_Hanoi.jpg",
+        image: "images/hoan_kiem_lake.png",
         desc: "Phố đi bộ cuối tuần, không gian thư giãn",
         bestMonths: "Tháng 9 - 4",
         tip: "Đi chiều tối để cảm nhận nhịp sống Hà Nội." 
@@ -115,7 +115,7 @@ var PLACES_DATA = [
         rating: 4.7,
         reviews: 3100,
         address: "Q. Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Old_Quarter%2C_Hanoi%2C_Vietnam_%285246300582%29.jpg",
+        image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=640&q=80",
         desc: "Nhiều hoạt động vui chơi, ẩm thực, mua sắm",
         bestMonths: "Tháng 10 - 3",
         tip: "Buổi tối có phố đi bộ và chợ đêm." 
@@ -129,7 +129,7 @@ var PLACES_DATA = [
         rating: 4.4,
         reviews: 1500,
         address: "14 Chả Cá, Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Grilled_fish_%40_Cha_Ca_La_Vong.jpg",
+        image: "https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?auto=format&fit=crop&w=640&q=80",
         desc: "Món chả cá đặc sản nổi tiếng nhất Hà Nội",
         bestMonths: "Tháng 10 - 2",
         tip: "Đi nhóm đông để thưởng thức trọn vẹn." 
@@ -143,7 +143,7 @@ var PLACES_DATA = [
         rating: 4.6,
         reviews: 1800,
         address: "61 Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Beef_pho.jpg",
+        image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=640&q=80",
         desc: "Phở bò truyền thống nổi tiếng Hà Nội",
         bestMonths: "Tháng 11 - 2",
         tip: "Buổi sáng sớm là ngon nhất." 
@@ -157,7 +157,7 @@ var PLACES_DATA = [
         rating: 4.5,
         reviews: 2400,
         address: "24 Lê Văn Hưu, Hai Bà Trưng, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/2/25/Bun_cha.jpg",
+        image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=640&q=80",
         desc: "Quán Obama từng ghé thăm năm 2016",
         bestMonths: "Tháng 9 - 4",
         tip: "Nên đặt bàn trước giờ trưa." 
@@ -171,7 +171,7 @@ var PLACES_DATA = [
         rating: 4.3,
         reviews: 980,
         address: "66 Tô Hiến Thành, Hai Bà Trưng, Hà Nội",
-        image: "https://upload.wikimedia.org/wikipedia/commons/7/75/Banh_Cuon.jpg",
+        image: "https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=640&q=80",
         desc: "Bánh cuốn nóng truyền thống gia truyền",
         bestMonths: "Tháng 10 - 2",
         tip: "Hợp đi buổi sáng hoặc chiều mát." 
