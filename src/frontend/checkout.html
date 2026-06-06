@@ -54,22 +54,26 @@
                     <p class="text-muted text-sm mb-4">Vui lòng nhập đúng thông tin như trên giấy tờ tùy thân.</p>
                     <div class="form-group">
                         <label class="form-label">Họ và tên người đại diện</label>
-                        <input type="text" class="form-control" placeholder="Nhập họ tên như trên CMND/CCCD">
+                        <input type="text" class="form-control" id="checkoutContactName" placeholder="Nhập họ tên như trên CMND/CCCD">
                     </div>
                     <div class="grid params-grid">
                         <div class="form-group">
                             <label class="form-label">Email liên hệ</label>
-                            <input type="email" class="form-control" placeholder="Để nhận vé và hóa đơn">
+                            <input type="email" class="form-control" id="checkoutContactEmail" placeholder="Để nhận vé và hóa đơn">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control" placeholder="Liên lạc trong quá trình đi tour">
+                            <input type="tel" class="form-control" id="checkoutContactPhone" placeholder="Liên lạc trong quá trình đi tour" required>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày khởi hành</label>
+                        <input type="date" class="form-control" id="checkoutTravelDate" required>
                     </div>
                     <div class="grid params-grid">
                         <div class="form-group">
                             <label class="form-label">Số hành khách người lớn</label>
-                            <select class="form-control">
+                            <select class="form-control" id="checkoutAdults">
                                 <option>1 người lớn</option>
                                 <option selected>2 người lớn</option>
                                 <option>3 người lớn</option>
@@ -78,24 +82,43 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số trẻ em (dưới 12 tuổi)</label>
-                            <select class="form-control">
+                            <select class="form-control" id="checkoutChildren">
                                 <option selected>0 trẻ em</option>
                                 <option>1 trẻ em</option>
                                 <option>2 trẻ em</option>
                             </select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="checkoutNote" rows="3" placeholder="Yêu cầu đặc biệt, lưu ý sức khỏe, ăn kiêng..."></textarea>
+                    </div>
                 </div>
 
                 <div class="card p-6 mb-4 insurance-card">
                     <h2 class="font-bold mb-2 flex items-center gap-2"><i class="bx bx-shield-quarter text-primary"></i> Bảo hiểm du lịch thông minh</h2>
                     <label class="flex items-start gap-4 mt-4">
-                        <input type="checkbox" class="insurance-checkbox" checked>
+                        <input type="checkbox" class="insurance-checkbox" id="checkoutInsurance" checked>
                         <div>
                             <h4 class="font-bold text-primary">Gói Bảo Hiểm Toàn Diện (+150.000₫/người)</h4>
                             <p class="text-muted text-sm mt-1">Bồi thường lên đến 500.000.000₫ cho các sự cố: hủy chuyến, thất lạc hành lý, tai nạn cá nhân. Hành trình an tâm - Trải nghiệm trọn vẹn.</p>
                         </div>
                     </label>
+                </div>
+
+                <div class="card p-6 mb-4">
+                    <h2 class="font-bold mb-2 flex items-center gap-2"><i class="bx bx-user-voice text-primary"></i> Hướng dẫn viên bản địa (tùy chọn)</h2>
+                    <p class="text-muted text-sm mb-4">Chọn hướng dẫn viên phù hợp hoặc bỏ qua nếu bạn tự túc.</p>
+                    <div class="form-group">
+                        <label class="form-label">Chọn hướng dẫn viên</label>
+                        <select class="form-control" id="checkoutGuideSelect">
+                            <option value="">Không cần hướng dẫn viên</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ghi chú cho hướng dẫn viên</label>
+                        <textarea class="form-control" id="checkoutGuideNote" rows="3" placeholder="Ví dụ: Có trẻ em/ người lớn tuổi, ưu tiên lịch nhẹ..."></textarea>
+                    </div>
                 </div>
 
                 <div class="card p-6 payment-methods">
@@ -165,17 +188,21 @@
                         <span id="checkoutAdultPrice">--</span>
                     </div>
                     <div class="summary-line">
+                        <span class="text-muted" id="checkoutChildrenLabel">Trẻ em x0</span>
+                        <span id="checkoutChildrenPrice">--</span>
+                    </div>
+                    <div class="summary-line">
                         <span class="text-muted">Bảo hiểm toàn diện</span>
                         <span id="checkoutInsurancePrice">300.000₫</span>
                     </div>
                     <div class="summary-line">
                         <span class="text-muted">Voucher giảm giá</span>
-                        <span class="text-success">-200.000₫</span>
+                        <span class="text-success" id="checkoutVoucherValue">--</span>
                     </div>
 
                     <div class="form-group flex gap-2 mt-4 pb-4 border-b">
-                        <input type="text" class="form-control" placeholder="Mã giảm giá">
-                        <button class="btn btn-outline">Áp dụng</button>
+                        <input type="text" class="form-control" id="checkoutVoucher" placeholder="Mã giảm giá">
+                        <button class="btn btn-outline" type="button" id="checkoutVoucherApply">Áp dụng</button>
                     </div>
 
                     <div class="summary-total mb-4">

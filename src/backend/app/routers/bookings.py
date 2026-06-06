@@ -56,7 +56,15 @@ async def get_my_bookings(current_user: dict = Depends(get_current_user)):
     cursor = db.bookings.find({"user_id": current_user["id"]})
     bookings = []
     async for doc in cursor:
-        bookings.append(serialize_booking(doc))
+        booking = serialize_booking(doc)
+        tour_title = None
+        if booking.get("tour_id"):
+            tour = await db.tours.find_one({"_id": validate_object_id(booking["tour_id"])})
+            if tour:
+                tour_title = tour.get("title")
+        if tour_title:
+            booking["tour_title"] = tour_title
+        bookings.append(booking)
     return bookings
 
 @router.get("/{id}", response_model=BookingResponse)

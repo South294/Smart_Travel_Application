@@ -39,33 +39,39 @@ async def seed_database():
     await db.guides.create_index("status")
     print("Indexes created.")
 
+    admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@smarttravel.vn")
+    admin_user = await db.users.find_one({"email": admin_email})
+    if not admin_user:
+        await db.users.insert_one({
+            "email": admin_email,
+            "password_hash": hash_pw(admin_password),
+            "full_name": "Admin SmartTravel",
+            "phone": "0901000000",
+            "birth_date": "1990-01-15",
+            "gender": "nam",
+            "address": "Hà Nội",
+            "role": "admin",
+            "preferences": [],
+            "custom_preferences": [],
+            "saved_vouchers": [],
+            "settings": {
+                "email_notifications": True,
+                "sms_notifications": False,
+                "ai_personalization": True,
+                "language": "vi"
+            },
+            "avatar_url": "",
+            "created_at": datetime.utcnow().isoformat()
+        })
+        print("Admin seeded.")
+    else:
+        print("Admin already exists.")
+
     users_count = await db.users.count_documents({})
     if users_count == 0:
         print("Seeding users...")
-        admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
-        admin_email = os.getenv("ADMIN_EMAIL", "admin@smarttravel.vn")
         users = [
-            {
-                "email": admin_email,
-                "password_hash": hash_pw(admin_password),
-                "full_name": "Admin SmartTravel",
-                "phone": "0901000000",
-                "birth_date": "1990-01-15",
-                "gender": "nam",
-                "address": "Hà Nội",
-                "role": "admin",
-                "preferences": [],
-                "custom_preferences": [],
-                "saved_vouchers": [],
-                "settings": {
-                    "email_notifications": True,
-                    "sms_notifications": False,
-                    "ai_personalization": True,
-                    "language": "vi"
-                },
-                "avatar_url": "",
-                "created_at": datetime.utcnow().isoformat()
-            },
             {
                 "email": "son.vu@gmail.com",
                 "password_hash": hash_pw("123456"),
@@ -110,7 +116,7 @@ async def seed_database():
             }
         ]
         await db.users.insert_many(users)
-        print(f"Users seeded: {len(users)} records (admin + 2 users).")
+        print(f"Users seeded: {len(users)} records (2 users).")
     else:
         print("Users already exist.")
 
@@ -359,6 +365,60 @@ async def seed_database():
         print("Seeding guides...")
         son_user = await db.users.find_one({"email": "son.vu@gmail.com"})
         extra_user = await db.users.find_one({"email": "nam.nguyen@gmail.com"})
+        demo_users = []
+
+        if not son_user:
+            demo_users.append({
+                "email": "guide.son@smarttravel.vn",
+                "password_hash": hash_pw("123456"),
+                "full_name": "Vũ Văn Sơn",
+                "phone": "0909009001",
+                "birth_date": "1992-02-18",
+                "gender": "nam",
+                "address": "Sơn La",
+                "role": "user",
+                "preferences": [],
+                "custom_preferences": [],
+                "saved_vouchers": [],
+                "settings": {
+                    "email_notifications": True,
+                    "sms_notifications": False,
+                    "ai_personalization": True,
+                    "language": "vi"
+                },
+                "avatar_url": "",
+                "created_at": datetime.utcnow().isoformat()
+            })
+
+        if not extra_user:
+            demo_users.append({
+                "email": "guide.nam@smarttravel.vn",
+                "password_hash": hash_pw("123456"),
+                "full_name": "Nguyễn Thanh Nam",
+                "phone": "0909009002",
+                "birth_date": "1990-09-10",
+                "gender": "nam",
+                "address": "Ninh Bình",
+                "role": "user",
+                "preferences": [],
+                "custom_preferences": [],
+                "saved_vouchers": [],
+                "settings": {
+                    "email_notifications": True,
+                    "sms_notifications": True,
+                    "ai_personalization": True,
+                    "language": "vi"
+                },
+                "avatar_url": "",
+                "created_at": datetime.utcnow().isoformat()
+            })
+
+        if demo_users:
+            await db.users.insert_many(demo_users)
+
+        son_user = son_user or await db.users.find_one({"email": "guide.son@smarttravel.vn"})
+        extra_user = extra_user or await db.users.find_one({"email": "guide.nam@smarttravel.vn"})
+
         guides = []
         if son_user:
             guides.append({
@@ -371,7 +431,7 @@ async def seed_database():
                 "bio": "Hướng dẫn viên chuyên tour trekking Miền Bắc, 5 năm kinh nghiệm dẫn đoàn.",
                 "id_front_url": "",
                 "id_back_url": "",
-                "status": "pending",
+                "status": "approved",
                 "created_at": datetime.utcnow().isoformat()
             })
         if extra_user:
@@ -381,7 +441,7 @@ async def seed_database():
                 "experience_years": 3,
                 "price_per_day": 600000,
                 "areas": ["Hà Nội", "Ninh Bình"],
-                "languages": ["Tiếng Việt"],
+                "languages": ["Tiếng Việt", "English"],
                 "bio": "Chuyên tour văn hóa và ẩm thực miền Bắc.",
                 "id_front_url": "",
                 "id_back_url": "",
@@ -414,6 +474,74 @@ async def seed_database():
                         "created_at": datetime.utcnow().isoformat()
                     })
                     print("Guide seeded: 1 record (pending).")
+
+    guide_account_email = "guide.demo@smarttravel.vn"
+    guide_account = await db.users.find_one({"email": guide_account_email})
+    if not guide_account:
+        result = await db.users.insert_one({
+            "email": guide_account_email,
+            "password_hash": hash_pw("123456"),
+            "full_name": "Lê Minh Hướng",
+            "phone": "0909009003",
+            "birth_date": "1991-07-12",
+            "gender": "nam",
+            "address": "Đà Nẵng",
+            "role": "guide",
+            "preferences": [],
+            "custom_preferences": [],
+            "saved_vouchers": [],
+            "settings": {
+                "email_notifications": True,
+                "sms_notifications": True,
+                "ai_personalization": True,
+                "language": "vi"
+            },
+            "avatar_url": "",
+            "created_at": datetime.utcnow().isoformat()
+        })
+        guide_account = await db.users.find_one({"_id": result.inserted_id})
+
+    existing_guide_profile = await db.guides.find_one({"user_id": str(guide_account["_id"])}) if guide_account else None
+    if guide_account and not existing_guide_profile:
+        guide_profile = {
+            "user_id": str(guide_account["_id"]),
+            "name": "Lê Minh Hướng",
+            "experience_years": 4,
+            "price_per_day": 700000,
+            "areas": ["Đà Nẵng", "Hội An", "Huế"],
+            "languages": ["Tiếng Việt", "English"],
+            "bio": "Hướng dẫn viên địa phương miền Trung, chuyên tour di sản và ẩm thực.",
+            "id_front_url": "",
+            "id_back_url": "",
+            "status": "approved",
+            "created_at": datetime.utcnow().isoformat()
+        }
+        result = await db.guides.insert_one(guide_profile)
+        guide_profile_id = result.inserted_id
+    else:
+        guide_profile_id = existing_guide_profile.get("_id") if existing_guide_profile else None
+
+    if guide_profile_id:
+        assignment_count = await db.guide_assignments.count_documents({"guide_id": guide_profile_id})
+        if assignment_count == 0:
+            await db.guide_assignments.insert_many([
+                {
+                    "guide_id": guide_profile_id,
+                    "tour_title": "Đà Nẵng - Hội An 2N1Đ",
+                    "destination": "Đà Nẵng",
+                    "trip_date": "2026-06-20",
+                    "earning": 900000,
+                    "status": "completed"
+                },
+                {
+                    "guide_id": guide_profile_id,
+                    "tour_title": "Huế cổ kính 3N2Đ",
+                    "destination": "Huế",
+                    "trip_date": "2026-07-05",
+                    "earning": 1200000,
+                    "status": "completed"
+                }
+            ])
 
     settings_doc = await db.settings.find_one({"key": "admin"})
     if not settings_doc:

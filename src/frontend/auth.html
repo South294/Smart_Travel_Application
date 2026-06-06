@@ -45,7 +45,7 @@
                 <div class="form-group auth-field">
                     <div class="input-with-icon">
                         <i class="bx bx-lock-alt"></i>
-                        <input type="password" class="form-control" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required minlength="6">
+                        <input type="password" class="form-control register-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required minlength="6">
                         <button type="button" class="toggle-password"><i class="bx bx-hide"></i></button>
                     </div>
                     <div class="form-error">Mật khẩu phải có ít nhất 6 ký tự</div>
@@ -75,7 +75,7 @@
                 <div class="form-group auth-field">
                     <div class="input-with-icon">
                         <i class="bx bx-lock-alt"></i>
-                        <input type="password" class="form-control" placeholder="Mật khẩu" required>
+                        <input type="password" class="form-control login-password" placeholder="Mật khẩu" required>
                         <button type="button" class="toggle-password"><i class="bx bx-hide"></i></button>
                     </div>
                     <div class="form-error">Vui lòng nhập mật khẩu</div>
@@ -155,7 +155,7 @@
                 });
                 if (valid) {
                     var emailInput = this.querySelector('.login-email');
-                    var passwordInput = this.querySelector('input[type="password"]');
+                    var passwordInput = this.querySelector('.login-password');
                     var email = emailInput ? emailInput.value.trim() : '';
                     var password = passwordInput ? passwordInput.value : '';
                     
@@ -221,7 +221,7 @@
                 if (valid) {
                     var nameInput = this.querySelector('.register-name');
                     var emailInput = this.querySelector('.register-email');
-                    var passwordInput = this.querySelector('input[type="password"]');
+                    var passwordInput = this.querySelector('.register-password');
                     
                     var fullName = nameInput ? nameInput.value.trim() : '';
                     var email = emailInput ? emailInput.value.trim() : '';

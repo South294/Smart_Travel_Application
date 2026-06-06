@@ -6,6 +6,7 @@ async function fetchApi(url, options = {}) {
     if (res.status === 401) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userRole');
     }
     return res;
 }
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   initProfileSave();
   initGuideRegisterForm();
   initGuideHireActions();
+  await initGuidesDirectory();
   await initGuideDashboard();
   initCheckoutData();
   initCheckoutPayment();
@@ -85,10 +87,27 @@ async function initAuthState() {
   if (!profile.email) return;
 
   var initials = getInitials(profile.full_name || profile.email || 'ST');
+  var role = profile.role || localStorage.getItem('userRole') || '';
+  var showGuideDashboard = false;
+
+  if (role === 'guide') {
+    try {
+      var guideRes = await fetchApi('/api/guides/me');
+      if (guideRes.ok) {
+        var guideProfile = await guideRes.json();
+        showGuideDashboard = guideProfile && guideProfile.status === 'approved';
+      }
+    } catch (e) {}
+  }
 
   containers.forEach(function(container) {
     if (container.closest('.admin-page')) return;
-    container.innerHTML = '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
+    var links = '';
+    if (showGuideDashboard) {
+      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HDV Dashboard</a>';
+    }
+    links += '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
+    container.innerHTML = links;
   });
 }
 
@@ -127,6 +146,58 @@ async function initProfileData() {
   syncPreferenceChips(profile.preferences || []);
   renderCustomPreferenceChips(profile.custom_preferences || []);
   await renderSavedVouchers();
+  await renderMyBookings();
+}
+
+async function renderMyBookings() {
+  var container = document.querySelector('#my-trips');
+  if (!container) return;
+
+  var listWrap = container.querySelector('.trip-list');
+  if (!listWrap) return;
+
+  try {
+    var res = await fetchApi('/api/bookings/me');
+    if (!res.ok) {
+      listWrap.innerHTML = '<div class="text-muted text-sm">Không thể tải danh sách chuyến đi.</div>';
+      return;
+    }
+
+    var bookings = await res.json();
+    if (!Array.isArray(bookings) || bookings.length === 0) {
+      listWrap.innerHTML = '<div class="text-muted text-sm">Chưa có chuyến đi nào.</div>';
+      return;
+    }
+
+    listWrap.innerHTML = bookings.map(function(booking) {
+      var statusText = mapBookingStatus(booking.status);
+      var statusClass = mapBookingStatusClass(booking.status);
+      return (
+        '<div class="trip-item flex items-center gap-4 pb-4 border-b">' +
+        '<div class="icon-circle icon-circle-primary"><i class="bx bx-map-pin"></i></div>' +
+        '<div class="flex-1">' +
+        '<h4 class="font-semibold">' + escapeHtml(booking.tour_title || 'Tour') + '</h4>' +
+        '<p class="text-muted text-sm">' + escapeHtml(booking.travel_date || '--') + '</p>' +
+        '</div>' +
+        '<span class="badge ' + statusClass + '">' + statusText + '</span>' +
+        '</div>'
+      );
+    }).join('');
+  } catch (e) {
+    listWrap.innerHTML = '<div class="text-muted text-sm">Không thể tải danh sách chuyến đi.</div>';
+  }
+}
+
+function mapBookingStatus(status) {
+  if (status === 'confirmed') return 'Đã xác nhận';
+  if (status === 'cancelled') return 'Đã hủy';
+  return 'Chờ xử lý';
+}
+
+function mapBookingStatusClass(status) {
+  if (status === 'confirmed') return 'badge-success';
+  if (status === 'cancelled') return 'badge-danger';
+  return 'badge-warning';
 }
 
 function initLogoutAction() {
@@ -135,6 +206,7 @@ function initLogoutAction() {
       e.preventDefault();
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('userProfile');
+      localStorage.removeItem('userRole');
       showToast('Ban da dang xuat thanh cong', 'success');
       setTimeout(function() { window.location.href = 'auth.html'; }, 800);
     });
@@ -154,7 +226,7 @@ async function getStoredUserProfile() {
 
 async function getStoredSavedVouchers() {
   try {
-    const res = await fetchApi('/api/users/me/vouchers');
+    const res = await fetchApi('/api/vouchers/me');
     if (res.ok) {
       return await res.json();
     }
@@ -631,21 +703,44 @@ function initCheckoutPayment() {
     });
   }
 
-  btn.addEventListener('click', function() {
+  btn.addEventListener('click', async function() {
+    var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (!isLoggedIn) {
+      showToast('Vui lòng đăng nhập để đặt tour', 'warning');
+      setTimeout(function() { window.location.href = 'auth.html'; }, 1200);
+      return;
+    }
+
     btn.classList.add('is-loading');
     btn.disabled = true;
 
-    setTimeout(function() {
-      btn.classList.remove('is-loading');
-      btn.disabled = false;
+    try {
+      var bookingPayload = buildBookingPayload();
+      if (!bookingPayload) {
+        btn.classList.remove('is-loading');
+        btn.disabled = false;
+        return;
+      }
 
-      var totalEl = document.getElementById('checkoutTotal');
-      var totalText = totalEl ? totalEl.textContent : '--';
+      var res = await fetchApi('/api/bookings', {
+        method: 'POST',
+        body: JSON.stringify(bookingPayload)
+      });
+
+      var data = await res.json();
+      if (!res.ok) {
+        showToast(data.detail || 'Không thể tạo booking', 'error');
+        return;
+      }
+
+      await submitSelectedGuideRequest();
+
+      var orderCode = data.id ? String(data.id).slice(-6).toUpperCase() : generateOrderCode();
+      var totalText = formatCurrency(data.total_amount || 0);
       var orderEl = document.getElementById('paymentOrderCode');
       var totalModal = document.getElementById('paymentTotal');
       var qrOrderEl = document.getElementById('paymentQrOrder');
       var qrTotalEl = document.getElementById('paymentQrTotal');
-      var orderCode = generateOrderCode();
 
       if (orderEl) orderEl.textContent = orderCode;
       if (totalModal) totalModal.textContent = totalText;
@@ -657,13 +752,18 @@ function initCheckoutPayment() {
 
       if (method === 'qr' && qrModal) {
         openModal('paymentQrModal');
-        showToast('Vui long quet ma QR de thanh toan', 'success');
+        showToast('Vui lòng quét mã QR để thanh toán', 'success');
         return;
       }
 
       openModal('paymentSuccessModal');
-      showToast('Thanh toan mo phong thanh cong', 'success');
-    }, 1200);
+      showToast('Đặt tour thành công, đang chờ xác nhận', 'success');
+    } catch (e) {
+      showToast('Lỗi kết nối máy chủ', 'error');
+    } finally {
+      btn.classList.remove('is-loading');
+      btn.disabled = false;
+    }
   });
 }
 
@@ -1009,6 +1109,7 @@ function initCheckoutData() {
   var originalPrice = parseInt(params.get('original'));
   var duration = params.get('duration');
   var img = params.get('img');
+  var tourId = params.get('tourId');
 
   if (!title || !price) {
     var titleEl = document.getElementById('checkoutTourTitle');
@@ -1021,22 +1122,265 @@ function initCheckoutData() {
   var durationEl = document.getElementById('checkoutTourDuration');
   var adultLabel = document.getElementById('checkoutAdultLabel');
   var adultPrice = document.getElementById('checkoutAdultPrice');
+  var childrenLabel = document.getElementById('checkoutChildrenLabel');
+  var childrenPrice = document.getElementById('checkoutChildrenPrice');
   var insurancePrice = document.getElementById('checkoutInsurancePrice');
   var totalEl = document.getElementById('checkoutTotal');
+  var adultsSelect = document.getElementById('checkoutAdults');
+  var childrenSelect = document.getElementById('checkoutChildren');
+  var insuranceCheckbox = document.getElementById('checkoutInsurance');
+  var voucherInput = document.getElementById('checkoutVoucher');
+  var voucherApply = document.getElementById('checkoutVoucherApply');
+  var voucherValue = document.getElementById('checkoutVoucherValue');
+  var travelDateInput = document.getElementById('checkoutTravelDate');
+  var dateLabel = document.getElementById('checkoutTourDate');
 
   if (titleEl) titleEl.textContent = title;
   if (imgEl && img) imgEl.src = img;
   if (durationEl && duration) durationEl.innerHTML = '<i class="bx bx-time"></i> ' + duration;
 
-  var fmt = new Intl.NumberFormat('vi-VN');
-  var adults = 2;
-  var insurance = 150000;
-  var adultTotal = price * adults;
-  var insuranceTotal = insurance * adults;
-  var total = adultTotal + insuranceTotal;
+  var currentVoucher = null;
 
-  if (adultLabel) adultLabel.textContent = 'Người lớn x' + adults;
-  if (adultPrice) adultPrice.textContent = fmt.format(adultTotal) + '₫';
-  if (insurancePrice) insurancePrice.textContent = fmt.format(insuranceTotal) + '₫';
-  if (totalEl) totalEl.textContent = fmt.format(total) + '₫';
+  function updateCheckoutTotals() {
+    var fmt = new Intl.NumberFormat('vi-VN');
+    var adults = getPassengerCount(adultsSelect, 2);
+    var children = getPassengerCount(childrenSelect, 0);
+    var insurance = insuranceCheckbox && insuranceCheckbox.checked ? 150000 : 0;
+    var adultTotal = price * adults;
+    var childTotal = Math.round(price * 0.5) * children;
+    var insuranceTotal = insurance * (adults + children);
+    var subtotal = adultTotal + childTotal + insuranceTotal;
+    var discount = calculateVoucherDiscount(currentVoucher, subtotal, insuranceTotal);
+    var total = Math.max(0, subtotal - discount);
+
+    if (adultLabel) adultLabel.textContent = 'Người lớn x' + adults;
+    if (adultPrice) adultPrice.textContent = fmt.format(adultTotal) + '₫';
+    if (childrenLabel) childrenLabel.textContent = 'Trẻ em x' + children;
+    if (childrenPrice) childrenPrice.textContent = fmt.format(childTotal) + '₫';
+    if (insurancePrice) insurancePrice.textContent = fmt.format(insuranceTotal) + '₫';
+    if (voucherValue) voucherValue.textContent = discount ? '-' + fmt.format(discount) + '₫' : '--';
+    if (totalEl) totalEl.textContent = fmt.format(total) + '₫';
+  }
+
+  function syncTravelDateLabel() {
+    if (dateLabel && travelDateInput) {
+      dateLabel.innerHTML = '<i class="bx bx-calendar"></i> ' + (travelDateInput.value || 'Chọn ngày khởi hành');
+    }
+  }
+
+  if (adultsSelect) adultsSelect.addEventListener('change', updateCheckoutTotals);
+  if (childrenSelect) childrenSelect.addEventListener('change', updateCheckoutTotals);
+  if (insuranceCheckbox) insuranceCheckbox.addEventListener('change', updateCheckoutTotals);
+  if (travelDateInput) travelDateInput.addEventListener('change', syncTravelDateLabel);
+
+  if (voucherApply && voucherInput) {
+    voucherApply.addEventListener('click', async function() {
+      var code = voucherInput.value.trim().toUpperCase();
+      if (!code) {
+        currentVoucher = null;
+        updateCheckoutTotals();
+        showToast('Vui lòng nhập mã giảm giá', 'warning');
+        return;
+      }
+
+      try {
+        var res = await fetchApi('/api/vouchers');
+        var list = res.ok ? await res.json() : [];
+        currentVoucher = Array.isArray(list) ? list.find(function(v) { return v.code === code; }) : null;
+        if (!currentVoucher) {
+          showToast('Mã giảm giá không hợp lệ', 'error');
+        } else {
+          showToast('Áp dụng mã thành công', 'success');
+        }
+        updateCheckoutTotals();
+      } catch (e) {
+        showToast('Không thể kiểm tra mã giảm giá', 'error');
+      }
+    });
+  }
+
+  syncTravelDateLabel();
+  updateCheckoutTotals();
+  initCheckoutGuides();
+
+  if (!tourId) {
+    resolveTourIdFromTitle(title);
+  } else {
+    localStorage.setItem('checkout_tour_id', tourId);
+  }
+}
+
+function getPassengerCount(selectEl, fallback) {
+  if (!selectEl) return fallback;
+  var value = selectEl.value || '';
+  var match = value.match(/\d+/);
+  if (!match) return fallback;
+  return parseInt(match[0], 10) || fallback;
+}
+
+function calculateVoucherDiscount(voucher, subtotal, insuranceTotal) {
+  if (!voucher) return 0;
+  if (voucher.discount_type === 'percent') {
+    var discount = subtotal * (voucher.discount_value / 100);
+    if (voucher.max_discount && discount > voucher.max_discount) {
+      discount = voucher.max_discount;
+    }
+    return Math.round(discount);
+  }
+  if (voucher.discount_type === 'fixed') {
+    return Math.round(voucher.discount_value || 0);
+  }
+  if (voucher.discount_type === 'free_insurance') {
+    return Math.round(Math.min(voucher.discount_value || 0, insuranceTotal));
+  }
+  return 0;
+}
+
+async function initCheckoutGuides() {
+  var select = document.getElementById('checkoutGuideSelect');
+  if (!select) return;
+
+  try {
+    var res = await fetchApi('/api/guides');
+    if (!res.ok) return;
+    var guides = await res.json();
+    if (!Array.isArray(guides) || guides.length === 0) return;
+
+    guides.forEach(function(guide) {
+      var option = document.createElement('option');
+      option.value = guide.id;
+      option.textContent = guide.name + ' - ' + formatCurrency(guide.price_per_day) + '/ngay';
+      select.appendChild(option);
+    });
+  } catch (e) {}
+}
+
+async function resolveTourIdFromTitle(title) {
+  if (!title) return;
+  try {
+    var res = await fetchApi('/api/tours');
+    if (!res.ok) return;
+    var tours = await res.json();
+    if (!Array.isArray(tours)) return;
+    var matched = tours.find(function(tour) {
+      return tour.title === title;
+    });
+    if (matched && matched.id) {
+      localStorage.setItem('checkout_tour_id', matched.id);
+    }
+  } catch (e) {}
+}
+
+function buildBookingPayload() {
+  var tourId = localStorage.getItem('checkout_tour_id');
+  if (!tourId) {
+    showToast('Thiếu mã tour, vui lòng chọn tour lại', 'error');
+    return null;
+  }
+
+  var travelDate = document.getElementById('checkoutTravelDate') ? document.getElementById('checkoutTravelDate').value : '';
+  var adults = getPassengerCount(document.getElementById('checkoutAdults'), 2);
+  var children = getPassengerCount(document.getElementById('checkoutChildren'), 0);
+  var insurance = document.getElementById('checkoutInsurance') ? document.getElementById('checkoutInsurance').checked : false;
+  var phone = document.getElementById('checkoutContactPhone') ? document.getElementById('checkoutContactPhone').value.trim() : '';
+  var note = document.getElementById('checkoutNote') ? document.getElementById('checkoutNote').value.trim() : '';
+  var voucherCode = document.getElementById('checkoutVoucher') ? document.getElementById('checkoutVoucher').value.trim().toUpperCase() : '';
+
+  var selectedOption = document.querySelector('.payment-option.selected');
+  var paymentMethod = selectedOption ? selectedOption.getAttribute('data-method') : 'credit_card';
+  if (paymentMethod === 'qr') {
+    paymentMethod = 'bank_transfer';
+  }
+
+  if (!travelDate) {
+    showToast('Vui lòng chọn ngày khởi hành', 'warning');
+    return null;
+  }
+  if (!phone) {
+    showToast('Vui lòng nhập số điện thoại liên hệ', 'warning');
+    return null;
+  }
+
+  return {
+    tour_id: tourId,
+    travel_date: travelDate,
+    adults: adults,
+    children: children,
+    insurance: insurance,
+    coupon_code: voucherCode || null,
+    payment_method: paymentMethod,
+    contact_phone: phone,
+    note: note || null
+  };
+}
+
+async function initGuidesDirectory() {
+  var grid = document.getElementById('guidesGrid');
+  if (!grid) return;
+
+  try {
+    var res = await fetchApi('/api/guides');
+    if (!res.ok) {
+      grid.innerHTML = '<div class="card p-6 text-center text-muted">Không thể tải danh sách hướng dẫn viên.</div>';
+      return;
+    }
+
+    var guides = await res.json();
+    if (!Array.isArray(guides) || guides.length === 0) {
+      grid.innerHTML = '<div class="card p-6 text-center text-muted">Chưa có hướng dẫn viên khả dụng.</div>';
+      return;
+    }
+
+    grid.innerHTML = guides.map(function(guide) {
+      var langs = Array.isArray(guide.languages) ? guide.languages : [];
+      var areas = Array.isArray(guide.areas) ? guide.areas.join(', ') : '';
+      return (
+        '<div class="guide-card">' +
+        '<img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=200" alt="' + escapeHtml(guide.name) + '" class="guide-avatar">' +
+        '<div class="guide-info">' +
+        '<div class="guide-header">' +
+        '<span class="badge badge-primary"><i class="bx bx-check-shield"></i> Đã xác minh</span>' +
+        '<span class="status-available">Sẵn sàng</span>' +
+        '</div>' +
+        '<h3 class="font-bold text-lg mt-2">' + escapeHtml(guide.name) + '</h3>' +
+        '<p class="text-muted text-sm"><i class="bx bx-map"></i> ' + escapeHtml(areas || 'Địa điểm linh hoạt') + '</p>' +
+        '<div class="guide-stats">' +
+        '<span><i class="bx bx-briefcase"></i> ' + escapeHtml(String(guide.experience_years || 0)) + ' năm kinh nghiệm</span>' +
+        '</div>' +
+        '<div class="mb-4">' + langs.map(function(lang) { return '<span class="lang-tag">' + escapeHtml(lang) + '</span>'; }).join('') + '</div>' +
+        '<div class="guide-price mb-4">' + formatCurrency(guide.price_per_day || 0) + ' <span class="guide-price-unit">/ ngày</span></div>' +
+        '<button class="btn btn-primary w-full btn-hire-guide" data-guide-id="' + escapeHtml(guide.id) + '">Thuê ngay</button>' +
+        '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    initGuideHireActions();
+  } catch (e) {
+    grid.innerHTML = '<div class="card p-6 text-center text-muted">Không thể tải danh sách hướng dẫn viên.</div>';
+  }
+}
+
+async function submitSelectedGuideRequest() {
+  var select = document.getElementById('checkoutGuideSelect');
+  if (!select || !select.value) return;
+  var guideNote = document.getElementById('checkoutGuideNote') ? document.getElementById('checkoutGuideNote').value.trim() : '';
+  var travelDate = document.getElementById('checkoutTravelDate') ? document.getElementById('checkoutTravelDate').value : '';
+  var destination = document.getElementById('checkoutTourTitle') ? document.getElementById('checkoutTourTitle').textContent.trim() : '';
+  var phone = document.getElementById('checkoutContactPhone') ? document.getElementById('checkoutContactPhone').value.trim() : '';
+
+  if (!travelDate || !destination) return;
+
+  try {
+    await fetchApi('/api/guides/requests', {
+      method: 'POST',
+      body: JSON.stringify({
+        guide_id: select.value,
+        trip_date: travelDate,
+        destination: destination,
+        note: guideNote || null,
+        customer_phone: phone || null
+      })
+    });
+  } catch (e) {}
 }
