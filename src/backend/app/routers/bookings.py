@@ -12,9 +12,18 @@ router = APIRouter()
 async def create_booking(booking: BookingCreate, current_user: dict = Depends(get_current_user)):
     db = get_db()
     tour_oid = validate_object_id(booking.tour_id)
-    tour = await db.tours.find_one({"_id": tour_oid})
+    tour = await db.tours.find_one({"_id": tour_oid, "is_active": True})
     if not tour:
-        raise HTTPException(status_code=404, detail="Không tìm thấy tour")
+        raise HTTPException(status_code=404, detail="Tour không tồn tại hoặc đã ngừng bán")
+
+    try:
+        travel_date = datetime.strptime(booking.travel_date, "%Y-%m-%d").date()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Ngày khởi hành không hợp lệ") from exc
+    if travel_date < datetime.utcnow().date():
+        raise HTTPException(status_code=400, detail="Ngày khởi hành phải từ hôm nay trở đi")
+    if booking.payment_method not in {"credit_card", "e_wallet", "bank_transfer"}:
+        raise HTTPException(status_code=400, detail="Phương thức thanh toán không hợp lệ")
 
     price_per_person = tour.get("discount_price") or tour.get("price", 0)
     total_amount = (price_per_person * booking.adults) + ((price_per_person * 0.5) * booking.children)
@@ -24,7 +33,15 @@ async def create_booking(booking: BookingCreate, current_user: dict = Depends(ge
         total_amount += insurance_per_person * (booking.adults + booking.children)
 
     if booking.coupon_code:
-        voucher = await db.vouchers.find_one({"code": booking.coupon_code, "is_active": True})
+        voucher = await db.vouchers.find_one({
+            "code": booking.coupon_code,
+            "is_active": True,
+            "$or": [
+                {"expiry_date": {"$exists": False}},
+                {"expiry_date": None},
+                {"expiry_date": {"$gte": datetime.utcnow().date().isoformat()}}
+            ]
+        })
         if voucher:
             if voucher["discount_type"] == "percent":
                 discount = total_amount * (voucher["discount_value"] / 100)
@@ -43,6 +60,7 @@ async def create_booking(booking: BookingCreate, current_user: dict = Depends(ge
     booking_dict = booking.model_dump()
     booking_dict["user_id"] = current_user["id"]
     booking_dict["status"] = "pending"
+    booking_dict["payment_status"] = "unpaid"
     booking_dict["total_amount"] = total_amount
     booking_dict["created_at"] = datetime.utcnow().isoformat()
 
@@ -88,5 +106,7 @@ async def cancel_booking(id: str, current_user: dict = Depends(get_current_user)
     if booking["user_id"] != current_user["id"] and current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Không đủ quyền truy cập")
 
-    await db.bookings.update_one({"_id": oid}, {"$set": {"status": "cancelled"}})
+    if booking.get("status") in {"cancelled", "completed"}:
+        raise HTTPException(status_code=400, detail="Đơn đặt không thể hủy ở trạng thái hiện tại")
+    await db.bookings.update_one({"_id": oid}, {"$set": {"status": "cancelled", "cancelled_at": datetime.utcnow().isoformat()}})
     return {"message": "Hủy đơn đặt thành công"}

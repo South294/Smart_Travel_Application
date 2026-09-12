@@ -120,6 +120,47 @@ async def seed_database():
     else:
         print("Users already exist.")
 
+    demo_users = [
+        {
+            "email": "son.vu@gmail.com",
+            "password_hash": hash_pw("123456"),
+            "full_name": "Vũ Văn Sơn",
+            "phone": "0912345678",
+            "birth_date": "1998-05-20",
+            "gender": "nam",
+            "address": "Mộc Châu, Sơn La",
+            "role": "user",
+            "preferences": ["núi", "trekking"],
+            "custom_preferences": [],
+            "saved_vouchers": [],
+            "settings": {"email_notifications": True, "sms_notifications": False, "ai_personalization": True, "language": "vi"},
+            "avatar_url": "",
+            "created_at": datetime.utcnow().isoformat()
+        },
+        {
+            "email": "nam.nguyen@gmail.com",
+            "password_hash": hash_pw("123456"),
+            "full_name": "Nguyễn Thanh Nam",
+            "phone": "0987654321",
+            "birth_date": "1995-11-10",
+            "gender": "nam",
+            "address": "Hà Nội",
+            "role": "user",
+            "preferences": ["biển", "ẩm thực"],
+            "custom_preferences": [],
+            "saved_vouchers": [],
+            "settings": {"email_notifications": True, "sms_notifications": True, "ai_personalization": True, "language": "vi"},
+            "avatar_url": "",
+            "created_at": datetime.utcnow().isoformat()
+        }
+    ]
+    for demo_user in demo_users:
+        await db.users.update_one(
+            {"email": demo_user["email"]},
+            {"$setOnInsert": demo_user},
+            upsert=True
+        )
+
     tours_count = await db.tours.count_documents({})
     if tours_count == 0:
         print("Seeding tours...")
@@ -522,26 +563,35 @@ async def seed_database():
         guide_profile_id = existing_guide_profile.get("_id") if existing_guide_profile else None
 
     if guide_profile_id:
-        assignment_count = await db.guide_assignments.count_documents({"guide_id": guide_profile_id})
-        if assignment_count == 0:
-            await db.guide_assignments.insert_many([
-                {
-                    "guide_id": guide_profile_id,
-                    "tour_title": "Đà Nẵng - Hội An 2N1Đ",
-                    "destination": "Đà Nẵng",
-                    "trip_date": "2026-06-20",
-                    "earning": 900000,
-                    "status": "completed"
-                },
-                {
-                    "guide_id": guide_profile_id,
-                    "tour_title": "Huế cổ kính 3N2Đ",
-                    "destination": "Huế",
-                    "trip_date": "2026-07-05",
-                    "earning": 1200000,
-                    "status": "completed"
-                }
-            ])
+        demo_assignments = [
+            {
+                "tour_title": "Đà Nẵng - Hội An 2N1Đ",
+                "destination": "Đà Nẵng",
+                "trip_date": "2026-09-14",
+                "earning": 900000,
+                "status": "in_progress"
+            },
+            {
+                "tour_title": "Huế cổ kính 3N2Đ",
+                "destination": "Huế",
+                "trip_date": "2026-09-05",
+                "earning": 1200000,
+                "status": "completed"
+            },
+            {
+                "tour_title": "Ẩm thực Đà Nẵng buổi tối",
+                "destination": "Đà Nẵng",
+                "trip_date": "2026-09-08",
+                "earning": 700000,
+                "status": "completed"
+            }
+        ]
+        for assignment in demo_assignments:
+            await db.guide_assignments.update_one(
+                {"guide_id": guide_profile_id, "tour_title": assignment["tour_title"]},
+                {"$set": {**assignment, "guide_id": guide_profile_id}},
+                upsert=True
+            )
 
     settings_doc = await db.settings.find_one({"key": "admin"})
     if not settings_doc:

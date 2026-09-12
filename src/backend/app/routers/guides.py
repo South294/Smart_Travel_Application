@@ -18,7 +18,7 @@ async def get_guides():
     return guides
 
 @router.get("/all", response_model=List[GuideResponse])
-async def get_all_guides():
+async def get_all_guides(admin: dict = Depends(get_current_admin_user)):
     """Admin: List all guides including pending and rejected"""
     db = get_db()
     cursor = db.guides.find()
@@ -144,7 +144,7 @@ async def get_guide(id: str):
     db = get_db()
     oid = validate_object_id(id)
     guide = await db.guides.find_one({"_id": oid})
-    if not guide:
+    if not guide or guide.get("status") != "approved":
         raise HTTPException(status_code=404, detail="Không tìm thấy hướng dẫn viên")
     return serialize_guide(guide)
 
@@ -222,7 +222,7 @@ async def assign_guide_tour(
     trip_date = payload.get("trip_date")
     earning = float(payload.get("earning", 0))
     
-    if not guide_id or not tour_title or not destination:
+    if not guide_id or not tour_title or not destination or not trip_date:
         raise HTTPException(status_code=400, detail="Thiếu thông tin bắt buộc")
     
     oid = validate_object_id(guide_id)
@@ -257,7 +257,11 @@ async def assign_guide_tour(
     # Create assignment record
     assignment_doc = {
         "guide_id": oid,
-        "tour_id": str(result.inserted_id),
+        "tour_id": result.inserted_id,
+        "tour_title": tour_title,
+        "destination": destination,
+        "trip_date": trip_date,
+        "earning": earning,
         "status": "assigned",
         "assigned_at": datetime.utcnow().isoformat(),
         "assigned_by": admin.get("email", "admin")
@@ -270,16 +274,9 @@ async def assign_guide_tour(
         "tour_id": str(result.inserted_id),
         "tour_title": tour_title
     }
-    await db.guide_assignments.insert_one(assignment_doc)
-    
-    return {
-        "message": "Đã phân công tour cho hướng dẫn viên",
-        "guide_id": str(oid),
-        "tour_id": tour_id
-    }
 
 @router.get("/unassigned-tours")
-async def get_unassigned_tours():
+async def get_unassigned_tours(admin: dict = Depends(get_current_admin_user)):
     """Admin: List tours not assigned to any guide"""
     db = get_db()
     cursor = db.tours.find({"guide_id": {"$exists": False}})

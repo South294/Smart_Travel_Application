@@ -9,7 +9,8 @@ async function fetchApi(url, options = {}) {
         Object.keys(options.headers).forEach(function(k) { headers[k] = options.headers[k]; });
     }
     if (token) headers['Authorization'] = 'Bearer ' + token;
-    var res = await fetch('http://localhost:8000' + url, { method: options.method || 'GET', headers: headers, body: options.body });
+    var apiBase = window.SMART_TRAVEL_API_URL || 'http://localhost:8000';
+    var res = await fetch(apiBase + url, { method: options.method || 'GET', headers: headers, body: options.body });
     if (res.status === 401) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('isLoggedIn');
@@ -211,15 +212,17 @@ async function loadPendingGuides() {
 
         guides.forEach(function(guide) {
             var tr = document.createElement('tr');
+            var guideName = guide.name || 'Hướng dẫn viên';
+            var guideAreas = (guide.areas || []).join(', ') || '--';
             tr.innerHTML =
                 '<td>' +
                 '<div class="user-info-table">' +
-                '<div class="user-avatar-sm">' + guide.name.charAt(0) + '</div>' +
-                '<div><span class="font-bold">' + guide.name + '</span></div>' +
+                '<div class="user-avatar-sm">' + escapeHtml(guideName.charAt(0)) + '</div>' +
+                '<div><span class="font-bold">' + escapeHtml(guideName) + '</span></div>' +
                 '</div>' +
                 '</td>' +
-                '<td>' + guide.experience_years + ' năm</td>' +
-                '<td>' + (guide.areas || []).join(', ') + '</td>' +
+                '<td>' + escapeHtml(String(guide.experience_years || 0)) + ' năm</td>' +
+                '<td>' + escapeHtml(guideAreas) + '</td>' +
                 '<td><span class="badge badge-warning">Chờ duyệt</span></td>' +
                 '<td>' +
                 '<div class="action-group">' +
@@ -425,8 +428,8 @@ async function loadActiveVouchers() {
             var typeLabel = v.discount_type === 'percent' ? ('Giảm ' + v.discount_value + '%') : ('Giảm ' + new Intl.NumberFormat('vi-VN').format(v.discount_value) + '₫');
             return '<div class="card voucher-card">' +
                 '<div>' +
-                '<p class="voucher-code">' + v.code + '</p>' +
-                '<p class="text-xs text-muted mt-1">' + typeLabel + ' - Hết hạn: ' + v.expiry_date + '</p>' +
+                '<p class="voucher-code">' + escapeHtml(v.code || '') + '</p>' +
+                '<p class="text-xs text-muted mt-1">' + escapeHtml(typeLabel) + ' - Hết hạn: ' + escapeHtml(v.expiry_date || '--') + '</p>' +
                 '</div>' +
                 '<div class="flex gap-2">' +
                 '<span class="badge ' + (v.is_active ? 'badge-success' : 'badge-danger') + '">' + (v.is_active ? 'Active' : 'Inactive') + '</span>' +

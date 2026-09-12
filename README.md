@@ -20,6 +20,11 @@ Một ứng dụng du lịch toàn diện cung cấp tính năng đặt tour, b�
    ```env
    MONGODB_URI=mongodb://localhost:27017
    MONGODB_DB=smart_travel
+   VNPAY_TMN_CODE=
+   VNPAY_HASH_SECRET=
+   VNPAY_PAYMENT_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+   VNPAY_RETURN_URL=http://localhost:8000/api/payments/vnpay/return
+   PAYMENT_FRONTEND_URL=http://localhost:5500/checkout.html
    ```
 4. Chạy backend (trong thư mục `src/backend`):
     ```powershell
@@ -49,6 +54,10 @@ python seed_db.py
 
 ### Frontend
 Vui lòng kiểm tra src/frontend/README.md hoặc đơn giản là mở file index.html bằng trình duyệt web của bạn.
+
+### Thanh toán thử nghiệm
+
+Checkout sử dụng VNPay Sandbox khi đã cấu hình `VNPAY_TMN_CODE` và `VNPAY_HASH_SECRET`. Nếu chưa có merchant sandbox, nút thanh toán sẽ báo thiếu cấu hình thay vì ghi nhận thanh toán thành công giả.
 
 ### Backend
 1. Di chuyển đến thư mục src/backend

@@ -3,10 +3,23 @@ from app.db.mongodb import get_db
 from app.schemas.voucher import VoucherCreate, VoucherResponse
 from app.routers.deps import get_current_user, get_current_admin_user
 from app.routers.helpers import validate_object_id, serialize_voucher
-from app.routers.helpers import validate_object_id
 from typing import List
+from datetime import datetime
 
 router = APIRouter()
+
+def active_voucher_filter(code: str = None):
+    query = {
+        "is_active": True,
+        "$or": [
+            {"expiry_date": {"$exists": False}},
+            {"expiry_date": None},
+            {"expiry_date": {"$gte": datetime.utcnow().date().isoformat()}}
+        ]
+    }
+    if code:
+        query["code"] = code
+    return query
 
 @router.post("", response_model=VoucherResponse)
 async def create_voucher(voucher: VoucherCreate, admin: dict = Depends(get_current_admin_user)):
@@ -22,7 +35,7 @@ async def create_voucher(voucher: VoucherCreate, admin: dict = Depends(get_curre
 @router.get("", response_model=List[VoucherResponse])
 async def get_vouchers():
     db = get_db()
-    cursor = db.vouchers.find({"is_active": True})
+    cursor = db.vouchers.find(active_voucher_filter())
     vouchers = []
     async for doc in cursor:
         vouchers.append(serialize_voucher(doc))
@@ -31,7 +44,7 @@ async def get_vouchers():
 @router.post("/{code}/claim")
 async def claim_voucher(code: str, current_user: dict = Depends(get_current_user)):
     db = get_db()
-    voucher = await db.vouchers.find_one({"code": code, "is_active": True})
+    voucher = await db.vouchers.find_one(active_voucher_filter(code))
     if not voucher:
         raise HTTPException(status_code=404, detail="Voucher không tồn tại hoặc đã hết hạn")
 
@@ -56,7 +69,7 @@ async def get_my_vouchers(current_user: dict = Depends(get_current_user)):
     if not saved_vouchers:
         return []
 
-    cursor = db.vouchers.find({"code": {"$in": saved_vouchers}})
+    cursor = db.vouchers.find({**active_voucher_filter(), "code": {"$in": saved_vouchers}})
     vouchers = []
     async for doc in cursor:
         vouchers.append(serialize_voucher(doc))

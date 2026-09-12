@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.config import settings
-from app.routers import auth, users, tours, bookings, vouchers, guides, admin
+from app.routers import auth, users, tours, bookings, vouchers, guides, admin, ai, payments
 from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_db
 import pymongo
 
@@ -48,6 +48,8 @@ app.include_router(bookings.router, prefix="/api/bookings", tags=["Bookings"])
 app.include_router(vouchers.router, prefix="/api/vouchers", tags=["Vouchers"])
 app.include_router(guides.router, prefix="/api/guides", tags=["Guides"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(ai.router, prefix="/api/ai", tags=["AI"])
+app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 
 @app.get("/")
 async def root():

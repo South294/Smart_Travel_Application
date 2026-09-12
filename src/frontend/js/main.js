@@ -2,7 +2,8 @@ async function fetchApi(url, options = {}) {
     const token = localStorage.getItem('access_token');
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (token) headers['Authorization'] = 'Bearer ' + token;
-    const res = await fetch('http://localhost:8000' + url, { ...options, headers });
+  const apiBase = window.SMART_TRAVEL_API_URL || 'http://localhost:8000';
+  const res = await fetch(apiBase + url, { ...options, headers });
     if (res.status === 401) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('isLoggedIn');
@@ -751,6 +752,16 @@ function initCheckoutPayment() {
   var qrConfirmBtn = document.getElementById('paymentQrConfirmBtn');
   if (!btn || !modal) return;
 
+  var paymentStatus = new URLSearchParams(window.location.search).get('payment');
+  if (paymentStatus === 'success') {
+    openModal('paymentSuccessModal');
+    showToast('Thanh toán VNPay thành công', 'success');
+  } else if (paymentStatus === 'failed') {
+    showToast('Thanh toán chưa thành công, booking vẫn đang chờ xử lý', 'warning');
+  } else if (paymentStatus === 'invalid') {
+    showToast('Không xác thực được kết quả thanh toán', 'error');
+  }
+
   if (qrConfirmBtn) {
     qrConfirmBtn.addEventListener('click', function() {
       closeModal('paymentQrModal');
@@ -790,6 +801,20 @@ function initCheckoutPayment() {
       }
 
       await submitSelectedGuideRequest();
+
+      var paymentRes = await fetchApi('/api/payments/vnpay/create', {
+        method: 'POST',
+        body: JSON.stringify({ booking_id: data.id })
+      });
+      var paymentData = await paymentRes.json();
+      if (!paymentRes.ok) {
+        showToast(paymentData.detail || 'Chưa thể khởi tạo thanh toán VNPay', 'error');
+        return;
+      }
+      if (paymentData.payment_url) {
+        window.location.href = paymentData.payment_url;
+        return;
+      }
 
       var orderCode = data.id ? String(data.id).slice(-6).toUpperCase() : generateOrderCode();
       var totalText = formatCurrency(data.total_amount || 0);
@@ -1416,8 +1441,12 @@ async function resolveTourIdFromTitle(title) {
     if (!res.ok) return;
     var tours = await res.json();
     if (!Array.isArray(tours)) return;
+    var normalizedTitle = title.toLowerCase().trim();
     var matched = tours.find(function(tour) {
-      return tour.title === title;
+      var normalizedTourTitle = String(tour.title || '').toLowerCase().trim();
+      return normalizedTourTitle === normalizedTitle ||
+        normalizedTitle.includes(normalizedTourTitle) ||
+        normalizedTourTitle.includes(normalizedTitle);
     });
     if (matched && matched.id) {
       localStorage.setItem('checkout_tour_id', matched.id);

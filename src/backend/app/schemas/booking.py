@@ -22,4 +22,5 @@ class BookingResponse(BookingBase):
     user_id: str
     status: str
     total_amount: float
+    payment_status: str = "unpaid"
     created_at: str

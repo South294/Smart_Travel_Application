@@ -44,6 +44,8 @@ async def login(data: LoginRequest):
     user = await db.users.find_one({"email": data.email})
     if not user or not verify_password(data.password, user["password_hash"]):
         raise HTTPException(status_code=400, detail="Email hoặc mật khẩu không đúng")
+    if user.get("is_active") is False:
+        raise HTTPException(status_code=403, detail="Tài khoản đã bị khóa")
 
     token = create_access_token(data={"sub": user["email"], "role": user["role"]})
 

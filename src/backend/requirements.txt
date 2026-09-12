@@ -8,3 +8,4 @@ motor
 pymongo
 pydantic-settings
 email-validator
+httpx

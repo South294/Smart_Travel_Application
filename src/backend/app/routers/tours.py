@@ -16,7 +16,7 @@ async def get_tours(
     radius_km: Optional[float] = Query(50)
 ):
     db = get_db()
-    query = {}
+    query = {"is_active": True}
     if category:
         query["category"] = category
 
@@ -41,7 +41,7 @@ async def get_tours(
 async def get_tour(id: str):
     db = get_db()
     oid = validate_object_id(id)
-    tour = await db.tours.find_one({"_id": oid})
+    tour = await db.tours.find_one({"_id": oid, "is_active": True})
     if not tour:
         raise HTTPException(status_code=404, detail="Không tìm thấy tour")
     return serialize_tour(tour)
