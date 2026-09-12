@@ -15,7 +15,13 @@ class GuideCreate(GuideBase):
     pass
 
 class GuideUpdate(BaseModel):
-    status: str
+    name: Optional[str] = Field(default=None, min_length=2)
+    experience_years: Optional[int] = Field(default=None, ge=0)
+    price_per_day: Optional[float] = Field(default=None, ge=0)
+    areas: Optional[List[str]] = Field(default=None, min_length=1)
+    languages: Optional[List[str]] = Field(default=None, min_length=1)
+    bio: Optional[str] = Field(default=None, min_length=1)
+    status: Optional[str] = None
 
 class GuideResponse(GuideBase):
     id: str

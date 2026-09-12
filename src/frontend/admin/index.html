@@ -198,32 +198,35 @@
                 </div>
             </div>
 
-            <div class="admin-view" id="guidesListView">
-                <div class="card p-6">
-                    <div class="admin-card-header">
-                        <h3 class="font-bold">Danh sách hướng dẫn viên</h3>
-                        <span class="badge badge-info" id="guidesCountBadge">Đang tải...</span>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Hướng dẫn viên</th>
-                                    <th>Khu vực</th>
-                                    <th>Ngôn ngữ</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="guidesListBody">
-                                <tr>
-                                    <td colspan="5" class="text-muted">Đang tải danh sách hướng dẫn viên...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="admin-view" id="guidesListView">
+    <div class="card p-6">
+        <div class="admin-card-header">
+            <h3 class="font-bold">Danh sách hướng dẫn viên</h3>
+            <div class="flex gap-2">
+                <input type="text" class="form-control form-control-sm" placeholder="Tìm tên, khu vực...">
+                <button class="btn btn-primary btn-sm"><i class="bx bx-plus"></i> Thêm Guide</button>
             </div>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Hướng dẫn viên</th>
+                        <th>Khu vực</th>
+                        <th>Ngôn ngữ</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="guidesListBody">
+                    <tr>
+                        <td colspan="5" class="text-muted">Đang tải danh sách hướng dẫn viên...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
             <div class="admin-view" id="vouchersView">
                 <div class="admin-grid-2">

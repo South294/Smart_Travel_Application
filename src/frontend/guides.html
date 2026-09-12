@@ -23,7 +23,7 @@
                 <a href="tours.html" class="nav-link">Tour du lịch</a>
                 <a href="map.html" class="nav-link">Bản đồ</a>
                 <a href="promotions.html" class="nav-link">Khuyến mãi</a>
-                <a href="guides.html" class="nav-link active">Thuê HDV</a>
+                <a href="guide-register.html" class="nav-link">Đăng ký HDV</a>
             </nav>
             <div class="nav-actions">
                 <a href="auth.html" class="btn btn-outline">Đăng nhập</a>
@@ -32,11 +32,114 @@
         </div>
     </header>
 
-    <div class="page-hero">
+<div class="page-hero">
         <div class="container">
             <h1>Tìm Hướng Dẫn Viên Bản Địa</h1>
             <p>Trải nghiệm văn hóa địa phương chân thực nhất cùng những người bạn đồng hành am hiểu</p>
         </div>
+    </div>
+
+    <div class="container section">
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <h2 class="section-title mb-0">HDV Nổi Bật</h2>
+            <select class="form-control sort-select">
+                <option>Đánh giá cao nhất</option>
+                <option>Giá thấp đến cao</option>
+                <option>Giá cao đến thấp</option>
+            </select>
+        </div>
+
+        <div class="grid guides-grid" id="guidesGrid">
+            <div class="card p-6 text-center text-muted">Đang tải danh sách hướng dẫn viên...</div>
+        </div>
+
+        <div class="register-banner">
+            <h3 class="font-bold text-xl mb-2">Bạn am hiểu địa phương của mình?</h3>
+            <p class="text-muted mb-4">Đăng ký trở thành Hướng Dẫn Viên để kiếm thêm thu nhập và gặp gỡ bạn bè quốc tế.</p>
+            <a href="guide-register.html" class="btn btn-primary">Đăng ký làm Hướng Dẫn Viên</a>
+        </div>
+    </div>
+
+    <div class="container section" style="margin-top: 40px;">
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <h2 class="section-title mb-0">Thuê Hướng Dẫn Viên</h2>
+            <select class="form-control sort-select">
+                <option>Nhiều đánh giá nhất</option>
+                <option>Giá thấp nhất</option>
+            </select>
+        </div>
+        
+        <div class="hire-guide-section">
+            <p class="text-muted mb-4">Kết nối với địa natives am hiểu để trải nghiệm tour thật:</p>
+            <div class="grid hire-cards" id="hireCards">
+                <div class="card card-interactive hire-card">
+                    <div class="tour-img">
+                        <img src="https://images.unsplash.com/photo-1615389139712-bcf869d440e3?auto=format&fit=crop&w=400&q=80" alt="Hà Nội Tour">
+                        <div class="tour-badge badge badge-warning">Đề xuất</div>
+                    </div>
+                    <div class="tour-info">
+                        <h3 class="font-bold">Tour Hà Nội - Bản địa</h3>
+                        <p class="text-muted"><i class="bx bx-map"></i> Hà Nội, Việt Nam</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div>
+                                <span class="price-large">250.000₫</span>/ngày
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="openHireModal('h1')">Thuê</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-interactive hire-card">
+                    <div class="tour-img">
+                        <img src="https://images.unsplash.com/photo-1621972517623-9486b3c0d015?auto=format&fit=crop&w=400&q=80" alt="Sapa Tour">
+                        <div class="tour-badge badge badge-primary">Hot</div>
+                    </div>
+                    <div class="tour-info">
+                        <h3 class="font-bold">Du Lịch Sapa 3N2Đ</h3>
+                        <p class="text-muted"><i class="bx bx-map"></i> Lào Cai, Việt Nam</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div>
+                                <span class="price-large">350.000₫</span>/ngày
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="openHireModal('h2')">Thuê</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="hireGuideModal">
+        <div class="modal-content modal-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">Thuê hướng dẫn viên</h3>
+                <button class="btn btn-icon" data-modal-close><i class="bx bx-x"></i></button>
+            </div>
+            <form id="hireGuideForm">
+                <input type="hidden" id="hireGuideId">
+                <div class="form-group">
+                    <label class="form-label">Hướng dẫn viên</label>
+                    <input type="text" class="form-control" id="hireGuideName" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Điểm đến</label>
+                    <input type="text" class="form-control" id="hireDestination" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ngày đi</label>
+                    <input type="date" class="form-control" id="hireTripDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ghi chú cho hướng dẫn viên</label>
+                    <textarea class="form-control" id="hireNote" rows="3" placeholder="VD: Có người lớn tuổi, cần hỗ trợ nhiều..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" class="btn btn-outline" data-modal-close>Hủy</button>
+                    <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                </div>
+            </form>
+        </div>
+    </div>
     </div>
 
     <div class="container section">

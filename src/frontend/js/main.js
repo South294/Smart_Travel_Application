@@ -83,28 +83,84 @@ async function initAuthState() {
 
   if (!isLoggedIn) return;
 
-  var profile = await getStoredUserProfile();
+var profile = await getStoredUserProfile();
   if (!profile.email) return;
 
   var initials = getInitials(profile.full_name || profile.email || 'ST');
   var role = profile.role || localStorage.getItem('userRole') || '';
   var showGuideDashboard = false;
+  var isGuideApproved = false;
 
   if (role === 'guide') {
     try {
       var guideRes = await fetchApi('/api/guides/me');
       if (guideRes.ok) {
         var guideProfile = await guideRes.json();
-        showGuideDashboard = guideProfile && guideProfile.status === 'approved';
+        isGuideApproved = guideProfile && guideProfile.status === 'approved';
+        showGuideDashboard = isGuideApproved;
       }
     } catch (e) {}
+  }
+
+  // Control navbar visibility based on guide status
+  var registerHdvLink = document.querySelector('a.nav-link[href="guides.html"]');
+  var guideHdvLink = document.querySelector('a.nav-link[href="guide-dashboard.html"]');
+  if (registerHdvLink) {
+    if (role !== 'guide') {
+      // User thường: Ẩn "Đăng ký HDV"
+      registerHdvLink.style.display = 'none';
+    } else if (!isGuideApproved) {
+      // Guide chờ duyệt: Hiện "Đăng ký HDV" nhưng Ẩn "HĐV riêng"
+      registerHdvLink.style.display = '';
+      if (guideHdvLink) {
+        guideHdvLink.style.display = 'none';
+      }
+    } else {
+      // Guide đã duyệt: Hiện cả 2 link
+      registerHdvLink.style.display = '';
+      if (guideHdvLink) {
+        guideHdvLink.style.display = '';
+      }
+    }
+  }
+  if (guideHdvLink) {
+    if (role !== 'guide') {
+      // User thường: Ẩn "HĐV riêng"
+      guideHdvLink.style.display = 'none';
+    } else if (!isGuideApproved) {
+      // Guide chờ duyệt: Ẩn "HĐV riêng"
+      guideHdvLink.style.display = 'none';
+    } else {
+      // Guide đã duyệt: Hiện "HĐV riêng"
+      guideHdvLink.style.display = '';
+    }
+  }
+
+  // Control dashboard button visibility
+  var dashboardBtn = document.querySelector('a.btn-ghost[href="guide-dashboard.html"]');
+  if (dashboardBtn) {
+    if (!isGuideApproved) {
+      dashboardBtn.style.display = 'none';
+    } else {
+      dashboardBtn.style.display = '';
+    }
   }
 
   containers.forEach(function(container) {
     if (container.closest('.admin-page')) return;
     var links = '';
     if (showGuideDashboard) {
-      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HDV Dashboard</a>';
+      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HĐV Dashboard</a>';
+    }
+    links += '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
+    container.innerHTML = links;
+  });
+
+  containers.forEach(function(container) {
+    if (container.closest('.admin-page')) return;
+    var links = '';
+    if (showGuideDashboard) {
+      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HĐV Dashboard</a>';
     }
     links += '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
     container.innerHTML = links;
@@ -1011,23 +1067,121 @@ async function initGuideDashboard() {
     return;
   }
 
+  initGuidePortalNavigation();
+  var userProfile = {};
+
   try {
-    var dashboardRes = await fetchApi('/api/guides/me/dashboard');
-    if (dashboardRes.ok) {
-      var data = await dashboardRes.json();
-      setTextBySelector('#guideTripsMonth', String(data.stats && data.stats.trips_month || 0));
-      setTextBySelector('#guideEarningsMonth', formatCurrency(data.stats && data.stats.earnings_month || 0));
-      renderGuideHistory(data.history || []);
+    var userRes = await fetchApi('/api/users/me');
+    if (userRes.ok) {
+      userProfile = await userRes.json();
+      renderGuideProfile(userProfile);
     }
   } catch (e) {}
 
   try {
-    var reqRes = await fetchApi('/api/guides/me/requests');
-    if (reqRes.ok) {
-      var requests = await reqRes.json();
-      renderGuideRequests(requests || []);
+    var dashboardRes = await fetchApi('/api/guides/me/dashboard');
+    if (dashboardRes.ok) {
+      var data = await dashboardRes.json();
+      renderGuideProfile({
+        ...data.guide,
+        full_name: userProfile.full_name || data.guide.name,
+        email: userProfile.email || '--'
+      });
+      renderGuideDashboardData(data);
     }
   } catch (e) {}
+}
+
+function initGuidePortalNavigation() {
+  document.querySelectorAll('[data-guide-view]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      var viewId = button.getAttribute('data-guide-view');
+      document.querySelectorAll('[data-guide-view]').forEach(function(item) { item.classList.remove('active'); });
+      document.querySelectorAll('.guide-view').forEach(function(view) { view.classList.remove('active'); });
+      button.classList.add('active');
+      var view = document.getElementById(viewId);
+      if (view) view.classList.add('active');
+      setTextBySelector('#guideViewTitle', button.getAttribute('data-guide-title') || 'Cổng hướng dẫn viên');
+      var sidebar = document.getElementById('guideSidebar');
+      if (sidebar) sidebar.classList.remove('is-open');
+    });
+  });
+
+  var menuButton = document.getElementById('guideMenuBtn');
+  if (menuButton) {
+    menuButton.addEventListener('click', function() {
+      var sidebar = document.getElementById('guideSidebar');
+      if (sidebar) sidebar.classList.toggle('is-open');
+    });
+  }
+
+  var logoutButton = document.getElementById('guideLogoutBtn');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function() {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userRole');
+      window.location.href = 'auth.html';
+    });
+  }
+}
+
+function renderGuideDashboardData(data) {
+  var stats = data.stats || {};
+  var activeTrips = data.active_trips || [];
+  var earnings = formatCurrency(stats.earnings_month || 0);
+  var activeCount = activeTrips.length;
+  var isActive = activeCount > 0;
+
+  setTextBySelector('#guideTripsMonth', String(stats.trips_month || 0));
+  setTextBySelector('#guideEarningsMonth', earnings);
+  setTextBySelector('#guideWorkEarnings', earnings);
+  setTextBySelector('#guideMapEarnings', earnings);
+  setTextBySelector('#guideActiveTrips', String(activeCount));
+  setTextBySelector('#guideWorkActiveTrips', String(activeCount));
+  setTextBySelector('#guideActiveStatus', isActive ? 'Đang trong chuyến' : 'Đang rảnh');
+  setTextBySelector('#guideStatusText', isActive ? 'Bạn đang trong chuyến' : 'Bạn đang không trong chuyến');
+  setTextBySelector('#guideCurrentTripBadge', activeCount + ' chuyến');
+
+  var statusDot = document.getElementById('guideStatusDot');
+  if (statusDot) statusDot.classList.toggle('is-active', isActive);
+  var mapEmpty = document.getElementById('guideMapEmpty');
+  if (mapEmpty) mapEmpty.style.display = isActive ? 'none' : 'grid';
+  var mapBadge = document.getElementById('guideMapBadge');
+  if (mapBadge) mapBadge.textContent = isActive ? 'Đang dẫn tour' : 'Sẵn sàng';
+
+  renderGuideActiveTrips(activeTrips);
+  renderGuideHistory(data.history || []);
+}
+
+function renderGuideProfile(profile) {
+  var guide = profile.guide || profile;
+  var name = profile.full_name || guide.name || 'Hướng dẫn viên';
+  var email = profile.email || '--';
+  var initials = getInitials(name);
+  ['#guideUserName', '#guideProfileName', '#guideInfoName'].forEach(function(selector) { setTextBySelector(selector, name); });
+  ['#guideProfileEmail', '#guideInfoEmail'].forEach(function(selector) { setTextBySelector(selector, email); });
+  ['#guideUserAvatar', '#guideProfileAvatar'].forEach(function(selector) { setTextBySelector(selector, initials); });
+  setTextBySelector('#guideInfoExperience', (guide.experience_years || 0) + ' năm');
+  setTextBySelector('#guideInfoPrice', formatCurrency(guide.price_per_day || 0) + '/ngày');
+  setTextBySelector('#guideInfoAreas', (guide.areas || []).join(', ') || '--');
+  setTextBySelector('#guideInfoLanguages', (guide.languages || []).join(', ') || '--');
+  setTextBySelector('#guideInfoBio', guide.bio || '--');
+}
+
+function renderGuideActiveTrips(list) {
+  var container = document.getElementById('guideActiveTripList');
+  if (!container) return;
+  if (!Array.isArray(list) || list.length === 0) {
+    container.innerHTML = '<p class="text-muted text-sm">Bạn chưa có chuyến đang hoạt động.</p>';
+    return;
+  }
+  container.innerHTML = list.map(function(item) {
+    return '<div class="guide-trip-item"><h4>' + escapeHtml(item.tour_title || 'Tour') + '</h4>' +
+      '<p><i class="bx bx-map"></i> ' + escapeHtml(item.destination || '--') + '</p>' +
+      '<p><i class="bx bx-calendar"></i> ' + escapeHtml(item.trip_date || '--') + '</p>' +
+      '<strong>' + (item.status === 'in_progress' ? 'Đang thực hiện' : 'Đã được phân công') + '</strong></div>';
+  }).join('');
 }
 
 function renderGuideHistory(list) {

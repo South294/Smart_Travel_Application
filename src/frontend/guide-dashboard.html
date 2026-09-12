@@ -3,93 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Trang làm việc dành cho hướng dẫn viên SmartTravel.">
-    <title>Bảng điều khiển Hướng dẫn viên - SmartTravel</title>
+    <meta name="description" content="Cổng làm việc riêng dành cho hướng dẫn viên SmartTravel.">
+    <title>Cổng hướng dẫn viên - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages/guides.css">
+    <link rel="stylesheet" href="css/pages/guide-dashboard.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
-<body class="bg-light guide-dashboard">
+<body class="guide-dashboard-page">
 
-    <header class="header">
+
+    <header class="header guide-user-header">
         <div class="container navbar">
             <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
-            <button class="mobile-menu-btn" aria-label="Menu"><i class="bx bx-menu"></i></button>
-            <nav class="nav-links">
-                <a href="index.html" class="nav-link">Trang chủ</a>
-                <a href="tours.html" class="nav-link">Tour du lịch</a>
-                <a href="map.html" class="nav-link">Bản đồ</a>
-                <a href="promotions.html" class="nav-link">Khuyến mãi</a>
-                <a href="guides.html" class="nav-link">Thuê HDV</a>
+            <button class="mobile-menu-btn" id="guideMenuBtn" aria-label="Menu"><i class="bx bx-menu"></i></button>
+            <nav class="nav-links guide-section-nav" id="guideSidebar" aria-label="Điều hướng hướng dẫn viên">
+                <button type="button" class="guide-side-link active" data-guide-view="guideMapView" data-guide-title="Bản đồ chuyến đi"><i class="bx bx-map-alt"></i> Bản đồ</button>
+                <button type="button" class="guide-side-link" data-guide-view="guideWorkView" data-guide-title="Thu nhập & công việc"><i class="bx bx-wallet"></i> Thu nhập & công việc</button>
+                <button type="button" class="guide-side-link" data-guide-view="guideProfileView" data-guide-title="Hồ sơ hướng dẫn viên"><i class="bx bx-user-circle"></i> Hồ sơ</button>
             </nav>
-            <div class="nav-actions">
-                <a href="profile.html" class="user-avatar profile-initials" title="Trang cá nhân">ST</a>
+            <div class="nav-actions guide-user-actions">
+                <span class="guide-user-name" id="guideUserName">Hướng dẫn viên</span>
+                <div class="guide-user-avatar user-avatar" id="guideUserAvatar">HD</div>
+                <button type="button" class="btn btn-outline btn-sm guide-logout" id="guideLogoutBtn"><i class="bx bx-log-out"></i> Đăng xuất</button>
             </div>
         </div>
     </header>
 
-    <section class="page-title-banner">
-        <div class="container">
-            <h1>Bảng điều khiển Hướng dẫn viên</h1>
-            <p class="text-muted">Quản lý chuyến đi, yêu cầu mới và thu nhập hàng tháng của bạn.</p>
-        </div>
-    </section>
+    <main class="guide-main">
+        <header class="guide-topbar">
+            <div class="flex items-center gap-4">
+                <div>
+                    <h1 class="guide-topbar-title" id="guideViewTitle">Bản đồ chuyến đi</h1>
+                    <p class="guide-topbar-subtitle">Không gian làm việc riêng của bạn</p>
+                </div>
+            </div>
+            <a href="index.html" class="guide-return-link"><i class="bx bx-arrow-back"></i> Về trang khách hàng</a>
+        </header>
 
-    <main class="container section">
-        <div class="guide-dashboard-grid">
-            <div class="card p-6">
-                <div class="dashboard-stat">
-                    <div class="icon-circle icon-circle-primary"><i class="bx bx-briefcase"></i></div>
-                    <div>
-                        <p class="text-muted text-sm">Số chuyến đã làm trong tháng</p>
-                        <h2 class="stat-highlight" id="guideTripsMonth">0</h2>
-                        <p class="text-xs text-muted">Cập nhật theo lịch sử hoàn thành</p>
+        <div class="guide-content">
+            <section class="guide-view active" id="guideMapView">
+                <div class="guide-stat-grid">
+                    <div class="card guide-stat-card"><div class="guide-stat-label">Trạng thái hiện tại</div><div class="guide-stat-value success" id="guideActiveStatus">Đang rảnh</div></div>
+                    <div class="card guide-stat-card"><div class="guide-stat-label">Chuyến đang hoạt động</div><div class="guide-stat-value" id="guideActiveTrips">0</div></div>
+                    <div class="card guide-stat-card"><div class="guide-stat-label">Thu nhập tháng này</div><div class="guide-stat-value" id="guideMapEarnings">0₫</div></div>
+                </div>
+                <div class="guide-panel-grid">
+                    <div class="card guide-panel">
+                        <div class="guide-panel-header"><h3>Bản đồ chuyến đi</h3><span class="badge badge-success" id="guideMapBadge">Sẵn sàng</span></div>
+                        <div class="guide-location-gate" id="guideLocationGate">
+                            <div><i class="bx bx-current-location"></i><strong>Cho phép định vị</strong><p>Bật định vị để SmartTravel biết vị trí hiện tại của bạn trong chuyến đi.</p></div>
+                            <button type="button" class="btn btn-primary btn-sm" id="guideEnableLocation"><i class="bx bx-target-lock"></i> Bật định vị</button>
+                        </div>
+                        <div class="guide-map" id="guideTripMap">
+                            <div id="guideLeafletMap"></div>
+                            <div class="guide-map-empty" id="guideMapEmpty"><div><i class="bx bx-map-alt"></i><p>Bật định vị để xem vị trí của bạn trên bản đồ.</p></div></div>
+                        </div>
+                        <p class="guide-location-status" id="guideLocationStatus"><i class="bx bx-info-circle"></i> Chưa bật định vị</p>
+                    </div>
+                    <div class="card guide-status-card">
+                        <div class="guide-panel-header"><h3>Chuyến hiện tại</h3><span class="badge badge-info" id="guideCurrentTripBadge">0 chuyến</span></div>
+                        <div class="guide-trip-list" id="guideActiveTripList"><p class="text-muted text-sm">Bạn chưa có chuyến đang hoạt động.</p></div>
+                        <div class="guide-status-line"><span class="guide-status-dot" id="guideStatusDot"></span><span id="guideStatusText">Bạn đang không trong chuyến</span></div>
                     </div>
                 </div>
-            </div>
-            <div class="card p-6">
-                <div class="dashboard-stat">
-                    <div class="icon-circle icon-circle-success"><i class="bx bx-wallet"></i></div>
-                    <div>
-                        <p class="text-muted text-sm">Thu nhập tháng này</p>
-                        <h2 class="stat-highlight" id="guideEarningsMonth">0₫</h2>
-                        <p class="text-xs text-muted">Tổng tiền đã ghi nhận</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card p-6">
-                <div class="dashboard-stat">
-                    <div class="icon-circle icon-circle-warning"><i class="bx bx-bell"></i></div>
-                    <div>
-                        <p class="text-muted text-sm">Yêu cầu chuyến mới</p>
-                        <h2 class="stat-highlight" id="guideRequestsCount">0</h2>
-                        <p class="text-xs text-muted">Cần phản hồi sớm</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="guide-dashboard-columns">
-            <div class="card p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold">Yêu cầu chuyến mới</h3>
-                    <span class="badge badge-warning" id="guideRequestsBadge">Đang tải...</span>
+            <section class="guide-view" id="guideWorkView">
+                <div class="guide-stat-grid">
+                    <div class="card guide-stat-card"><div class="guide-stat-label">Thu nhập tháng này</div><div class="guide-stat-value success" id="guideWorkEarnings">0₫</div></div>
+                    <div class="card guide-stat-card"><div class="guide-stat-label">Chuyến đã hoàn thành</div><div class="guide-stat-value" id="guideTripsMonth">0</div></div>
+                    <div class="card guide-stat-card"><div class="guide-stat-label">Chuyến đang hoạt động</div><div class="guide-stat-value warning" id="guideWorkActiveTrips">0</div></div>
                 </div>
-                <div class="guide-request-list" id="guideRequestsList"></div>
-            </div>
-            <div class="card p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold">Lịch sử chuyến đã làm</h3>
-                    <span class="badge badge-info" id="guideHistoryBadge">Đang tải...</span>
+                <div class="card guide-panel">
+                    <div class="guide-panel-header"><h3>Lịch sử làm việc</h3><span class="badge badge-info" id="guideHistoryBadge">0 chuyến</span></div>
+                    <div class="guide-history-list" id="guideHistoryList"><p class="text-muted text-sm">Đang tải lịch sử...</p></div>
                 </div>
-                <div class="guide-history-list" id="guideHistoryList"></div>
-            </div>
+            </section>
+
+            <section class="guide-view" id="guideProfileView">
+                <div class="guide-profile-layout">
+                    <div class="card guide-profile-card">
+                        <div class="guide-profile-avatar" id="guideProfileAvatar">HD</div>
+                        <h2 id="guideProfileName">Hướng dẫn viên</h2>
+                        <p id="guideProfileEmail">Đang tải email...</p>
+                        <span class="badge badge-success">Hồ sơ đã duyệt</span>
+                    </div>
+                    <div class="card guide-panel">
+                        <div class="guide-panel-header"><h3>Thông tin hướng dẫn viên</h3><span class="badge badge-success">Đang hoạt động</span></div>
+                        <div class="guide-info-list">
+                            <div class="guide-info-item"><span>Họ và tên</span><strong id="guideInfoName">--</strong></div>
+                            <div class="guide-info-item"><span>Email</span><strong id="guideInfoEmail">--</strong></div>
+                            <div class="guide-info-item"><span>Kinh nghiệm</span><strong id="guideInfoExperience">--</strong></div>
+                            <div class="guide-info-item"><span>Mức giá mỗi ngày</span><strong id="guideInfoPrice">--</strong></div>
+                            <div class="guide-info-item"><span>Khu vực hoạt động</span><strong id="guideInfoAreas">--</strong></div>
+                            <div class="guide-info-item"><span>Ngôn ngữ</span><strong id="guideInfoLanguages">--</strong></div>
+                        </div>
+                        <div class="mt-6"><div class="guide-info-item"><span>Giới thiệu</span><strong id="guideInfoBio">--</strong></div></div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/guide-map.js"></script>
 </body>
 </html>

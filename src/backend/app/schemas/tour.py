@@ -22,6 +22,7 @@ class TourBase(BaseModel):
     lat: Optional[float] = None
     lng: Optional[float] = None
     geo_location: Optional[LocationInfo] = None
+    guide_id: Optional[str] = None
 
 class TourCreate(TourBase):
     pass

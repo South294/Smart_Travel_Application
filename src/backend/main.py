@@ -1,11 +1,31 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.routers import auth, users, tours, bookings, vouchers, guides, admin
 from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_db
 import pymongo
 
-app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await connect_to_mongo()
+    db = get_db()
+    if db is not None:
+        await db.tours.create_index([("geo_location", pymongo.GEOSPHERE)])
+        await db.tours.create_index("slug", unique=True)
+        await db.tours.create_index("category")
+        await db.tours.create_index("is_active")
+        await db.users.create_index("email", unique=True)
+        await db.vouchers.create_index("code", unique=True)
+        await db.bookings.create_index("user_id")
+        await db.bookings.create_index("tour_id")
+        await db.bookings.create_index("status")
+        await db.guides.create_index("user_id")
+        await db.guides.create_index("status")
+    yield
+    await close_mongo_connection()
+
+app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,28 +40,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-async def startup_db_client():
-    await connect_to_mongo()
-    db = get_db()
-    if db is not None:
-        await db.tours.create_index([("geo_location", pymongo.GEOSPHERE)])
-        await db.tours.create_index("slug", unique=True)
-        await db.tours.create_index("category")
-        await db.tours.create_index("is_active")
-        await db.users.create_index("email", unique=True)
-        await db.vouchers.create_index("code", unique=True)
-        await db.vouchers.create_index("is_active")
-        await db.bookings.create_index("user_id")
-        await db.bookings.create_index("tour_id")
-        await db.bookings.create_index("status")
-        await db.guides.create_index("user_id")
-        await db.guides.create_index("status")
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    await close_mongo_connection()
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])

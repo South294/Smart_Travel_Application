@@ -1,0 +1,8 @@
+INFO:     Will watch for changes in these directories: ['D:\\Project\\Smart_Travel_Application\\src\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [1820] using StatReload
+INFO:     Started server process [2516]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Connected to MongoDB at mongodb://localhost:27017, database: smart_travel
+INFO:     127.0.0.1:60188 - "POST /api/auth/login HTTP/1.1" 400 Bad Request
