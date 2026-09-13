@@ -38,3 +38,8 @@ class TourUpdate(BaseModel):
 
 class TourResponse(TourBase):
     id: str
+
+class TourRecommendationResponse(TourResponse):
+    match_score: Optional[float] = None
+    match_reason: Optional[str] = None
+    match_percentage: Optional[int] = None

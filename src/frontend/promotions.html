@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Khuyến mãi và ưu đãi độc quyền tại SmartTravel. Tiết kiệm hơn cho chuyến đi tiếp theo của bạn.">
-    <title>Khuyến mãi - SmartTravel</title>
+    <title>Ưu đãi & Khuyến mãi - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages/promotions.css">
     <link rel="stylesheet" href="css/pages/redesign.css">
+    <link rel="stylesheet" href="css/pages/promotions.css?v=4">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -33,20 +33,30 @@
         </div>
     </header>
 
-    <div class="page-hero">
+    <div class="promo-hero">
         <div class="container">
-            <h1>Ưu đãi độc quyền</h1>
-            <p>Tiết kiệm hơn cho chuyến đi tiếp theo của bạn cùng SmartTravel</p>
+            <div class="promo-hero-inner">
+                <div class="promo-hero-text">
+                    <div class="promo-hero-tag"><i class="bx bx-gift"></i> Ưu đãi độc quyền 2026</div>
+                    <h1>Mã Giảm Giá & Voucher Du Lịch</h1>
+                    <p>Thu thập các voucher giảm giá giá trị cao để tiết kiệm tối đa chi phí cho kỳ nghỉ sắp tới của bạn cùng người thân</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="container section">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="section-title mb-0">Khuyến mãi đang diễn ra</h2>
-            <span class="badge badge-success"><i class="bx bx-check-circle"></i> 3 ưu đãi còn hiệu lực</span>
+        <div class="promo-filter-bar">
+            <div class="promo-tabs">
+                <button class="promo-tab-btn active">Tất cả ưu đãi</button>
+                <button class="promo-tab-btn">Tour Biển</button>
+                <button class="promo-tab-btn">Trekking & Núi</button>
+                <button class="promo-tab-btn">Bảo hiểm & Quà tặng</button>
+            </div>
+            <span class="badge badge-success"><i class="bx bx-check-shield"></i> 4 mã đang áp dụng</span>
         </div>
 
-        <div class="promotions-list">
+        <div class="promotions-grid">
 
             <div class="promo-card">
                 <div class="promo-img">
@@ -54,13 +64,13 @@
                     <div class="promo-badge promo-badge-red">Giảm 20%</div>
                 </div>
                 <div class="promo-content">
-                    <h3 class="font-bold text-xl mb-2">Chào Hè Sôi Động - Giảm 20% Tour Biển</h3>
-                    <p class="text-muted">Áp dụng cho tất cả các tour du lịch biển tại Hạ Long, Cát Bà, Đồ Sơn. Tối đa giảm 500.000₫.</p>
+                    <h3>Chào Hè Sôi Động - Giảm 20% Tour Biển Đảo</h3>
+                    <p class="promo-desc">Áp dụng cho toàn bộ tour Hạ Long, Cát Bà, Phú Quốc, Nha Trang. Giảm tối đa 500.000₫ trên tổng hóa đơn.</p>
+                    <div class="promo-expiry"><i class="bx bx-time-five"></i> Hạn sử dụng: 30/06/2026</div>
+                </div>
+                <div class="promo-stub">
                     <div class="promo-code-box">SUMMER20</div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="promo-expiry text-sm text-warning font-semibold"><i class="bx bx-time"></i> Hết hạn: 30/06/2026</span>
-                        <button class="btn btn-primary btn-claim-promo" data-code="SUMMER20">Nhận mã ngay</button>
-                    </div>
+                    <button class="btn btn-primary btn-claim-promo" data-code="SUMMER20">Nhận mã ngay</button>
                 </div>
             </div>
 
@@ -70,13 +80,13 @@
                     <div class="promo-badge promo-badge-green">Đồng giá 1.999k</div>
                 </div>
                 <div class="promo-content">
-                    <h3 class="font-bold text-xl mb-2">Lên Rừng Vượt Thác - Đồng giá siêu rẻ</h3>
-                    <p class="text-muted">Trải nghiệm các tour Trekking Mộc Châu, Sapa, Hà Giang với mức giá không thể tốt hơn.</p>
+                    <h3>Lên Rừng Vượt Thác - Đồng Giá Khám Phá Tây Bắc</h3>
+                    <p class="promo-desc">Trải nghiệm trekking Sapa, Mộc Châu, Hà Giang dành cho nhóm từ 2 người trở lên. Tiết kiệm lên đến 35%.</p>
+                    <div class="promo-expiry"><i class="bx bx-time-five"></i> Hạn sử dụng: 15/07/2026</div>
+                </div>
+                <div class="promo-stub">
                     <div class="promo-code-box">TREK1999</div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="promo-expiry text-sm text-warning font-semibold"><i class="bx bx-time"></i> Hết hạn: 15/07/2026</span>
-                        <button class="btn btn-primary btn-claim-promo" data-code="TREK1999">Nhận mã ngay</button>
-                    </div>
+                    <button class="btn btn-primary btn-claim-promo" data-code="TREK1999">Nhận mã ngay</button>
                 </div>
             </div>
 
@@ -86,16 +96,40 @@
                     <div class="promo-badge promo-badge-orange">Tặng bảo hiểm</div>
                 </div>
                 <div class="promo-content">
-                    <h3 class="font-bold text-xl mb-2">Tặng Gói Bảo Hiểm Toàn Diện</h3>
-                    <p class="text-muted">Nhận ngay gói bảo hiểm du lịch toàn diện trị giá 300.000₫ khi đặt bất kỳ tour nước ngoài nào.</p>
+                    <h3>Tặng Gói Bảo Hiểm Toàn Diện Trị Giá 300K</h3>
+                    <p class="promo-desc">Nhận ngay gói bảo hiểm du lịch y tế & hành lý cao cấp khi đặt bất kỳ tour có thời lượng từ 3 ngày trở lên.</p>
+                    <div class="promo-expiry"><i class="bx bx-time-five"></i> Hạn sử dụng: 31/12/2026</div>
+                </div>
+                <div class="promo-stub">
                     <div class="promo-code-box">SAFEFREE</div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="promo-expiry text-sm text-warning font-semibold"><i class="bx bx-time"></i> Hết hạn: 31/12/2026</span>
-                        <button class="btn btn-primary btn-claim-promo" data-code="SAFEFREE">Nhận mã ngay</button>
-                    </div>
+                    <button class="btn btn-primary btn-claim-promo" data-code="SAFEFREE">Nhận mã ngay</button>
                 </div>
             </div>
 
+            <div class="promo-card">
+                <div class="promo-img">
+                    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80" alt="Việt Nam">
+                    <div class="promo-badge promo-badge-blue">Giảm 500k</div>
+                </div>
+                <div class="promo-content">
+                    <h3>Hành Trình Di Sản - Giảm 500.000₫ Đơn Từ 3 Triệu</h3>
+                    <p class="promo-desc">Ưu đãi chào đón thành viên mới khám phá nét đẹp văn hóa cố đô Huế, Hội An, Tràng An Ninh Bình.</p>
+                    <div class="promo-expiry"><i class="bx bx-time-five"></i> Hạn sử dụng: 31/12/2026</div>
+                </div>
+                <div class="promo-stub">
+                    <div class="promo-code-box">VIETNAM500</div>
+                    <button class="btn btn-primary btn-claim-promo" data-code="VIETNAM500">Nhận mã ngay</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="promo-banner-cta">
+            <div class="promo-banner-cta-text">
+                <h3>Bạn có mã khuyến mãi đối tác riêng?</h3>
+                <p>Nhập mã ngay tại bước thanh toán để nhận thêm ưu đãi cộng dồn độc quyền cho chuyến đi của bạn.</p>
+            </div>
+            <a href="tours.html" class="btn btn-primary">Khám phá tour ngay</a>
         </div>
     </div>
 

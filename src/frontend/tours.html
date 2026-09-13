@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Khám phá hơn 500 tour du lịch chất lượng cao tại SmartTravel. Lọc theo giá, đánh giá, thời gian và loại tour.">
+    <meta name="description" content="Khám phá các tour du lịch chất lượng cao tại SmartTravel. Lọc theo giá, đánh giá, thời gian và loại tour.">
     <title>Tour du lịch - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages/tours.css?v=2">
     <link rel="stylesheet" href="css/pages/redesign.css">
+    <link rel="stylesheet" href="css/pages/tours.css?v=4">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -33,26 +33,46 @@
         </div>
     </header>
 
-    <div class="page-title-banner">
+    <div class="tours-page-header">
         <div class="container">
-            <h1>Khám phá Tour Du lịch Tốt nhất</h1>
-            <p class="text-muted mt-4">Hơn 500+ tour du lịch đang chờ đón bạn</p>
+            <div class="tours-header-inner">
+                <div class="tours-header-content">
+                    <h1>Khám Phá Tour Du Lịch Tuyệt Vời</h1>
+                    <p>Hơn 500+ hành trình độc đáo, hướng dẫn viên bản địa chu đáo và cam kết dịch vụ tốt nhất Việt Nam</p>
+                </div>
+                <div class="tours-header-stats">
+                    <div class="tours-stat-item">
+                        <span class="tours-stat-num">500+</span>
+                        <span class="tours-stat-label">Hành trình</span>
+                    </div>
+                    <div class="tours-stat-item">
+                        <span class="tours-stat-num">4.9/5</span>
+                        <span class="tours-stat-label">Đánh giá</span>
+                    </div>
+                    <div class="tours-stat-item">
+                        <span class="tours-stat-num">100%</span>
+                        <span class="tours-stat-label">Cam kết chất lượng</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="container section">
         <div class="tours-layout">
 
-            <aside class="filters-sidebar card">
-                <h3 class="font-bold mb-4 flex items-center gap-2"><i class="bx bx-filter-alt"></i> Bộ lọc tìm kiếm</h3>
-
-                <div class="filter-group">
-                    <label class="form-label">Điểm đến</label>
-                    <input type="text" class="form-control" id="tourFilterDestination" placeholder="Tìm thành phố, quốc gia...">
+            <aside class="filters-sidebar">
+                <div class="filter-sidebar-title">
+                    <i class="bx bx-filter-alt"></i> Bộ lọc tìm kiếm
                 </div>
 
                 <div class="filter-group">
-                    <label class="form-label">Loại tour</label>
+                    <label class="form-label"><i class="bx bx-search"></i> Điểm đến</label>
+                    <input type="text" class="form-control" id="tourFilterDestination" placeholder="Tìm thành phố, địa danh...">
+                </div>
+
+                <div class="filter-group">
+                    <label class="form-label"><i class="bx bx-category"></i> Loại tour</label>
                     <div class="filter-chips" id="tourFilterCategories">
                         <span class="filter-chip active" data-value="Tất cả">Tất cả</span>
                         <span class="filter-chip" data-value="Biển đảo">Biển đảo</span>
@@ -64,8 +84,8 @@
                 </div>
 
                 <div class="filter-group">
-                    <label class="form-label">Khoảng giá (VNĐ)</label>
-                    <div class="flex gap-4 items-center">
+                    <label class="form-label"><i class="bx bx-wallet"></i> Khoảng giá (VNĐ)</label>
+                    <div class="flex gap-2 items-center">
                         <input type="number" class="form-control" id="tourFilterPriceMin" placeholder="Từ">
                         <span class="text-muted">-</span>
                         <input type="number" class="form-control" id="tourFilterPriceMax" placeholder="Đến">
@@ -73,18 +93,18 @@
                 </div>
 
                 <div class="filter-group">
-                    <label class="form-label">Thời gian</label>
+                    <label class="form-label"><i class="bx bx-time-five"></i> Thời gian chuyến đi</label>
                     <select class="form-control" id="tourFilterDuration">
-                        <option value="all">Tất cả</option>
-                        <option value="1-2">1-2 ngày</option>
-                        <option value="3-4">3-4 ngày</option>
-                        <option value="5-7">5-7 ngày</option>
+                        <option value="all">Tất cả thời lượng</option>
+                        <option value="1-2">1 - 2 ngày</option>
+                        <option value="3-4">3 - 4 ngày</option>
+                        <option value="5-7">5 - 7 ngày</option>
                         <option value="7+">Trên 7 ngày</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <label class="form-label">Đánh giá</label>
+                    <label class="form-label"><i class="bx bx-star"></i> Đánh giá tối thiểu</label>
                     <div class="checkbox-list" id="tourFilterRatings">
                         <label class="checkbox-item"><input type="checkbox" value="5"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i></span> 5 sao</label>
                         <label class="checkbox-item"><input type="checkbox" value="4"> <span class="text-warning"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bx-star"></i></span> 4 sao trở lên</label>
@@ -92,13 +112,17 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary w-full mt-4" id="tourFilterApply">Áp dụng bộ lọc</button>
-                <button class="btn btn-ghost w-full mt-2" id="tourFilterReset">Xóa bộ lọc</button>
+                <div class="filter-actions">
+                    <button class="btn btn-primary w-full" id="tourFilterApply">Áp dụng bộ lọc</button>
+                    <button class="btn btn-ghost w-full" id="tourFilterReset">Thiết lập lại</button>
+                </div>
             </aside>
 
             <main class="tours-list">
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-muted">Hiển thị <strong id="toursResultCount">24</strong> kết quả</p>
+                <div class="tours-list-header">
+                    <div class="tours-count-badge">
+                        Hiển thị <strong id="toursResultCount">6</strong> chuyến đi phù hợp
+                    </div>
                     <div class="flex gap-2 items-center">
                         <select class="form-control sort-select">
                             <option>Đánh giá tốt nhất</option>
@@ -109,28 +133,36 @@
                     </div>
                 </div>
 
-                <div class="grid list-grid" id="toursListGrid">
+                <div class="list-grid" id="toursListGrid">
 
                     <div class="card card-interactive tour-card list-card" data-title="Mộc Châu Mộng Mơ - Tour 3N2Đ Siêu Cấp" data-location="Sơn La, Việt Nam" data-category="Núi rừng" data-duration="3" data-price="2800000" data-rating="4.9">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=800&q=80" alt="Mộc Châu">
-                            <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.9 (120)</div>
-                            <div class="tour-badge-left badge badge-danger"><i class="bx bxs-hot"></i> Best Seller</div>
+                            <div class="tour-badge-top-left">
+                                <span class="badge-tag badge-tag-hot"><i class="bx bxs-hot"></i> Bán chạy</span>
+                            </div>
+                            <div class="tour-badge-top-right">
+                                <span class="badge-tag badge-tag-rating"><i class="bx bxs-star"></i> 4.9 (120)</span>
+                            </div>
                         </div>
                         <div class="tour-info">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="badge badge-primary">3N2Đ</span>
-                                <span class="badge badge-success">Núi rừng</span>
-                            </div>
-                            <h3 class="font-bold tour-title">Mộc Châu Mộng Mơ - Tour 3N2Đ Siêu Cấp</h3>
-                            <p class="text-muted mt-2 font-sm tour-desc">Trọn gói xe đưa đón, homestay, ăn uống và tham quan đồi chè, thác Dải Yếm.</p>
-                            <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Sơn La, Việt Nam</p>
-                            <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                                <div>
-                                    <span class="price-old">3.500.000₫</span>
-                                    <div class="price-large">2.800.000₫</div>
+                            <div class="tour-info-head">
+                                <div class="tour-meta-pills">
+                                    <span class="meta-pill meta-pill-duration">3N2Đ</span>
+                                    <span class="meta-pill meta-pill-cat">Núi rừng</span>
                                 </div>
-                                <a href="checkout.html?title=M%E1%BB%99c+Ch%C3%A2u+M%E1%BB%99ng+M%C6%A1+-+Tour+3N2%C4%90&price=2800000&original=3500000&duration=3N2%C4%90&img=https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
+                                <h3 class="tour-title">Mộc Châu Mộng Mơ - Tour 3N2Đ Siêu Cấp</h3>
+                                <p class="tour-desc">Trọn gói xe đưa đón khứ hồi cao cấp, homestay ngắm mây, ẩm thực Tây Bắc và tham quan đồi chè trái tim, thác Dải Yếm.</p>
+                                <div class="tour-location-row">
+                                    <i class="bx bx-map-pin"></i> Sơn La, Việt Nam
+                                </div>
+                            </div>
+                            <div class="tour-info-bottom">
+                                <div class="tour-pricing">
+                                    <span class="tour-price-old">3.500.000₫</span>
+                                    <div class="tour-price-current">2.800.000₫ <span class="tour-price-unit">/ khách</span></div>
+                                </div>
+                                <a href="checkout.html?title=M%E1%BB%99c+Ch%C3%A2u+M%E1%BB%99ng+M%C6%A1+-+Tour+3N2%C4%90&price=2800000&original=3500000&duration=3N2%C4%90&img=https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=800&q=80" class="btn-book-tour">Đặt ngay <i class="bx bx-right-arrow-alt"></i></a>
                             </div>
                         </div>
                     </div>
@@ -138,21 +170,31 @@
                     <div class="card card-interactive tour-card list-card" data-title="Du thuyền Vịnh Hạ Long 5 Sao đẳng cấp" data-location="Quảng Ninh, Việt Nam" data-category="Văn hóa" data-duration="4" data-price="4200000" data-rating="4.8">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" alt="Hạ Long">
-                            <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.8 (95)</div>
+                            <div class="tour-badge-top-left">
+                                <span class="badge-tag badge-tag-discount"><i class="bx bxs-discount"></i> Ưu đãi</span>
+                            </div>
+                            <div class="tour-badge-top-right">
+                                <span class="badge-tag badge-tag-rating"><i class="bx bxs-star"></i> 4.8 (95)</span>
+                            </div>
                         </div>
                         <div class="tour-info">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="badge badge-primary">4N3Đ</span>
-                                <span class="badge badge-info">Văn hóa</span>
-                            </div>
-                            <h3 class="font-bold tour-title">Du thuyền Vịnh Hạ Long 5 Sao đẳng cấp</h3>
-                            <p class="text-muted mt-2 font-sm tour-desc">Trải nghiệm kỳ nghỉ trên du thuyền sang trọng, thưởng thức hải sản và câu mực đêm.</p>
-                            <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Quảng Ninh, Việt Nam</p>
-                            <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                                <div>
-                                    <div class="price-large">4.200.000₫</div>
+                            <div class="tour-info-head">
+                                <div class="tour-meta-pills">
+                                    <span class="meta-pill meta-pill-duration">4N3Đ</span>
+                                    <span class="meta-pill meta-pill-cat">Văn hóa</span>
                                 </div>
-                                <a href="checkout.html?title=Du+thuy%E1%BB%81n+V%E1%BB%8Bnh+H%E1%BA%A1+Long+5+Sao&price=4200000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
+                                <h3 class="tour-title">Du thuyền Vịnh Hạ Long 5 Sao đẳng cấp</h3>
+                                <p class="tour-desc">Kỳ nghỉ thượng lưu trên vịnh kỳ quan di sản UNESCO, tiệc tối buffet hải sản tươi sống, trải nghiệm chèo thuyền kayak và câu mực đêm.</p>
+                                <div class="tour-location-row">
+                                    <i class="bx bx-map-pin"></i> Quảng Ninh, Việt Nam
+                                </div>
+                            </div>
+                            <div class="tour-info-bottom">
+                                <div class="tour-pricing">
+                                    <span class="tour-price-old">5.100.000₫</span>
+                                    <div class="tour-price-current">4.200.000₫ <span class="tour-price-unit">/ khách</span></div>
+                                </div>
+                                <a href="checkout.html?title=Du+thuy%E1%BB%81n+V%E1%BB%8Bnh+H%E1%BA%A1+Long+5+Sao&price=4200000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" class="btn-book-tour">Đặt ngay <i class="bx bx-right-arrow-alt"></i></a>
                             </div>
                         </div>
                     </div>
@@ -160,23 +202,31 @@
                     <div class="card card-interactive tour-card list-card" data-title="Combo Cát Bà - Đảo Ngọc 4N3Đ" data-location="Hải Phòng, Việt Nam" data-category="Biển đảo" data-duration="4" data-price="5500000" data-rating="4.7">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=800&q=80" alt="Cát Bà">
-                            <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.7 (88)</div>
-                            <div class="tour-badge-left badge badge-danger"><i class="bx bxs-discount"></i> Giảm 25%</div>
+                            <div class="tour-badge-top-left">
+                                <span class="badge-tag badge-tag-hot"><i class="bx bxs-discount"></i> Giảm 25%</span>
+                            </div>
+                            <div class="tour-badge-top-right">
+                                <span class="badge-tag badge-tag-rating"><i class="bx bxs-star"></i> 4.7 (88)</span>
+                            </div>
                         </div>
                         <div class="tour-info">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="badge badge-primary">4N3Đ</span>
-                                <span class="badge badge-success">Biển đảo</span>
-                            </div>
-                            <h3 class="font-bold tour-title">Combo Cát Bà - Đảo Ngọc 4N3Đ</h3>
-                            <p class="text-muted mt-2 font-sm tour-desc">Tận hưởng nghỉ dưỡng tại vịnh Lan Hạ với các hoạt động chèo kayak và câu mực.</p>
-                            <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Hải Phòng, Việt Nam</p>
-                            <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                                <div>
-                                    <span class="price-old">7.200.000₫</span>
-                                    <div class="price-large">5.500.000₫</div>
+                            <div class="tour-info-head">
+                                <div class="tour-meta-pills">
+                                    <span class="meta-pill meta-pill-duration">4N3Đ</span>
+                                    <span class="meta-pill meta-pill-cat">Biển đảo</span>
                                 </div>
-                                <a href="checkout.html?title=Combo+C%C3%A1t+B%C3%A0+-+%C4%90%E1%BA%A3o+Ng%E1%BB%8Dc+4N3%C4%90&price=5500000&original=7200000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
+                                <h3 class="tour-title">Combo Cát Bà - Đảo Ngọc 4N3Đ</h3>
+                                <p class="tour-desc">Tận hưởng làn nước xanh trong tại vịnh Lan Hạ, khám phá làng chài cổ Cái Bèo, trekking Vườn quốc gia Cát Bà và ngắm hoàng hôn Pháo đài Thần công.</p>
+                                <div class="tour-location-row">
+                                    <i class="bx bx-map-pin"></i> Hải Phòng, Việt Nam
+                                </div>
+                            </div>
+                            <div class="tour-info-bottom">
+                                <div class="tour-pricing">
+                                    <span class="tour-price-old">7.200.000₫</span>
+                                    <div class="tour-price-current">5.500.000₫ <span class="tour-price-unit">/ khách</span></div>
+                                </div>
+                                <a href="checkout.html?title=Combo+C%C3%A1t+B%C3%A0+-+%C4%90%E1%BA%A3o+Ng%E1%BB%8Dc+4N3%C4%90&price=5500000&original=7200000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=800&q=80" class="btn-book-tour">Đặt ngay <i class="bx bx-right-arrow-alt"></i></a>
                             </div>
                         </div>
                     </div>
@@ -184,44 +234,95 @@
                     <div class="card card-interactive tour-card list-card" data-title="Trekking Sapa - Chinh phục Fansipan" data-location="Lào Cai, Việt Nam" data-category="Phiêu lưu" data-duration="3" data-price="3200000" data-rating="4.9">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80" alt="Sapa">
-                            <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.9 (156)</div>
-                            <div class="tour-badge-left badge badge-warning"><i class="bx bxs-hot"></i> Hot</div>
+                            <div class="tour-badge-top-left">
+                                <span class="badge-tag badge-tag-hot"><i class="bx bxs-flame"></i> Cực Hot</span>
+                            </div>
+                            <div class="tour-badge-top-right">
+                                <span class="badge-tag badge-tag-rating"><i class="bx bxs-star"></i> 4.9 (156)</span>
+                            </div>
                         </div>
                         <div class="tour-info">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="badge badge-primary">3N2Đ</span>
-                                <span class="badge badge-warning">Phiêu lưu</span>
-                            </div>
-                            <h3 class="font-bold tour-title">Trekking Sapa - Chinh phục Fansipan</h3>
-                            <p class="text-muted mt-2 font-sm tour-desc">Hành trình chinh phục nóc nhà Đông Dương. Bao gồm cáp treo, khách sạn và hướng dẫn viên bản địa.</p>
-                            <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Lào Cai, Việt Nam</p>
-                            <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                                <div>
-                                    <div class="price-large">3.200.000₫</div>
+                            <div class="tour-info-head">
+                                <div class="tour-meta-pills">
+                                    <span class="meta-pill meta-pill-duration">3N2Đ</span>
+                                    <span class="meta-pill meta-pill-cat">Phiêu lưu</span>
                                 </div>
-                                <a href="checkout.html?title=Trekking+Sapa+-+Chinh+ph%E1%BB%A5c+Fansipan&price=3200000&duration=3N2%C4%90&img=https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
+                                <h3 class="tour-title">Trekking Sapa - Chinh phục Fansipan</h3>
+                                <p class="tour-desc">Chinh phục nóc nhà Đông Dương hùng vĩ, cáp treo Sun World, khách sạn trung tâm Sapa và sự đồng hành của hướng dẫn viên người H'Mông bản địa.</p>
+                                <div class="tour-location-row">
+                                    <i class="bx bx-map-pin"></i> Lào Cai, Việt Nam
+                                </div>
+                            </div>
+                            <div class="tour-info-bottom">
+                                <div class="tour-pricing">
+                                    <span class="tour-price-old">3.900.000₫</span>
+                                    <div class="tour-price-current">3.200.000₫ <span class="tour-price-unit">/ khách</span></div>
+                                </div>
+                                <a href="checkout.html?title=Trekking+Sapa+-+Chinh+ph%E1%BB%A5c+Fansipan&price=3200000&duration=3N2%C4%90&img=https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80" class="btn-book-tour">Đặt ngay <i class="bx bx-right-arrow-alt"></i></a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card card-interactive tour-card list-card" data-title="Tam Đảo All-Inclusive 2N1Đ" data-location="Vĩnh Phúc, Việt Nam" data-category="Nghỉ dưỡng" data-duration="2" data-price="6800000" data-rating="4.6">
+                    <div class="card card-interactive tour-card list-card" data-title="Tam Đảo All-Inclusive Nghỉ Dưỡng Mây Ngàn" data-location="Vĩnh Phúc, Việt Nam" data-category="Núi rừng" data-duration="2" data-price="6800000" data-rating="4.6">
                         <div class="tour-img">
                             <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=800&q=80" alt="Tam Đảo">
-                            <div class="tour-badge badge badge-warning"><i class="bx bxs-star"></i> 4.6 (74)</div>
+                            <div class="tour-badge-top-left">
+                                <span class="badge-tag badge-tag-discount"><i class="bx bxs-crown"></i> Cao cấp</span>
+                            </div>
+                            <div class="tour-badge-top-right">
+                                <span class="badge-tag badge-tag-rating"><i class="bx bxs-star"></i> 4.6 (74)</span>
+                            </div>
                         </div>
                         <div class="tour-info">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="badge badge-primary">2N1Đ</span>
-                                <span class="badge badge-success">Nghỉ dưỡng</span>
-                            </div>
-                            <h3 class="font-bold tour-title">Tam Đảo All-Inclusive 2N1Đ</h3>
-                            <p class="text-muted mt-2 font-sm tour-desc">Nghỉ dưỡng cao cấp tại resort trên núi. Bao gồm spa, buffet sáng và ngắm mây.</p>
-                            <p class="text-muted flex items-center gap-2 mt-2"><i class="bx bx-map"></i> Vĩnh Phúc, Việt Nam</p>
-                            <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                                <div>
-                                    <div class="price-large">6.800.000₫</div>
+                            <div class="tour-info-head">
+                                <div class="tour-meta-pills">
+                                    <span class="meta-pill meta-pill-duration">2N1Đ</span>
+                                    <span class="meta-pill meta-pill-cat">Núi rừng</span>
                                 </div>
-                                <a href="checkout.html?title=Tam+%C4%90%E1%BA%A3o+All-Inclusive+2N1%C4%90&price=6800000&duration=2N1%C4%90&img=https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=800&q=80" class="btn btn-primary">Đặt ngay</a>
+                                <h3 class="tour-title">Tam Đảo All-Inclusive Nghỉ Dưỡng Mây Ngàn</h3>
+                                <p class="tour-desc">Nghỉ dưỡng trọn gói tại resort 5 sao lưng chừng núi mây, spa thảo dược thư giãn, buffet ẩm thực Á-Âu và xe limousine đưa đón tận nơi.</p>
+                                <div class="tour-location-row">
+                                    <i class="bx bx-map-pin"></i> Vĩnh Phúc, Việt Nam
+                                </div>
+                            </div>
+                            <div class="tour-info-bottom">
+                                <div class="tour-pricing">
+                                    <span class="tour-price-old">7.800.000₫</span>
+                                    <div class="tour-price-current">6.800.000₫ <span class="tour-price-unit">/ khách</span></div>
+                                </div>
+                                <a href="checkout.html?title=Tam+%C4%90%E1%BA%A3o+All-Inclusive+2N1%C4%90&price=6800000&duration=2N1%C4%90&img=https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=800&q=80" class="btn-book-tour">Đặt ngay <i class="bx bx-right-arrow-alt"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-interactive tour-card list-card" data-title="Thiên Đường Biển Đảo Phú Quốc Sunset Sanato" data-location="Kiên Giang, Việt Nam" data-category="Biển đảo" data-duration="4" data-price="4990000" data-rating="4.9">
+                        <div class="tour-img">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Phú Quốc">
+                            <div class="tour-badge-top-left">
+                                <span class="badge-tag badge-tag-hot"><i class="bx bxs-hot"></i> Đang Hot</span>
+                            </div>
+                            <div class="tour-badge-top-right">
+                                <span class="badge-tag badge-tag-rating"><i class="bx bxs-star"></i> 4.9 (210)</span>
+                            </div>
+                        </div>
+                        <div class="tour-info">
+                            <div class="tour-info-head">
+                                <div class="tour-meta-pills">
+                                    <span class="meta-pill meta-pill-duration">4N3Đ</span>
+                                    <span class="meta-pill meta-pill-cat">Biển đảo</span>
+                                </div>
+                                <h3 class="tour-title">Thiên Đường Biển Đảo Phú Quốc Sunset Sanato</h3>
+                                <p class="tour-desc">Trọn vẹn cáp treo Hòn Thơm vượt biển dài nhất thế giới, lặn ngắm san hô tại hòn Móng Tay, thưởng thức hải sản Bãi Sao và ngắm hoàng hôn huyền ảo.</p>
+                                <div class="tour-location-row">
+                                    <i class="bx bx-map-pin"></i> Kiên Giang, Việt Nam
+                                </div>
+                            </div>
+                            <div class="tour-info-bottom">
+                                <div class="tour-pricing">
+                                    <span class="tour-price-old">6.200.000₫</span>
+                                    <div class="tour-price-current">4.990.000₫ <span class="tour-price-unit">/ khách</span></div>
+                                </div>
+                                <a href="checkout.html?title=Ph%C3%BA+Qu%E1%BB%91c+Sunset+Sanato&price=4990000&duration=4N3%C4%90&img=https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" class="btn-book-tour">Đặt ngay <i class="bx bx-right-arrow-alt"></i></a>
                             </div>
                         </div>
                     </div>

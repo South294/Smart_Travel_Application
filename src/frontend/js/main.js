@@ -33,8 +33,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   await initGuidesDirectory();
   await initGuideProfilePage();
   await initGuideDashboard();
-  initCheckoutData();
+  await initCheckoutData();
   initCheckoutPayment();
+  await initTrendingTours();
+  await initPersonalizedRecommendations();
 });
 
 function initNavigation() {
@@ -1614,4 +1616,149 @@ async function submitSelectedGuideRequest() {
       })
     });
   } catch (e) {}
+}
+
+function renderTourCardHTML(tour, showReason) {
+  var img = (tour.images && tour.images.length > 0) ? tour.images[0] : 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80';
+  var priceVal = Number(tour.discount_price || tour.price || 0);
+  var hasDiscount = tour.discount_price && Number(tour.discount_price) < Number(tour.price);
+  var oldPriceHTML = hasDiscount ? '<span class="tour-price-old">' + formatCurrency(tour.price) + '</span>' : '';
+  
+  var badgesHTML = '';
+  var tags = tour.tags || [];
+  if (tags.indexOf('hot') !== -1) {
+    badgesHTML += '<span class="tour-badge tour-badge-hot"><i class="bx bxs-hot"></i> HOT</span>';
+  }
+  if (tags.indexOf('best-seller') !== -1) {
+    badgesHTML += '<span class="tour-badge tour-badge-bestseller"><i class="bx bxs-award"></i> Bán chạy</span>';
+  } else if (tags.indexOf('luxury') !== -1) {
+    badgesHTML += '<span class="tour-badge tour-badge-luxury"><i class="bx bxs-crown"></i> Cao cấp</span>';
+  }
+
+  var reasonHTML = '';
+  if (showReason && tour.match_reason) {
+    var matchPct = tour.match_percentage ? ' (' + tour.match_percentage + '%)' : '';
+    reasonHTML = '<div class="tour-reason-badge"><i class="bx bx-sparkles"></i> ' + escapeHtml(tour.match_reason) + matchPct + '</div>';
+  }
+
+  var durationText = '';
+  if (tour.duration_days) {
+    durationText = tour.duration_days + 'N' + (tour.duration_nights !== undefined ? tour.duration_nights + 'Đ' : '');
+  }
+
+  return (
+    '<div class="tour-card-item">' +
+      '<div class="tour-card-thumb">' +
+        '<img src="' + escapeHtml(img) + '" alt="' + escapeHtml(tour.title) + '" loading="lazy">' +
+        '<div class="tour-badge-stack">' + badgesHTML + '</div>' +
+      '</div>' +
+      '<div class="tour-card-body">' +
+        '<div class="tour-meta-row">' +
+          '<span class="tour-meta-loc"><i class="bx bx-map"></i> ' + escapeHtml(tour.location || 'Việt Nam') + '</span>' +
+          (durationText ? '<span><i class="bx bx-time-five"></i> ' + escapeHtml(durationText) + '</span>' : '') +
+        '</div>' +
+        '<h3 class="tour-card-title" title="' + escapeHtml(tour.title) + '">' + escapeHtml(tour.title) + '</h3>' +
+        reasonHTML +
+        '<div class="tour-stats-row">' +
+          '<div class="tour-rating"><i class="bx bxs-star"></i> ' + (tour.rating || 4.8).toFixed(1) + ' <span class="tour-rating-count">(' + (tour.review_count || 100) + ')</span></div>' +
+        '</div>' +
+        '<div class="tour-card-footer">' +
+          '<div class="tour-price-box">' +
+            oldPriceHTML +
+            '<span class="tour-price-current">' + formatCurrency(priceVal) + '</span>' +
+          '</div>' +
+          '<a href="checkout.html?tour_id=' + escapeHtml(tour.id) + '" class="btn-book-card"><i class="bx bx-calendar-check"></i> Đặt tour</a>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+async function initTrendingTours() {
+  var grid = document.getElementById('trendingToursGrid');
+  if (!grid) return;
+
+  try {
+    var res = await fetchApi('/api/tours/hot?limit=8');
+    if (!res.ok) throw new Error('Không thể tải tour');
+    var tours = await res.json();
+    if (!tours || tours.length === 0) {
+      grid.innerHTML = '<div class="card p-6 text-center text-muted w-full">Chưa có tour thịnh hành nào.</div>';
+      return;
+    }
+    grid.innerHTML = tours.map(function(t) {
+      return renderTourCardHTML(t, false);
+    }).join('');
+  } catch (e) {
+    grid.innerHTML = '<div class="card p-6 text-center text-muted w-full">Tạm thời không tải được danh sách tour thịnh hành.</div>';
+  }
+}
+
+async function initPersonalizedRecommendations() {
+  var grid = document.getElementById('recommendationsToursGrid');
+  if (!grid) return;
+
+  var currentBudget = 'all';
+  var currentCategory = 'all';
+
+  var budgetPills = document.querySelectorAll('#recBudgetFilter .filter-pill');
+  var categoryPills = document.querySelectorAll('#recCategoryFilter .filter-pill');
+
+  async function fetchAndRenderRecommendations() {
+    grid.innerHTML = '<div class="card p-6 text-center text-muted w-full"><i class="bx bx-loader-alt bx-spin"></i> Đang chọn lọc các hành trình phù hợp nhất...</div>';
+    try {
+      var query = '/api/tours/recommendations?limit=8';
+      if (currentBudget !== 'all') {
+        query += '&max_budget=' + encodeURIComponent(currentBudget);
+      }
+      if (currentCategory !== 'all') {
+        query += '&category=' + encodeURIComponent(currentCategory);
+      }
+
+      var res = await fetchApi(query);
+      if (!res.ok) throw new Error('Lỗi khi lấy gợi ý');
+      var tours = await res.json();
+      if (!tours || tours.length === 0) {
+        grid.innerHTML = '<div class="card p-6 text-center text-muted w-full">Không tìm thấy tour nào phù hợp với tiêu chí lọc hiện tại. Hãy thử mở rộng ngân sách hoặc đổi danh mục.</div>';
+        return;
+      }
+      grid.innerHTML = tours.map(function(t) {
+        return renderTourCardHTML(t, true);
+      }).join('');
+    } catch (err) {
+      grid.innerHTML = '<div class="card p-6 text-center text-muted w-full">Không thể tải gợi ý du lịch vào lúc này.</div>';
+    }
+  }
+
+  budgetPills.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      budgetPills.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentBudget = btn.getAttribute('data-budget') || 'all';
+      fetchAndRenderRecommendations();
+    });
+  });
+
+  categoryPills.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      categoryPills.forEach(function(c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      currentCategory = btn.getAttribute('data-category') || 'all';
+      fetchAndRenderRecommendations();
+    });
+  });
+
+  try {
+    var userRes = await fetchApi('/api/users/me');
+    if (userRes.ok) {
+      var userData = await userRes.json();
+      var subtitleEl = document.getElementById('recSubtitle');
+      if (subtitleEl && userData.full_name) {
+        var userPrefs = userData.preferences && userData.preferences.length > 0 ? ' (' + userData.preferences.join(', ') + ')' : '';
+        subtitleEl.textContent = 'Chào ' + userData.full_name + '! Hệ thống đã tối ưu gợi ý theo gu' + userPrefs + ' và lịch sử du lịch của bạn.';
+      }
+    }
+  } catch (ignored) {}
+
+  await fetchAndRenderRecommendations();
 }

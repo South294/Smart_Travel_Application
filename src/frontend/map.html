@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Khám phá các địa điểm du lịch, quán ăn, khách sạn trên bản đồ tương tác SmartTravel. Tìm kiếm xung quanh vị trí của bạn.">
-    <title>Bản đồ - SmartTravel</title>
+    <title>Bản đồ trải nghiệm - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages/map.css">
     <link rel="stylesheet" href="css/pages/redesign.css">
+    <link rel="stylesheet" href="css/pages/map.css?v=4">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body class="map-page">
@@ -34,22 +34,22 @@
     </header>
 
     <div class="map-container">
-        <aside class="map-sidebar glass-panel" id="mapSidebar">
+        <aside class="map-sidebar" id="mapSidebar">
             <div class="sidebar-header">
-                <h2 class="font-bold">Danh mục trải nghiệm</h2>
-                <p class="text-muted text-sm" id="locationStatus">Chưa bật định vị</p>
+                <h2><i class="bx bx-compass"></i> Điểm Đến Quanh Bạn</h2>
+                <div class="location-status-badge" id="locationStatus">Đang cập nhật vị trí...</div>
             </div>
 
-            <div class="category-tabs vertical" id="categoryTabs">
+            <div class="category-tabs" id="categoryTabs">
                 <button class="map-tab active" data-category="all"><i class="bx bx-grid-alt"></i> Tất cả</button>
                 <button class="map-tab" data-category="food"><i class="bx bx-restaurant"></i> Ăn uống</button>
-                <button class="map-tab" data-category="culture"><i class="bx bx-landscape"></i> Tham quan văn hóa</button>
+                <button class="map-tab" data-category="culture"><i class="bx bx-landmark"></i> Văn hóa</button>
                 <button class="map-tab" data-category="fun"><i class="bx bx-party"></i> Vui chơi</button>
             </div>
 
             <div class="search-input-wrap">
                 <i class="bx bx-search"></i>
-                <input type="text" class="form-control form-control-icon" placeholder="Tìm kiếm địa điểm..." id="mapSearchInput">
+                <input type="text" class="form-control" placeholder="Tìm tên địa điểm, quán xá..." id="mapSearchInput">
             </div>
 
             <div class="places-list" id="placesList"></div>
@@ -59,8 +59,8 @@
             <div class="location-gate" id="locationGate">
                 <div class="location-gate-icon"><i class="bx bx-current-location"></i></div>
                 <div class="location-gate-body">
-                    <h3 class="font-semibold" id="gateTitle">Cho phép dùng định vị</h3>
-                    <p class="text-muted text-sm" id="gateDesc">Để gợi ý điểm ăn uống, tham quan văn hóa, vui chơi quanh bạn.</p>
+                    <h3 id="gateTitle">Bật định vị để nhận gợi ý chuẩn xác</h3>
+                    <p id="gateDesc">Tìm kiếm khoảng cách thực tế đến các điểm ăn uống, văn hóa và giải trí gần bạn nhất.</p>
                 </div>
                 <div class="location-gate-actions">
                     <button class="btn btn-outline btn-sm" id="btnSkipLocation">Bỏ qua</button>
@@ -70,8 +70,9 @@
 
             <div class="detail-card" id="placeDetail">
                 <div class="detail-placeholder">
-                    <i class="bx bx-map-alt"></i>
-                    <p>Chọn một địa điểm để xem chi tiết.</p>
+                    <i class="bx bx-map-pin"></i>
+                    <p>Chọn một địa điểm từ danh sách để xem chi tiết</p>
+                    <span>Khám phá khoảng cách, câu chuyện văn hóa, hình ảnh thực tế và mẹo du lịch hữu ích</span>
                 </div>
             </div>
         </section>

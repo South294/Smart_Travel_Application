@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SmartTravel AI - Trợ lý lập kế hoạch du lịch thông minh.">
+    <meta name="description" content="SmartTravel AI - Trợ lý lập kế hoạch du lịch thông minh, gợi ý tour theo sở thích và ngân sách.">
     <title>SmartTravel AI - Lên đường theo cách của bạn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
@@ -81,18 +84,96 @@
             </div>
         </section>
 
+        <section class="section-showcase container" id="trendingToursSection">
+            <div class="showcase-header">
+                <div class="showcase-title-wrap">
+                    <span class="eyebrow eyebrow-muted"><i class="bx bxs-hot"></i> Xu hướng du lịch</span>
+                    <h2>Tour Đang Thịnh Hành & Bán Chạy Nhất</h2>
+                    <p>Những điểm đến được du khách yêu thích và đặt nhiều nhất trong tuần</p>
+                </div>
+                <a href="tours.html" class="btn btn-outline">Xem tất cả tour <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+            <div class="tour-grid" id="trendingToursGrid">
+                <div class="card p-6 text-center text-muted w-full">Đang tải danh sách tour thịnh hành...</div>
+            </div>
+        </section>
+
+        <section class="section-showcase-alt" id="personalizedRecommendationsSection">
+            <div class="container">
+                <div class="showcase-header">
+                    <div class="showcase-title-wrap">
+                        <span class="eyebrow"><i class="bx bx-sparkles"></i> Dành riêng cho bạn</span>
+                        <h2>Gợi Ý Cá Nhân Hóa Theo Gu & Ngân Sách</h2>
+                        <p id="recSubtitle">Tự động đề xuất theo sở thích, lịch sử hành trình và mức chi tiêu của bạn</p>
+                    </div>
+                </div>
+
+                <div class="rec-filter-bar">
+                    <div class="filter-row">
+                        <span class="filter-label"><i class="bx bx-wallet"></i> Hạn mức ngân sách:</span>
+                        <div class="filter-pills" id="recBudgetFilter">
+                            <button class="filter-pill active" data-budget="all">Tất cả mức giá</button>
+                            <button class="filter-pill" data-budget="1500000">Dưới 1.5 Triệu</button>
+                            <button class="filter-pill" data-budget="3000000">1.5 - 3 Triệu</button>
+                            <button class="filter-pill" data-budget="5000000">3 - 5 Triệu</button>
+                            <button class="filter-pill" data-budget="10000000">Trên 5 Triệu</button>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-label"><i class="bx bx-compass"></i> Phong cách yêu thích:</span>
+                        <div class="filter-pills" id="recCategoryFilter">
+                            <button class="filter-pill active" data-category="all">Tất cả phong cách</button>
+                            <button class="filter-pill" data-category="sea">Biển đảo</button>
+                            <button class="filter-pill" data-category="mountain">Núi rừng & Trekking</button>
+                            <button class="filter-pill" data-category="sight">Văn hóa & Di sản</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tour-grid" id="recommendationsToursGrid">
+                    <div class="card p-6 text-center text-muted w-full">Đang tổng hợp các gợi ý phù hợp nhất...</div>
+                </div>
+            </div>
+        </section>
+
         <section class="section container quick-explore">
-            <div class="section-heading"><div><span class="eyebrow eyebrow-muted">Khám phá thêm</span><h2 class="section-title">Khi bạn đã biết mình muốn đi đâu</h2></div><a href="tours.html" class="btn btn-ghost">Xem toàn bộ tour <i class="bx bx-right-arrow-alt"></i></a></div>
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow eyebrow-muted">Khám phá thêm</span>
+                    <h2 class="section-title">Khi bạn đã biết mình muốn đi đâu</h2>
+                </div>
+                <a href="tours.html" class="btn btn-ghost">Xem toàn bộ tour <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
             <div class="quick-grid">
-                <a class="quick-card quick-card-green" href="tours.html"><i class="bx bx-compass"></i><span><strong>Chọn tour có sẵn</strong><small>Lọc theo điểm đến, giá và thời lượng</small></span><i class="bx bx-right-arrow-alt"></i></a>
-                <a class="quick-card quick-card-blue" href="map.html"><i class="bx bx-map-alt"></i><span><strong>Mở bản đồ khám phá</strong><small>Nhìn hành trình theo cách trực quan</small></span><i class="bx bx-right-arrow-alt"></i></a>
-                <a class="quick-card quick-card-orange" href="promotions.html"><i class="bx bx-purchase-tag"></i><span><strong>Săn ưu đãi hôm nay</strong><small>Voucher và chương trình đang hoạt động</small></span><i class="bx bx-right-arrow-alt"></i></a>
+                <a class="quick-card quick-card-green" href="tours.html">
+                    <i class="bx bx-compass"></i>
+                    <span><strong>Chọn tour có sẵn</strong><small>Lọc theo điểm đến, giá và thời lượng</small></span>
+                    <i class="bx bx-right-arrow-alt"></i>
+                </a>
+                <a class="quick-card quick-card-blue" href="map.html">
+                    <i class="bx bx-map-alt"></i>
+                    <span><strong>Mở bản đồ khám phá</strong><small>Nhìn hành trình theo cách trực quan</small></span>
+                    <i class="bx bx-right-arrow-alt"></i>
+                </a>
+                <a class="quick-card quick-card-orange" href="promotions.html">
+                    <i class="bx bx-purchase-tag"></i>
+                    <span><strong>Săn ưu đãi hôm nay</strong><small>Voucher và chương trình đang hoạt động</small></span>
+                    <i class="bx bx-right-arrow-alt"></i>
+                </a>
             </div>
         </section>
     </main>
 
     <footer class="footer">
-        <div class="container footer-simple"><div class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</div><p>Trợ lý nhỏ cho những chuyến đi đáng nhớ.</p><div class="footer-links"><a href="tours.html">Tour</a><a href="map.html">Bản đồ</a><a href="auth.html">Tài khoản</a></div></div>
+        <div class="container footer-simple">
+            <div class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</div>
+            <p>Trợ lý thông minh cho những chuyến đi đáng nhớ.</p>
+            <div class="footer-links">
+                <a href="tours.html">Tour</a>
+                <a href="map.html">Bản đồ</a>
+                <a href="auth.html">Tài khoản</a>
+            </div>
+        </div>
     </footer>
     <script src="js/main.js"></script>
     <script src="js/chat.js"></script>

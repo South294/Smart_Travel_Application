@@ -1,8 +1,9 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 import jwt
 from app.db.mongodb import get_db
+from typing import Optional
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
@@ -38,6 +39,25 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         )
     user["id"] = str(user["_id"])
     return user
+
+async def get_optional_current_user(request: Request) -> Optional[dict]:
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header.split(" ", 1)[1].strip()
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email = payload.get("sub")
+        if not email:
+            return None
+        db = get_db()
+        user = await db.users.find_one({"email": email, "is_active": {"$ne": False}})
+        if user:
+            user["id"] = str(user["_id"])
+            return user
+    except Exception:
+        return None
+    return None
 
 async def get_current_admin_user(current_user: dict = Depends(get_current_user)):
     if current_user.get("role") != "admin":
