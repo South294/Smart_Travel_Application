@@ -478,18 +478,16 @@
     <div class="modal-overlay" id="assignGuideModal">
         <div class="modal-content modal-md">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-xl">Tạo chuyến cho hướng dẫn viên</h3>
+                <h3 class="font-bold text-xl">Phân công tour cho hướng dẫn viên</h3>
                 <button class="btn btn-icon" data-modal-close><i class="bx bx-x"></i></button>
             </div>
             <form id="assignGuideForm">
                 <input type="hidden" id="assignGuideId">
                 <div class="form-group">
-                    <label class="form-label">Tên tour</label>
-                    <input type="text" class="form-control" id="assignTourTitle" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Điểm đến</label>
-                    <input type="text" class="form-control" id="assignDestination" required>
+                    <label class="form-label">Tour chưa phân công</label>
+                    <select class="form-control" id="assignTourId" required>
+                        <option value="">Đang tải danh sách tour...</option>
+                    </select>
                 </div>
                 <div class="grid params-grid">
                     <div class="form-group">
@@ -503,7 +501,7 @@
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" class="btn btn-outline" data-modal-close>Hủy</button>
-                    <button type="submit" class="btn btn-primary">Tạo chuyến</button>
+                    <button type="submit" class="btn btn-primary">Phân công tour</button>
                 </div>
             </form>
         </div>

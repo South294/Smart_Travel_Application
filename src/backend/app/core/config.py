@@ -6,7 +6,10 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     MONGODB_URI: str = "mongodb://localhost:27017"
     MONGODB_DB: str = "smart_travel"
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "change-this-in-production")
+    SECRET_KEY: str = os.getenv(
+        "SECRET_KEY",
+        "smart-travel-development-secret-change-before-production-2026"
+    )
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     FRONTEND_ORIGIN: str = os.getenv("FRONTEND_ORIGIN", "http://localhost:5500")

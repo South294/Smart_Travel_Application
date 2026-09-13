@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages/guide.css">
+    <link rel="stylesheet" href="css/pages/guides.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
@@ -25,7 +25,7 @@
                 <a href="map.html" class="nav-link">Bản đồ</a>
                 <a href="promotions.html" class="nav-link">Khuyến mãi</a>
                 <a href="guide-dashboard.html" class="nav-link active">Cổng HDV</a>
-                <a href="guides.html" class="nav-link">Đăng ký HDV</a>
+                <a href="guides.html" class="nav-link">Thuê HDV</a>
             </nav>
             <div class="nav-actions">
                 <a href="auth.html" class="btn btn-outline">Đăng nhập</a>
@@ -34,6 +34,7 @@
         </div>
     </header>
 
+    <main id="guidePageContent" hidden>
 <div class="page-hero">
         <div class="container">
             <h1>Hướng Dẫn Viên - SmartTravel</h1>
@@ -48,18 +49,19 @@
                     <div class="card-body">
                         <h5 class="card-title">Thông tin hướng dẫn viên</h5>
                         <div class="mb-3">
-                            <img src="https://images.unsplash.com/photo-1615389139712-bcf869d440e3?auto=format&fit=crop&w=300&q=80" class="img-fluid rounded-circle mb-3" alt="HĐV">
-                            <h6 class="text-center">Lê Minh Hướng</h6>
+                            <img src="https://images.unsplash.com/photo-1615389139712-bcf869d440e3?auto=format&fit=crop&w=300&q=80" class="img-fluid rounded-circle mb-3" alt="Ảnh hướng dẫn viên">
+                            <h6 class="text-center" id="guideName">Đang tải...</h6>
                         </div>
-                        <p class="text-muted text-center"><strong>Kinh nghiệm:</strong> 3 năm</p>
-                        <p class="text-muted text-center"><strong>Khu vực:</strong> Hà Nội</p>
-                        <p class="text-muted text-center"><strong>Ngôn ngữ:</strong> Tiếng Việt, English</p>
-                        <p class="text-muted text-center"><strong>Mức giá thuê:</strong> 250.000₫/ngày</p>
+                        <p class="text-muted text-center"><strong>Kinh nghiệm:</strong> <span id="guideExperience">--</span></p>
+                        <p class="text-muted text-center"><strong>Khu vực:</strong> <span id="guideAreas">--</span></p>
+                        <p class="text-muted text-center"><strong>Ngôn ngữ:</strong> <span id="guideLanguages">--</span></p>
+                        <p class="text-muted text-center"><strong>Mức giá thuê:</strong> <span id="guidePrice">--</span>/ngày</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </main>
 
     <footer class="footer">
         <div class="container">

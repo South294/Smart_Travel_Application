@@ -327,29 +327,51 @@ async function loadGuidesList() {
     }
 }
 
+var unassignedTours = [];
+
+async function loadUnassignedTours() {
+    var select = document.getElementById('assignTourId');
+    if (!select) return;
+
+    try {
+        var res = await fetchApi('/api/guides/unassigned-tours');
+        if (!res.ok) throw new Error('Unable to load tours');
+        unassignedTours = await res.json();
+        select.innerHTML = '<option value="">Select a tour</option>';
+        unassignedTours.forEach(function(tour) {
+            var option = document.createElement('option');
+            option.value = tour.id;
+            option.textContent = (tour.title || 'Tour') + ' - ' + (tour.location || 'Chua ro dia diem');
+            select.appendChild(option);
+        });
+    } catch (error) {
+        select.innerHTML = '<option value="">Khong the tai danh sach tour</option>';
+    }
+}
+
 function initGuideAssignments() {
     var form = document.getElementById('assignGuideForm');
     if (!form) return;
+    loadUnassignedTours();
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         var payload = {
             guide_id: document.getElementById('assignGuideId').value,
-            tour_title: document.getElementById('assignTourTitle').value.trim(),
-            destination: document.getElementById('assignDestination').value.trim(),
+            tour_id: document.getElementById('assignTourId').value,
             trip_date: document.getElementById('assignTripDate').value,
             earning: parseFloat(document.getElementById('assignEarning').value) || 0
         };
 
-        if (!payload.guide_id || !payload.tour_title || !payload.destination || !payload.trip_date) {
+        if (!payload.guide_id || !payload.tour_id || !payload.trip_date) {
             showToast('Vui lòng nhập đầy đủ thông tin', 'error');
             return;
         }
 
         var submitBtn = form.querySelector('button[type="submit"]');
         var originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Đang tạo...';
+        submitBtn.textContent = 'Đang phân công...';
         submitBtn.disabled = true;
 
         try {
@@ -358,9 +380,10 @@ function initGuideAssignments() {
                 body: JSON.stringify(payload)
             });
             if (res.ok) {
-                showToast('Đã tạo chuyến cho hướng dẫn viên', 'success');
+                showToast('Đã phân công tour cho hướng dẫn viên', 'success');
                 closeModalById('assignGuideModal');
                 form.reset();
+                await loadUnassignedTours();
             } else {
                 var err = await res.json();
                 showToast(err.detail || 'Không thể tạo chuyến', 'error');
@@ -378,6 +401,7 @@ function openAssignGuideModal(guideId) {
     var modal = document.getElementById('assignGuideModal');
     var idInput = document.getElementById('assignGuideId');
     if (idInput) idInput.value = guideId || '';
+    loadUnassignedTours();
     if (modal) modal.classList.add('is-active');
 }
 

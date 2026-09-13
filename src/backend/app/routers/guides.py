@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Body
+from fastapi import APIRouter, Depends, HTTPException
 from app.db.mongodb import get_db
 from app.schemas.guide import GuideCreate, GuideResponse, GuideUpdate, GuideRequestCreate
 from app.routers.deps import get_current_user, get_current_admin_user
@@ -32,7 +32,17 @@ async def apply_guide(guide: GuideCreate, current_user: dict = Depends(get_curre
     db = get_db()
     existing = await db.guides.find_one({"user_id": current_user["id"]})
     if existing:
-        raise HTTPException(status_code=400, detail="Bạn đã gửi hồ sơ rồi")
+        if existing.get("status") != "rejected":
+            raise HTTPException(status_code=400, detail="Bạn đã gửi hồ sơ rồi")
+
+        guide_dict = guide.model_dump()
+        guide_dict.update({
+            "status": "pending",
+            "created_at": datetime.utcnow().isoformat()
+        })
+        await db.guides.update_one({"_id": existing["_id"]}, {"$set": guide_dict})
+        updated = await db.guides.find_one({"_id": existing["_id"]})
+        return serialize_guide(updated)
 
     guide_dict = guide.model_dump()
     guide_dict["user_id"] = current_user["id"]
@@ -169,111 +179,6 @@ async def reject_guide(id: str, admin: dict = Depends(get_current_admin_user)):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Không tìm thấy hướng dẫn viên")
     return {"message": "Đã từ chối hồ sơ hướng dẫn viên"}
-
-@router.patch("/{id}/assign-tour")
-async def assign_tour_to_guide(
-    id: str, 
-    tour_id: str = Query(...), 
-    admin: dict = Depends(get_current_admin_user)
-):
-    """Admin: Assign a tour to a guide"""
-    db = get_db()
-    oid = validate_object_id(id)
-    tour_oid = validate_object_id(tour_id)
-    
-    # Check tour exists and not already assigned
-    tour = await db.tours.find_one({"_id": tour_oid})
-    if not tour:
-        raise HTTPException(status_code=404, detail="Không tìm thấy tour")
-    
-    # Check tour already has a guide
-    if tour.get("guide_id"):
-        raise HTTPException(status_code=400, detail="Tour đã được phân công cho hướng dẫn viên khác")
-    
-    # Assign tour to guide
-    await db.tours.update_one({"_id": tour_oid}, {"$set": {"guide_id": oid}})
-    
-    # Create assignment record
-    assignment_doc = {
-        "guide_id": oid,
-        "tour_id": tour_oid,
-        "status": "assigned",
-        "assigned_at": datetime.utcnow().isoformat(),
-        "assigned_by": admin.get("email", "admin")
-    }
-    await db.guide_assignments.insert_one(assignment_doc)
-    
-    return {
-        "message": "Đã phân công tour cho hướng dẫn viên",
-        "guide_id": str(oid),
-        "tour_id": tour_id
-    }
-
-@router.post("/assign", response_model=dict)
-async def assign_guide_tour(
-    payload: dict = Body(...),
-    admin: dict = Depends(get_current_admin_user)
-):
-    """Admin: Assign a tour to a guide (JSON)"""
-    db = get_db()
-    guide_id = payload.get("guide_id")
-    tour_title = payload.get("tour_title")
-    destination = payload.get("destination")
-    trip_date = payload.get("trip_date")
-    earning = float(payload.get("earning", 0))
-    
-    if not guide_id or not tour_title or not destination or not trip_date:
-        raise HTTPException(status_code=400, detail="Thiếu thông tin bắt buộc")
-    
-    oid = validate_object_id(guide_id)
-    
-    # Check guide exists and is approved
-    guide = await db.guides.find_one({"_id": oid, "status": "approved"})
-    if not guide:
-        raise HTTPException(status_code=404, detail="Không tìm thấy hướng dẫn viên hoặc chưa được duyệt")
-    
-    # Create new tour assigned to this guide
-    tour_doc = {
-        "title": tour_title,
-        "slug": tour_title.lower().replace(" ", "-"),
-        "category": "Đa dạng",  # default category
-        "location": destination,
-        "duration_days": 2,  # default
-        "duration_nights": 1,
-        "price": earning,
-        "discount_price": None,
-        "rating": 0.0,
-        "review_count": 0,
-        "images": [],
-        "tags": [],
-        "is_active": True,
-        "lat": None,
-        "lng": None,
-        "geo_location": None,
-        "guide_id": str(oid)
-    }
-    result = await db.tours.insert_one(tour_doc)
-    
-    # Create assignment record
-    assignment_doc = {
-        "guide_id": oid,
-        "tour_id": result.inserted_id,
-        "tour_title": tour_title,
-        "destination": destination,
-        "trip_date": trip_date,
-        "earning": earning,
-        "status": "assigned",
-        "assigned_at": datetime.utcnow().isoformat(),
-        "assigned_by": admin.get("email", "admin")
-    }
-    await db.guide_assignments.insert_one(assignment_doc)
-    
-    return {
-        "message": "Đã tạo tour và phân công cho hướng dẫn viên",
-        "guide_id": str(oid),
-        "tour_id": str(result.inserted_id),
-        "tour_title": tour_title
-    }
 
 @router.get("/unassigned-tours")
 async def get_unassigned_tours(admin: dict = Depends(get_current_admin_user)):

@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from app.db.mongodb import get_db
 from app.routers.deps import get_current_admin_user
 from app.routers.helpers import serialize_user, serialize_booking, serialize_guide, validate_object_id
+from datetime import datetime
 
 router = APIRouter()
 
@@ -19,8 +20,7 @@ class BookingStatusUpdate(BaseModel):
 
 class GuideAssignmentCreate(BaseModel):
     guide_id: str
-    tour_title: str
-    destination: str
+    tour_id: str
     trip_date: str
     earning: float = 0
 
@@ -108,21 +108,36 @@ async def get_all_guides(admin: dict = Depends(get_current_admin_user)):
 async def create_guide_assignment(payload: GuideAssignmentCreate, admin: dict = Depends(get_current_admin_user)):
     db = get_db()
     guide_oid = validate_object_id(payload.guide_id)
+    tour_oid = validate_object_id(payload.tour_id)
     guide = await db.guides.find_one({"_id": guide_oid, "status": "approved"})
     if not guide:
         raise HTTPException(status_code=404, detail="Không tìm thấy hướng dẫn viên")
+    tour = await db.tours.find_one({"_id": tour_oid, "is_active": True})
+    if not tour:
+        raise HTTPException(status_code=404, detail="Không tìm thấy tour")
+    if tour.get("guide_id"):
+        raise HTTPException(status_code=400, detail="Tour đã được phân công cho hướng dẫn viên khác")
 
     assignment = {
         "guide_id": guide_oid,
-        "tour_title": payload.tour_title,
-        "destination": payload.destination,
+        "tour_id": tour_oid,
+        "tour_title": tour.get("title", "Tour"),
+        "destination": tour.get("location", ""),
         "trip_date": payload.trip_date,
         "earning": payload.earning,
-        "status": "completed"
+        "status": "assigned",
+        "assigned_at": datetime.utcnow().isoformat(),
+        "assigned_by": admin.get("email", "admin")
     }
 
+    await db.tours.update_one({"_id": tour_oid}, {"$set": {"guide_id": guide_oid}})
     result = await db.guide_assignments.insert_one(assignment)
-    return {"message": "Đã tạo chuyến cho hướng dẫn viên", "id": str(result.inserted_id)}
+    return {
+        "message": "Đã phân công tour cho hướng dẫn viên",
+        "id": str(result.inserted_id),
+        "guide_id": payload.guide_id,
+        "tour_id": payload.tour_id
+    }
 
 @router.get("/settings")
 async def get_admin_settings(admin: dict = Depends(get_current_admin_user)):

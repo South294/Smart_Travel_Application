@@ -64,6 +64,16 @@ Checkout sử dụng VNPay Sandbox khi đã cấu hình `VNPAY_TMN_CODE` và `VN
 2. Cài đặt các thư viện phụ thuộc: pip install -r requirements.txt
 3. Chạy máy chủ: python main.py hoặc uvicorn main:app --reload (nếu sử dụng FastAPI).
 
+### Kiểm thử nghiệp vụ
+Trong thư mục gốc của dự án:
+```powershell
+pip install -r src/backend/requirements-dev.txt
+python -m unittest -v test_business_flows.py
+pytest -q
+```
+
+Kịch bản và tiêu chí đánh giá HCI được ghi trong [docs/hci-evaluation.md](docs/hci-evaluation.md).
+
 ## Các Tính Năng Chính
 - Bản đồ và chỉ đường
 - Đặt tour du lịch

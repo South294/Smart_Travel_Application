@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   initGuideRegisterForm();
   initGuideHireActions();
   await initGuidesDirectory();
+  await initGuideProfilePage();
   await initGuideDashboard();
   initCheckoutData();
   initCheckoutPayment();
@@ -81,6 +82,15 @@ function initMobileMenu() {
 async function initAuthState() {
   var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   var containers = document.querySelectorAll('.nav-actions');
+  var hireGuideLink = document.querySelector('a.nav-link[href="guides.html"]');
+  var registerHdvLink = document.querySelector('a.nav-link[href="guide-register.html"]');
+  var guideHdvLink = document.querySelector('a.nav-link[href="guide-dashboard.html"]');
+
+  if (hireGuideLink) {
+    hireGuideLink.textContent = 'Thuê HDV';
+    hireGuideLink.style.display = '';
+  }
+  if (guideHdvLink) guideHdvLink.style.display = 'none';
 
   if (!isLoggedIn) return;
 
@@ -88,15 +98,16 @@ var profile = await getStoredUserProfile();
   if (!profile.email) return;
 
   var initials = getInitials(profile.full_name || profile.email || 'ST');
-  var role = profile.role || localStorage.getItem('userRole') || '';
   var showGuideDashboard = false;
   var isGuideApproved = false;
+  var hasGuideApplication = false;
 
-  if (role === 'guide') {
+  if (isLoggedIn) {
     try {
       var guideRes = await fetchApi('/api/guides/me');
       if (guideRes.ok) {
         var guideProfile = await guideRes.json();
+        hasGuideApplication = true;
         isGuideApproved = guideProfile && guideProfile.status === 'approved';
         showGuideDashboard = isGuideApproved;
       }
@@ -104,37 +115,11 @@ var profile = await getStoredUserProfile();
   }
 
   // Control navbar visibility based on guide status
-  var registerHdvLink = document.querySelector('a.nav-link[href="guides.html"]');
-  var guideHdvLink = document.querySelector('a.nav-link[href="guide-dashboard.html"]');
   if (registerHdvLink) {
-    if (role !== 'guide') {
-      // User thường: Ẩn "Đăng ký HDV"
-      registerHdvLink.style.display = 'none';
-    } else if (!isGuideApproved) {
-      // Guide chờ duyệt: Hiện "Đăng ký HDV" nhưng Ẩn "HĐV riêng"
-      registerHdvLink.style.display = '';
-      if (guideHdvLink) {
-        guideHdvLink.style.display = 'none';
-      }
-    } else {
-      // Guide đã duyệt: Hiện cả 2 link
-      registerHdvLink.style.display = '';
-      if (guideHdvLink) {
-        guideHdvLink.style.display = '';
-      }
-    }
+    registerHdvLink.style.display = hasGuideApplication ? 'none' : '';
   }
   if (guideHdvLink) {
-    if (role !== 'guide') {
-      // User thường: Ẩn "HĐV riêng"
-      guideHdvLink.style.display = 'none';
-    } else if (!isGuideApproved) {
-      // Guide chờ duyệt: Ẩn "HĐV riêng"
-      guideHdvLink.style.display = 'none';
-    } else {
-      // Guide đã duyệt: Hiện "HĐV riêng"
-      guideHdvLink.style.display = '';
-    }
+    guideHdvLink.style.display = isGuideApproved ? '' : 'none';
   }
 
   // Control dashboard button visibility
@@ -936,6 +921,8 @@ function initGuideRegisterForm() {
   var form = document.getElementById('guide-register-form');
   if (!form) return;
 
+  initGuideApplicationStatus(form);
+
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
     var submitBtn = form.querySelector('button[type="submit"]');
@@ -972,6 +959,33 @@ function initGuideRegisterForm() {
         submitBtn.disabled = false;
     }
   });
+}
+
+async function initGuideApplicationStatus(form) {
+  if (!localStorage.getItem('access_token')) return;
+
+  try {
+    var response = await fetchApi('/api/guides/me');
+    if (!response.ok) return;
+
+    var guide = await response.json();
+    var statusBox = document.getElementById('guideApplicationStatus');
+    if (!statusBox) return;
+
+    statusBox.hidden = false;
+    if (guide.status === 'pending') {
+      statusBox.className = 'alert-box alert-warning mb-6';
+      statusBox.textContent = 'Hồ sơ của bạn đang chờ admin phê duyệt.';
+      form.hidden = true;
+    } else if (guide.status === 'approved') {
+      statusBox.className = 'alert-box alert-success mb-6';
+      statusBox.textContent = 'Hồ sơ đã được duyệt. Bạn có thể vào Cổng HDV.';
+      form.hidden = true;
+    } else if (guide.status === 'rejected') {
+      statusBox.className = 'alert-box alert-danger mb-6';
+      statusBox.textContent = 'Hồ sơ chưa được duyệt. Bạn có thể cập nhật thông tin và gửi lại.';
+    }
+  } catch (error) {}
 }
 
 function initGuideHireActions() {
@@ -1062,6 +1076,40 @@ async function submitGuideHire() {
 function closeHireModal() {
   var modal = document.getElementById('hireGuideModal');
   if (modal) modal.classList.remove('is-active');
+}
+
+async function initGuideProfilePage() {
+  if (!window.location.pathname.endsWith('guide.html')) return;
+
+  if (localStorage.getItem('isLoggedIn') !== 'true' || !localStorage.getItem('access_token')) {
+    window.location.replace('auth.html');
+    return;
+  }
+
+  try {
+    var response = await fetchApi('/api/guides/me');
+    if (!response.ok) {
+      window.location.replace('guides.html');
+      return;
+    }
+
+    var guide = await response.json();
+    if (guide.status !== 'approved') {
+      showToast('Hồ sơ hướng dẫn viên chưa được duyệt', 'warning');
+      setTimeout(function() { window.location.replace('guides.html'); }, 1000);
+      return;
+    }
+
+    setTextBySelector('#guideName', guide.name || '--');
+    setTextBySelector('#guideExperience', String(guide.experience_years || 0) + ' năm');
+    setTextBySelector('#guideAreas', Array.isArray(guide.areas) ? guide.areas.join(', ') : '--');
+    setTextBySelector('#guideLanguages', Array.isArray(guide.languages) ? guide.languages.join(', ') : '--');
+    setTextBySelector('#guidePrice', formatCurrency(guide.price_per_day || 0));
+    var content = document.getElementById('guidePageContent');
+    if (content) content.hidden = false;
+  } catch (error) {
+    window.location.replace('guides.html');
+  }
 }
 
 async function initGuideDashboard() {
