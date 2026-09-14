@@ -21,7 +21,7 @@
             <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
             <button class="mobile-menu-btn" aria-label="Mở menu"><i class="bx bx-menu"></i></button>
             <nav class="nav-links">
-                <a href="index.html" class="nav-link active">Trợ lý AI</a>
+                <a href="index.html" class="nav-link active">Trang chủ</a>
                 <a href="tours.html" class="nav-link">Tour du lịch</a>
                 <a href="map.html" class="nav-link">Bản đồ</a>
                 <a href="promotions.html" class="nav-link">Khuyến mãi</a>
@@ -36,50 +36,46 @@
     </header>
 
     <main>
-        <section class="chat-hero">
+        <section class="chat-hero home-hero">
             <div class="chat-orbit chat-orbit-one"></div>
             <div class="chat-orbit chat-orbit-two"></div>
-            <div class="container chat-layout">
-                <div class="chat-intro">
-                    <span class="eyebrow"><i class="bx bx-sparkles"></i> SmartTravel AI</span>
-                    <h1>Chuyến đi hay bắt đầu từ một câu hỏi.</h1>
-                    <p>Nói cho mình biết bạn muốn đi đâu, có bao nhiêu thời gian và ngân sách. Mình sẽ tìm những lựa chọn hợp với hôm nay.</p>
+            <div class="container home-hero-layout">
+                <div class="home-hero-intro">
+                    <span class="eyebrow"><i class="bx bx-paper-plane"></i> Nền Tảng Du Lịch Thông Minh</span>
+                    <h1>Khám Phá Việt Nam Cùng Trải Nghiệm Đáng Nhớ</h1>
+                    <p>Hơn 500+ hành trình độc đáo, hướng dẫn viên tận tâm và công nghệ trợ lý AI sẵn sàng hỗ trợ bạn lập kế hoạch mọi lúc mọi nơi.</p>
+                    <div class="home-hero-actions">
+                        <a href="tours.html" class="btn btn-primary btn-large"><i class="bx bx-compass"></i> Khám phá Tour ngay</a>
+                        <button type="button" class="btn btn-outline-hero btn-large" id="heroOpenChatBtn"><i class="bx bx-bot"></i> Hỏi Trợ lý AI</button>
+                    </div>
                     <div class="chat-trust-row">
-                        <span><i class="bx bx-cloud-rain"></i> Theo thời tiết</span>
-                        <span><i class="bx bx-wallet"></i> Theo ngân sách</span>
-                        <span><i class="bx bx-map-alt"></i> Tour thật</span>
+                        <span><i class="bx bx-cloud-rain"></i> Gợi ý theo thời tiết</span>
+                        <span><i class="bx bx-wallet"></i> Tối ưu theo ngân sách</span>
+                        <span><i class="bx bx-check-shield"></i> 100% Tour thật & Uy tín</span>
                     </div>
                 </div>
-
-                <div class="chat-panel">
-                    <div class="chat-panel-header">
-                        <div class="assistant-identity">
-                            <span class="assistant-mark"><i class="bx bx-sparkles"></i></span>
-                            <div><strong>Trợ lý hành trình</strong><small>Đang sẵn sàng tư vấn</small></div>
-                        </div>
-                        <div class="chat-weather" id="chatWeather"><i class="bx bx-cloud"></i><span>Hà Nội</span><strong>--</strong><small>Chờ thời tiết</small></div>
-                    </div>
-                    <div class="chat-context">
-                        <label for="chatCity"><i class="bx bx-map-pin"></i> Điểm đến</label>
-                        <input id="chatCity" type="text" maxlength="100" autocomplete="address-level2" placeholder="Để trống để tìm mọi nơi">
-                        <span><i class="bx bx-globe"></i> Toàn quốc</span>
-                    </div>
-                    <div class="chat-messages" id="travelChatMessages">
-                        <div class="chat-message chat-message-bot">
-                            <div class="chat-avatar"><i class="bx bx-sparkles"></i></div>
-                            <div class="chat-bubble">Xin chào! Bạn đang muốn tìm một chuyến đi như thế nào hôm nay?</div>
+                <div class="home-hero-highlight">
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-icon"><i class="bx bx-map-pin"></i></div>
+                        <div class="hero-stat-info">
+                            <strong>500+</strong>
+                            <small>Điểm đến hấp dẫn</small>
                         </div>
                     </div>
-                    <div class="chat-prompts" aria-label="Gợi ý câu hỏi">
-                        <button type="button" data-chat-prompt="Hôm nay Hà Nội mưa, tôi nên đi đâu?">Ngày mưa đi đâu?</button>
-                        <button type="button" data-chat-prompt="Tôi muốn đi chơi dưới 500.000đ ở Hà Nội">Dưới 500.000đ</button>
-                        <button type="button" data-chat-prompt="Tìm một nơi yên tĩnh để uống cà phê và làm việc">Nơi yên tĩnh</button>
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-icon"><i class="bx bx-star"></i></div>
+                        <div class="hero-stat-info">
+                            <strong>4.9 / 5</strong>
+                            <small>Đánh giá hài lòng</small>
+                        </div>
                     </div>
-                    <form class="chat-composer" id="travelChatForm">
-                        <input id="travelChatInput" type="text" maxlength="2000" autocomplete="off" placeholder="Ví dụ: Lập lịch trình 2 ngày ở Hà Nội..." aria-label="Tin nhắn cho trợ lý AI">
-                        <button id="travelChatSend" class="chat-send" type="submit" aria-label="Gửi tin nhắn"><i class="bx bx-up-arrow-alt"></i></button>
-                    </form>
-                    <p class="chat-disclaimer"><i class="bx bx-info-circle"></i> Gợi ý được tạo từ dữ liệu tour hiện có. Hãy kiểm tra giá trước khi đặt.</p>
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-icon"><i class="bx bx-bot"></i></div>
+                        <div class="hero-stat-info">
+                            <strong>24/7</strong>
+                            <small>Trợ lý AI đồng hành</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -175,6 +171,56 @@
             </div>
         </div>
     </footer>
+
+    <div class="chat-widget-wrapper" id="chatWidgetWrapper">
+        <div class="chat-panel chat-widget-panel" id="chatFloatingWidget" aria-hidden="true">
+            <div class="chat-panel-header">
+                <div class="assistant-identity">
+                    <span class="assistant-mark"><i class="bx bx-bot"></i></span>
+                    <div>
+                        <strong>Trợ lý SmartTravel AI</strong>
+                        <small><span class="online-indicator"></span>Đồng hành & gợi ý tour 24/7</small>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <div class="chat-weather" id="chatWeather"><i class="bx bx-cloud"></i><span>Hà Nội</span><strong>--</strong><small>Chờ thời tiết</small></div>
+                    <button type="button" class="chat-widget-close" id="chatWidgetClose" aria-label="Đóng trợ lý AI"><i class="bx bx-x"></i></button>
+                </div>
+            </div>
+            <div class="chat-context">
+                <label for="chatCity"><i class="bx bx-map-pin"></i> Điểm đến</label>
+                <input id="chatCity" type="text" maxlength="100" autocomplete="address-level2" placeholder="Để trống để tìm mọi nơi">
+                <span><i class="bx bx-globe"></i> Toàn quốc</span>
+            </div>
+            <div class="chat-messages" id="travelChatMessages">
+                <div class="chat-message chat-message-bot">
+                    <div class="chat-avatar"><i class="bx bx-sparkles"></i></div>
+                    <div class="chat-bubble">Xin chào! Bạn đang muốn tìm một chuyến đi như thế nào hôm nay?</div>
+                </div>
+            </div>
+            <div class="chat-prompts" aria-label="Gợi ý câu hỏi">
+                <button type="button" data-chat-prompt="Hôm nay Hà Nội mưa, tôi nên đi đâu?">Ngày mưa đi đâu?</button>
+                <button type="button" data-chat-prompt="Tôi muốn đi chơi dưới 500.000đ ở Hà Nội">Dưới 500.000đ</button>
+                <button type="button" data-chat-prompt="Tìm một nơi yên tĩnh để uống cà phê và làm việc">Nơi yên tĩnh</button>
+            </div>
+            <form class="chat-composer" id="travelChatForm">
+                <input id="travelChatInput" type="text" maxlength="2000" autocomplete="off" placeholder="Ví dụ: Lập lịch trình 2 ngày ở Hà Nội..." aria-label="Tin nhắn cho trợ lý AI">
+                <button id="travelChatSend" class="chat-send" type="submit" aria-label="Gửi tin nhắn"><i class="bx bx-up-arrow-alt"></i></button>
+            </form>
+            <p class="chat-disclaimer"><i class="bx bx-info-circle"></i> Gợi ý được tạo từ dữ liệu tour hiện có. Hãy kiểm tra giá trước khi đặt.</p>
+        </div>
+
+        <button type="button" class="chat-floating-btn" id="chatFloatingBtn" aria-label="Trợ lý Du lịch SmartTravel AI" title="Hỏi Trợ lý Du lịch AI">
+            <span class="chat-btn-pulse"></span>
+            <div class="chat-btn-inner">
+                <i class="bx bx-bot chat-icon-open"></i>
+                <i class="bx bx-x chat-icon-close"></i>
+            </div>
+            <span class="chat-btn-badge">AI Travel</span>
+            <span class="chat-floating-tooltip">Hỏi Trợ lý Du lịch AI</span>
+        </button>
+    </div>
+
     <script src="js/main.js"></script>
     <script src="js/chat.js"></script>
 </body>

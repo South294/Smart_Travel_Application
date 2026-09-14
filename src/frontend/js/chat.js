@@ -110,6 +110,50 @@
     var sendButton = document.getElementById('travelChatSend');
     if (!form || !input || !messages || !sendButton) return;
 
+    var widget = document.getElementById('chatFloatingWidget');
+    var triggerBtn = document.getElementById('chatFloatingBtn');
+    var closeBtn = document.getElementById('chatWidgetClose');
+    var heroOpenBtn = document.getElementById('heroOpenChatBtn');
+
+    function openChat() {
+      if (!widget) return;
+      widget.classList.add('is-open');
+      widget.setAttribute('aria-hidden', 'false');
+      if (triggerBtn) triggerBtn.classList.add('is-active');
+      input.focus();
+    }
+
+    function closeChat() {
+      if (!widget) return;
+      widget.classList.remove('is-open');
+      widget.setAttribute('aria-hidden', 'true');
+      if (triggerBtn) triggerBtn.classList.remove('is-active');
+    }
+
+    function toggleChat() {
+      if (!widget) return;
+      if (widget.classList.contains('is-open')) {
+        closeChat();
+      } else {
+        openChat();
+      }
+    }
+
+    if (triggerBtn) {
+      triggerBtn.addEventListener('click', toggleChat);
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeChat);
+    }
+    if (heroOpenBtn) {
+      heroOpenBtn.addEventListener('click', openChat);
+    }
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && widget && widget.classList.contains('is-open')) {
+        closeChat();
+      }
+    });
+
     document.querySelectorAll('[data-chat-prompt]').forEach(function (button) {
       button.addEventListener('click', function () {
         input.value = button.getAttribute('data-chat-prompt') || '';
