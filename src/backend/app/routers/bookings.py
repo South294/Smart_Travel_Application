@@ -4,6 +4,7 @@ from app.schemas.booking import BookingCreate, BookingResponse
 from app.routers.deps import get_current_user
 from app.routers.helpers import validate_object_id, serialize_booking
 from datetime import datetime
+import secrets
 from typing import List
 
 router = APIRouter()
@@ -22,7 +23,7 @@ async def create_booking(booking: BookingCreate, current_user: dict = Depends(ge
         raise HTTPException(status_code=400, detail="Ngày khởi hành không hợp lệ") from exc
     if travel_date < datetime.utcnow().date():
         raise HTTPException(status_code=400, detail="Ngày khởi hành phải từ hôm nay trở đi")
-    if booking.payment_method not in {"credit_card", "e_wallet", "bank_transfer"}:
+    if booking.payment_method not in {"credit_card", "e_wallet", "bank_transfer", "qr"}:
         raise HTTPException(status_code=400, detail="Phương thức thanh toán không hợp lệ")
 
     price_per_person = tour.get("discount_price") or tour.get("price", 0)
@@ -59,10 +60,17 @@ async def create_booking(booking: BookingCreate, current_user: dict = Depends(ge
 
     booking_dict = booking.model_dump()
     booking_dict["user_id"] = current_user["id"]
-    booking_dict["status"] = "pending"
-    booking_dict["payment_status"] = "unpaid"
+    is_free = float(price_per_person or 0) == 0
+    if is_free:
+        total_amount = 0
+    booking_dict["status"] = "confirmed" if is_free else "pending"
+    booking_dict["payment_status"] = "paid" if is_free else "unpaid"
     booking_dict["total_amount"] = total_amount
     booking_dict["created_at"] = datetime.utcnow().isoformat()
+    booking_dict["booking_code"] = f"ST-{secrets.token_hex(4).upper()}"
+    booking_dict["is_free"] = is_free
+    booking_dict["paid_at"] = booking_dict["created_at"] if is_free else None
+    booking_dict["payment_provider"] = "free" if is_free else None
 
     result = await db.bookings.insert_one(booking_dict)
     booking_dict["id"] = str(result.inserted_id)
@@ -80,6 +88,9 @@ async def get_my_bookings(current_user: dict = Depends(get_current_user)):
             tour = await db.tours.find_one({"_id": validate_object_id(booking["tour_id"])})
             if tour:
                 tour_title = tour.get("title")
+            booking["tour_location"] = tour.get("location")
+            booking["tour_lat"] = tour.get("lat")
+            booking["tour_lng"] = tour.get("lng")
         if tour_title:
             booking["tour_title"] = tour_title
         bookings.append(booking)

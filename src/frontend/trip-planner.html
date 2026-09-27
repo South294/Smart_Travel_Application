@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lập kế hoạch chuyến đi - SmartTravel</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/trip-planner.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<header class="header">
+    <div class="container navbar">
+        <a href="index.html" class="logo"><i class="bx bx-paper-plane"></i> SmartTravel</a>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">Trang chủ</a>
+            <a href="tours.html" class="nav-link">Tour du lịch</a>
+            <a href="trip-planner.html" class="nav-link active">Lập kế hoạch</a>
+        </nav>
+        <a href="auth.html" class="btn btn-primary">Đăng nhập</a>
+    </div>
+</header>
+<main class="planner-page">
+    <section class="planner-hero">
+        <div class="container">
+            <span class="eyebrow"><i class="bx bx-sparkles"></i> Trợ lý hành trình AI</span>
+            <h1>Từ điểm xuất phát đến một chuyến đi trọn gói</h1>
+            <p>Chọn nơi bắt đầu và điểm đến. SmartTravel sẽ gợi ý các điểm dừng, tour gần tuyến và gom tất cả vào một đơn đặt.</p>
+        </div>
+    </section>
+    <section class="container planner-content">
+        <form class="planner-form card" id="routePlanForm">
+            <div class="form-group"><label class="form-label" for="routeOrigin">Điểm đi</label><input class="form-control" id="routeOrigin" value="Hà Nội" required></div>
+            <div class="form-group"><label class="form-label" for="routeDestination">Điểm đến</label><input class="form-control" id="routeDestination" value="Ninh Bình" required></div>
+            <div class="form-group"><label class="form-label" for="routeDate">Ngày khởi hành</label><input class="form-control" id="routeDate" type="date" required></div>
+            <div class="form-group"><label class="form-label" for="routeAdults">Người lớn</label><input class="form-control" id="routeAdults" type="number" min="1" value="2" required></div>
+            <div class="form-group"><label class="form-label" for="routeChildren">Trẻ em</label><input class="form-control" id="routeChildren" type="number" min="0" value="0" required></div>
+            <button class="btn btn-primary btn-large" type="submit"><i class="bx bx-route"></i> Lập tuyến ngay</button>
+        </form>
+        <div id="plannerStatus" class="planner-status" role="status"></div>
+        <div class="planner-grid" id="plannerResult" hidden>
+            <div class="planner-main">
+                <div class="card route-summary" id="routeSummary"></div>
+                <div class="card route-map" id="routeMap"></div>
+                <div class="route-stops" id="routeStops"></div>
+                <div class="tour-selection">
+                    <div class="section-heading"><div><span class="eyebrow eyebrow-muted">Mua theo tuyến</span><h2>Tour nằm trên hành trình</h2></div><span class="selected-count" id="selectedCount">0 tour</span></div>
+                    <div class="planner-tour-grid" id="routeTours"></div>
+                </div>
+            </div>
+            <aside class="card combo-panel">
+                <span class="eyebrow eyebrow-muted">Combo của bạn</span>
+                <h2>Đặt trọn hành trình</h2>
+                <div id="comboItems" class="combo-items"><p class="text-muted">Chọn tour gần tuyến để thêm vào combo.</p></div>
+                <div class="combo-total"><span>Tạm tính</span><strong id="comboTotal">0₫</strong></div>
+                <input class="form-control" id="comboPhone" placeholder="Số điện thoại liên hệ" required>
+                <select class="form-control" id="comboPayment"><option value="qr">Thanh toán QR</option><option value="credit_card">VNPay Sandbox</option><option value="e_wallet">Ví điện tử</option><option value="bank_transfer">Chuyển khoản</option></select>
+                <button class="btn btn-primary w-full" id="createComboBtn" type="button"><i class="bx bx-basket"></i> Tạo combo và thanh toán</button>
+                <p class="text-xs text-muted">Các tour được lưu trong một booking và thanh toán bằng một giao dịch.</p>
+            </aside>
+        </div>
+    </section>
+</main>
+<script src="js/main.js"></script>
+<script src="js/trip-planner.js"></script>
+</body>
+</html>

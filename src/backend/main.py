@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.config import settings
-from app.routers import auth, users, tours, bookings, vouchers, guides, admin, ai, payments
+from app.routers import auth, users, tours, bookings, vouchers, guides, admin, ai, payments, route_plans, combo_bookings
 from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_db
 import pymongo
 
@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
         await db.bookings.create_index("status")
         await db.guides.create_index("user_id")
         await db.guides.create_index("status")
+        await db.chat_sessions.create_index("session_id", unique=True)
     yield
     await close_mongo_connection()
 
@@ -45,10 +46,12 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(tours.router, prefix="/api/tours", tags=["Tours"])
 app.include_router(bookings.router, prefix="/api/bookings", tags=["Bookings"])
+app.include_router(combo_bookings.router, prefix="/api/bookings/combo", tags=["Combo bookings"])
 app.include_router(vouchers.router, prefix="/api/vouchers", tags=["Vouchers"])
 app.include_router(guides.router, prefix="/api/guides", tags=["Guides"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(ai.router, prefix="/api/ai", tags=["AI"])
+app.include_router(route_plans.router, prefix="/api/routes", tags=["Routes"])
 app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 
 @app.get("/")

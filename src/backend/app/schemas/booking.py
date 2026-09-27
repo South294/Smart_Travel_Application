@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 
-VALID_PAYMENT_METHODS = ["credit_card", "e_wallet", "bank_transfer"]
+VALID_PAYMENT_METHODS = ["credit_card", "e_wallet", "bank_transfer", "qr"]
 
 class BookingBase(BaseModel):
     tour_id: str = Field(min_length=1)
@@ -24,3 +24,10 @@ class BookingResponse(BookingBase):
     total_amount: float
     payment_status: str = "unpaid"
     created_at: str
+    booking_code: Optional[str] = None
+    paid_at: Optional[str] = None
+    is_free: bool = False
+    tour_title: Optional[str] = None
+    tour_location: Optional[str] = None
+    tour_lat: Optional[float] = None
+    tour_lng: Optional[float] = None

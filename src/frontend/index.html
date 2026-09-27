@@ -221,6 +221,33 @@
         </button>
     </div>
 
+    <div class="chat-tour-modal" id="chatTourDetailModal" aria-hidden="true">
+        <div class="chat-tour-modal-panel" role="dialog" aria-modal="true" aria-labelledby="chatTourDetailTitle">
+            <button type="button" class="chat-tour-modal-close" data-tour-modal-close aria-label="Đóng thông tin tour"><i class="bx bx-x"></i></button>
+            <div id="chatTourDetailLoading" class="chat-tour-detail-loading">Đang tải thông tin tour...</div>
+            <div id="chatTourDetailContent" hidden>
+                <img id="chatTourDetailImage" class="chat-tour-detail-image" src="" alt="">
+                <div class="chat-tour-detail-body">
+                    <span id="chatTourDetailLocation" class="chat-tour-detail-location"></span>
+                    <h2 id="chatTourDetailTitle"></h2>
+                    <div class="chat-tour-detail-facts">
+                        <span><i class="bx bx-time-five"></i><b id="chatTourDetailDuration"></b></span>
+                        <span><i class="bx bxs-star"></i><b id="chatTourDetailRating"></b></span>
+                    </div>
+                    <p id="chatTourDetailDescription" class="chat-tour-detail-description"></p>
+                    <p id="chatTourDetailTags" class="chat-tour-detail-tags"></p>
+                    <strong id="chatTourDetailPrice" class="chat-tour-detail-price"></strong>
+                    <iframe id="chatTourDetailMap" class="chat-tour-detail-map" title="Bản đồ vị trí tour" loading="lazy"></iframe>
+                    <div class="chat-tour-detail-actions">
+                        <a id="chatTourGoogleMap" class="btn btn-outline" href="#" target="_blank" rel="noopener"><i class="bx bx-map-alt"></i> Google Maps</a>
+                        <a id="chatTourBookLink" class="btn btn-primary" href="">Đặt tour <i class="bx bx-right-arrow-alt"></i></a>
+                        <button type="button" class="btn btn-outline" data-tour-modal-close>Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
     <script src="js/chat.js"></script>
 </body>

@@ -483,6 +483,21 @@
 .chat-bubble { padding: 12px 16px; border-radius: 4px 16px 16px 16px; background: #e8eee4; color: #26332c; font-size: .92rem; line-height: 1.55; }
 .chat-message-user .chat-bubble { border-radius: 16px 4px 16px 16px; background: #246e5a; color: white; }
 .chat-message.is-loading .chat-bubble { color: #708077; font-style: italic; }
+.chat-itinerary { margin: 0 22px; padding: 14px 16px; border: 1px solid #dbe7d8; border-radius: 14px; background: #ffffff; color: #30483a; font-size: .84rem; line-height: 1.5; }
+.chat-itinerary > strong { display: block; margin-bottom: 10px; color: #1f634e; }
+.chat-itinerary-day + .chat-itinerary-day { margin-top: 10px; padding-top: 10px; border-top: 1px solid #edf1eb; }
+.chat-itinerary-day ul { margin: 5px 0 0 18px; padding: 0; color: #637268; }
+.chat-itinerary-day li + li { margin-top: 3px; }
+.chat-recommendations { display: grid; gap: 8px; margin: 0 16px; }
+.recommendation-card { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; padding: 8px; border: 1px solid #dfe9dd; border-radius: 12px; background: #fff; }
+.recommendation-card > img { width: 76px; height: 76px; border-radius: 9px; object-fit: cover; }
+.recommendation-content { min-width: 0; }
+.recommendation-location { display: block; overflow: hidden; color: #0a9b79; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+.recommendation-content h3 { display: -webkit-box; margin: 3px 0; overflow: hidden; color: #234438; font-size: .78rem; line-height: 1.25; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.recommendation-content p { display: -webkit-box; margin: 0 0 5px; overflow: hidden; color: #718177; font-size: .7rem; line-height: 1.25; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.recommendation-footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.recommendation-footer strong { color: #0aa982; font-size: .76rem; white-space: nowrap; }
+.recommendation-footer .btn-small { padding: 5px 8px; border: 0; font-size: .68rem; white-space: nowrap; }
 .chat-prompts { display: flex; gap: 8px; overflow-x: auto; padding: 0 22px 14px; scrollbar-width: none; }
 .chat-prompts button { flex: 0 0 auto; padding: 8px 13px; border: 1px solid #d6e1d0; border-radius: 999px; background: #fff; color: #3b5a4b; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 500; transition: .2s ease; }
 .chat-prompts button:hover { border-color: #7eae91; background: #edf5e9; color: #1e5945; }
@@ -493,6 +508,26 @@
 .chat-send:disabled { cursor: wait; opacity: .55; }
 .chat-disclaimer { padding: 12px 22px 16px; color: #7d8b81; font-size: .72rem; text-align: center; }
 .chat-disclaimer i { margin-right: 4px; }
+
+.chat-tour-modal { position: fixed; inset: 0; z-index: 10050; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(11, 31, 24, .58); }
+.chat-tour-modal.is-active { display: flex; }
+.chat-tour-modal-panel { position: relative; width: min(760px, 100%); max-height: min(720px, 92vh); overflow: auto; border-radius: 18px; background: #fff; box-shadow: 0 24px 80px rgba(5, 28, 20, .3); animation: chat-tour-modal-in .2s ease both; }
+.chat-tour-modal-close { position: absolute; z-index: 2; top: 12px; right: 12px; display: grid; width: 36px; height: 36px; place-items: center; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .92); color: #234438; cursor: pointer; font-size: 1.35rem; }
+.chat-tour-detail-loading { padding: 64px 24px; color: #637268; text-align: center; }
+.chat-tour-detail-image { display: block; width: 100%; height: 240px; object-fit: cover; }
+.chat-tour-detail-body { padding: 22px 26px 26px; }
+.chat-tour-detail-location { color: #0a9b79; font-size: .84rem; font-weight: 700; }
+.chat-tour-detail-body h2 { margin: 6px 40px 12px 0; color: #17352a; font-size: 1.45rem; line-height: 1.25; }
+.chat-tour-detail-facts { display: flex; flex-wrap: wrap; gap: 16px; color: #5c7065; font-size: .88rem; }
+.chat-tour-detail-facts span { display: inline-flex; align-items: center; gap: 5px; }
+.chat-tour-detail-facts i { color: #0aa982; }
+.chat-tour-detail-facts span:nth-child(2) i { color: #f2ad22; }
+.chat-tour-detail-description { margin: 14px 0 8px; color: #52665a; font-size: .9rem; line-height: 1.55; }
+.chat-tour-detail-tags { min-height: 20px; margin: 14px 0 8px; color: #718177; font-size: .82rem; }
+.chat-tour-detail-price { display: block; margin-bottom: 16px; color: #0aa982; font-size: 1.2rem; }
+.chat-tour-detail-map { display: block; width: 100%; height: 190px; border: 1px solid #e0e9df; border-radius: 12px; }
+.chat-tour-detail-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+@keyframes chat-tour-modal-in { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 .section-showcase {
   padding: 56px 0 68px;
@@ -844,6 +879,17 @@
   .chat-context { padding: 8px 16px; }
   .chat-context > span { display: none; }
   .chat-messages { height: 280px; padding: 16px 16px 12px; }
+  .chat-recommendations { margin: 0 10px; }
+  .recommendation-card { grid-template-columns: 62px minmax(0, 1fr); }
+  .recommendation-card > img { width: 62px; height: 62px; }
+  .chat-tour-modal { padding: 10px; }
+  .chat-tour-modal-panel { max-height: 94vh; border-radius: 14px; }
+  .chat-tour-detail-image { height: 160px; }
+  .chat-tour-detail-body { padding: 18px; }
+  .chat-tour-detail-body h2 { font-size: 1.15rem; }
+  .chat-tour-detail-map { height: 150px; }
+  .chat-tour-detail-actions { flex-direction: column; }
+  .chat-tour-detail-actions .btn { width: 100%; justify-content: center; }
   .chat-prompts { padding: 0 16px 12px; }
   .chat-composer { margin: 0 16px; }
   .chat-disclaimer { padding: 10px 16px 14px; }

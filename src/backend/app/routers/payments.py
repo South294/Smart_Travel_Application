@@ -73,6 +73,40 @@ async def create_vnpay_payment(
     return PaymentCreateResponse(mode="vnpay_sandbox", payment_url=payment_url, booking_id=payload.booking_id)
 
 
+@router.post("/vnpay/create-combo", response_model=PaymentCreateResponse)
+async def create_combo_vnpay_payment(
+    payload: PaymentCreateRequest,
+    request: Request,
+    current_user: dict = Depends(get_current_user),
+):
+    db = get_db()
+    booking_oid = validate_object_id(payload.booking_id)
+    booking = await db.bookings.find_one({"_id": booking_oid, "user_id": current_user["id"], "is_combo": True})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Không tìm thấy combo của bạn")
+    return await create_vnpay_payment(payload, request, current_user)
+
+
+@router.post("/qr/confirm")
+async def confirm_qr_payment(
+    payload: PaymentCreateRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    db = get_db()
+    booking_oid = validate_object_id(payload.booking_id)
+    booking = await db.bookings.find_one({"_id": booking_oid, "user_id": current_user["id"]})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Không tìm thấy booking của bạn")
+    if booking.get("payment_status") == "paid":
+        return {"message": "Booking đã được xác nhận", "booking_id": payload.booking_id}
+    paid_at = datetime.utcnow().isoformat()
+    await db.bookings.update_one(
+        {"_id": booking_oid},
+        {"$set": {"payment_status": "paid", "status": "confirmed", "payment_provider": "qr_demo", "paid_at": paid_at}},
+    )
+    return {"message": "Thanh toán QR demo thành công", "booking_id": payload.booking_id, "paid_at": paid_at}
+
+
 @router.get("/vnpay/return")
 async def vnpay_return(request: Request):
     params = dict(request.query_params)

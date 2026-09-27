@@ -112,6 +112,19 @@
   font-size: 1rem;
 }
 
+.booking-detail-modal { padding: 24px; }
+.booking-code-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border: 1px dashed var(--primary-color); border-radius: var(--radius-md); background: rgba(10, 169, 130, .07); }
+.booking-code-box span { color: var(--text-muted); font-size: .85rem; }
+.booking-code-box strong { color: var(--primary-color); font-size: 1.15rem; letter-spacing: .08em; }
+.booking-detail-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+@media (max-width: 600px) {
+  .booking-detail-modal { padding: 18px; }
+  .booking-code-box { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .booking-detail-actions { flex-direction: column; }
+  .booking-detail-actions .btn { justify-content: center; width: 100%; }
+}
+
 .voucher-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

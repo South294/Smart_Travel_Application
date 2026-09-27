@@ -417,6 +417,14 @@ async def seed_database():
     ]
 
     for tour in tours:
+        tags = [str(tag).lower() for tag in tour.get("tags", [])]
+        tour.setdefault("indoor", any(tag in tags for tag in ["indoor", "museum", "food"]))
+        tour.setdefault("outdoor", not tour["indoor"])
+        tour.setdefault("best_weather", ["rain"] if tour["indoor"] else ["clear", "cloudy"])
+        tour.setdefault("estimated_duration_hours", tour["duration_days"] * 8)
+        tour.setdefault("difficulty_level", "easy" if "mountain" not in tags and "trekking" not in tags else "moderate")
+        tour.setdefault("suitable_for_children", "trekking" not in tags)
+        tour.setdefault("suitable_for_elderly", "trekking" not in tags)
         await db.tours.update_one(
             {"slug": tour["slug"]},
             {"$set": tour},

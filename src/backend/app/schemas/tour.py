@@ -10,6 +10,7 @@ class TourBase(BaseModel):
     slug: str = Field(min_length=1, max_length=200)
     category: str = Field(min_length=1)
     location: str = Field(min_length=1)
+    description: Optional[str] = None
     duration_days: int = Field(ge=1)
     duration_nights: int = Field(ge=0)
     price: float = Field(ge=0)
@@ -18,6 +19,13 @@ class TourBase(BaseModel):
     review_count: int = Field(default=0, ge=0)
     images: List[str] = []
     tags: List[str] = []
+    indoor: bool = False
+    outdoor: bool = True
+    best_weather: List[str] = []
+    estimated_duration_hours: Optional[float] = None
+    difficulty_level: Optional[str] = None
+    suitable_for_children: bool = True
+    suitable_for_elderly: bool = True
     is_active: bool = True
     lat: Optional[float] = None
     lng: Optional[float] = None
@@ -29,10 +37,18 @@ class TourCreate(TourBase):
 
 class TourUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1)
+    description: Optional[str] = None
     category: Optional[str] = None
     location: Optional[str] = None
     price: Optional[float] = Field(default=None, ge=0)
     discount_price: Optional[float] = Field(default=None, ge=0)
+    indoor: Optional[bool] = None
+    outdoor: Optional[bool] = None
+    best_weather: Optional[List[str]] = None
+    estimated_duration_hours: Optional[float] = None
+    difficulty_level: Optional[str] = None
+    suitable_for_children: Optional[bool] = None
+    suitable_for_elderly: Optional[bool] = None
     is_active: Optional[bool] = None
     rating: Optional[float] = Field(default=None, ge=0, le=5)
 

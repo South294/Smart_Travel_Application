@@ -217,19 +217,54 @@ async function renderMyBookings() {
       var statusText = mapBookingStatus(booking.status);
       var statusClass = mapBookingStatusClass(booking.status);
       return (
-        '<div class="trip-item flex items-center gap-4 pb-4 border-b">' +
+        '<button type="button" class="trip-item trip-clickable flex items-center gap-4 pb-4 border-b" data-booking-id="' + escapeHtml(booking.id) + '">' +
         '<div class="icon-circle icon-circle-primary"><i class="bx bx-map-pin"></i></div>' +
         '<div class="flex-1">' +
         '<h4 class="font-semibold">' + escapeHtml(booking.tour_title || 'Tour') + '</h4>' +
-        '<p class="text-muted text-sm">' + escapeHtml(booking.travel_date || '--') + '</p>' +
+        '<p class="text-muted text-sm">' + escapeHtml(booking.tour_location || '--') + ' · ' + escapeHtml(booking.travel_date || '--') + '</p>' +
         '</div>' +
         '<span class="badge ' + statusClass + '">' + statusText + '</span>' +
-        '</div>'
+        '</button>'
       );
     }).join('');
+    listWrap.querySelectorAll('[data-booking-id]').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var booking = bookings.find(function(entry) { return entry.id === item.getAttribute('data-booking-id'); });
+        if (booking) openBookingDetail(booking);
+      });
+    });
   } catch (e) {
     listWrap.innerHTML = '<div class="text-muted text-sm">Không thể tải danh sách chuyến đi.</div>';
   }
+}
+
+function formatBookingDate(value) {
+  if (!value) return '--';
+  var date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('vi-VN');
+}
+
+function openBookingDetail(booking) {
+  var modal = document.getElementById('bookingDetailModal');
+  if (!modal) return;
+  var setText = function(id, value) {
+    var element = document.getElementById(id);
+    if (element) element.textContent = value || '--';
+  };
+  setText('bookingDetailTitle', booking.tour_title || 'Tour du lịch');
+  setText('bookingDetailCode', booking.booking_code || ('ST-' + String(booking.id || '').slice(-8).toUpperCase()));
+  setText('bookingDetailTravelDate', booking.travel_date);
+  setText('bookingDetailPaidAt', booking.paid_at ? formatBookingDate(booking.paid_at) : 'Chưa thanh toán');
+  setText('bookingDetailLocation', booking.tour_location || 'Đang cập nhật');
+  setText('bookingDetailStatus', mapBookingStatus(booking.status));
+  setText('bookingDetailTotal', formatCurrency(booking.total_amount || 0));
+  var mapLink = document.getElementById('bookingDetailMapLink');
+  if (mapLink) {
+    var query = booking.tour_lat && booking.tour_lng ? booking.tour_lat + ',' + booking.tour_lng : booking.tour_location || booking.tour_title;
+    mapLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+  }
+  openModal('bookingDetailModal');
 }
 
 function mapBookingStatus(status) {
@@ -741,6 +776,18 @@ function initCheckoutPayment() {
 
   var paymentStatus = new URLSearchParams(window.location.search).get('payment');
   if (paymentStatus === 'success') {
+    var returnedBookingId = new URLSearchParams(window.location.search).get('booking_id');
+    if (returnedBookingId) {
+      fetchApi('/api/bookings/' + encodeURIComponent(returnedBookingId)).then(function(response) {
+        return response.ok ? response.json() : null;
+      }).then(function(booking) {
+        if (!booking) return;
+        var returnedCode = document.getElementById('paymentOrderCode');
+        var returnedTotal = document.getElementById('paymentTotal');
+        if (returnedCode) returnedCode.textContent = booking.booking_code || ('ST-' + String(booking.id).slice(-8).toUpperCase());
+        if (returnedTotal) returnedTotal.textContent = formatCurrency(booking.total_amount || 0);
+      }).catch(function() {});
+    }
     openModal('paymentSuccessModal');
     showToast('Thanh toán VNPay thành công', 'success');
   } else if (paymentStatus === 'failed') {
@@ -789,21 +836,9 @@ function initCheckoutPayment() {
 
       await submitSelectedGuideRequest();
 
-      var paymentRes = await fetchApi('/api/payments/vnpay/create', {
-        method: 'POST',
-        body: JSON.stringify({ booking_id: data.id })
-      });
-      var paymentData = await paymentRes.json();
-      if (!paymentRes.ok) {
-        showToast(paymentData.detail || 'Chưa thể khởi tạo thanh toán VNPay', 'error');
-        return;
-      }
-      if (paymentData.payment_url) {
-        window.location.href = paymentData.payment_url;
-        return;
-      }
-
-      var orderCode = data.id ? String(data.id).slice(-6).toUpperCase() : generateOrderCode();
+      var selectedOption = document.querySelector('.payment-option.selected');
+      var method = selectedOption ? selectedOption.getAttribute('data-method') : '';
+      var orderCode = data.booking_code || (data.id ? String(data.id).slice(-6).toUpperCase() : generateOrderCode());
       var totalText = formatCurrency(data.total_amount || 0);
       var orderEl = document.getElementById('paymentOrderCode');
       var totalModal = document.getElementById('paymentTotal');
@@ -815,12 +850,42 @@ function initCheckoutPayment() {
       if (qrOrderEl) qrOrderEl.textContent = orderCode;
       if (qrTotalEl) qrTotalEl.textContent = totalText;
 
-      var selectedOption = document.querySelector('.payment-option.selected');
-      var method = selectedOption ? selectedOption.getAttribute('data-method') : '';
+      if (data.is_free) {
+        var freeTitle = document.getElementById('paymentSuccessTitle');
+        if (freeTitle) freeTitle.textContent = 'Đặt tour miễn phí thành công';
+        openModal('paymentSuccessModal');
+        showToast('Đặt tour miễn phí thành công, không cần thanh toán', 'success');
+        return;
+      }
 
-      if (method === 'qr' && qrModal) {
-        openModal('paymentQrModal');
-        showToast('Vui lòng quét mã QR để thanh toán', 'success');
+      if (method === 'qr') {
+        var qrConfirmRes = await fetchApi('/api/payments/qr/confirm', {
+          method: 'POST',
+          body: JSON.stringify({ booking_id: data.id })
+        });
+        var qrConfirmData = await qrConfirmRes.json();
+        if (!qrConfirmRes.ok) {
+          showToast(qrConfirmData.detail || 'Không thể xác nhận thanh toán QR', 'error');
+          return;
+        }
+        var qrTitle = document.getElementById('paymentSuccessTitle');
+        if (qrTitle) qrTitle.textContent = 'Thanh toán QR demo thành công';
+        openModal('paymentSuccessModal');
+        showToast('Đặt tour và thanh toán QR demo thành công', 'success');
+        return;
+      }
+
+      var paymentRes = await fetchApi('/api/payments/vnpay/create', {
+        method: 'POST',
+        body: JSON.stringify({ booking_id: data.id })
+      });
+      var paymentData = await paymentRes.json();
+      if (!paymentRes.ok) {
+        showToast(paymentData.detail || 'Chưa thể khởi tạo thanh toán VNPay', 'error');
+        return;
+      }
+      if (paymentData.payment_url) {
+        window.location.href = paymentData.payment_url;
         return;
       }
 

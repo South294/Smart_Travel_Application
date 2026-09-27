@@ -128,6 +128,31 @@
                     <div class="voucher-list" id="saved-vouchers-list"></div>
                 </div>
 
+                <div class="modal-overlay" id="bookingDetailModal">
+                    <div class="modal-content modal-md booking-detail-modal">
+                        <div class="flex justify-between items-start gap-4 mb-4">
+                            <div>
+                                <span class="text-muted text-sm">Thông tin chuyến đã đặt</span>
+                                <h3 class="font-bold" id="bookingDetailTitle">Tour du lịch</h3>
+                            </div>
+                            <button type="button" class="btn btn-icon" data-modal-close aria-label="Đóng"><i class="bx bx-x"></i></button>
+                        </div>
+                        <div class="booking-code-box"><span>Mã sử dụng tại điểm đến</span><strong id="bookingDetailCode">ST-XXXXXXX</strong></div>
+                        <p class="text-muted text-sm mt-2">Khi đến nơi, bạn chỉ cần xuất trình mã này cho đơn vị tổ chức, không cần vé giấy.</p>
+                        <div class="trip-modal-grid mt-4">
+                            <div class="trip-modal-item"><i class="bx bx-calendar"></i><span>Ngày khởi hành: <b id="bookingDetailTravelDate">--</b></span></div>
+                            <div class="trip-modal-item"><i class="bx bx-credit-card"></i><span>Ngày thanh toán: <b id="bookingDetailPaidAt">--</b></span></div>
+                            <div class="trip-modal-item"><i class="bx bx-map-pin"></i><span>Địa điểm: <b id="bookingDetailLocation">--</b></span></div>
+                            <div class="trip-modal-item"><i class="bx bx-check-circle"></i><span>Trạng thái: <b id="bookingDetailStatus">--</b></span></div>
+                            <div class="trip-modal-item"><i class="bx bx-wallet"></i><span>Tổng tiền: <b id="bookingDetailTotal">--</b></span></div>
+                        </div>
+                        <div class="booking-detail-actions mt-4">
+                            <a id="bookingDetailMapLink" class="btn btn-outline" href="#" target="_blank" rel="noopener"><i class="bx bx-map-alt"></i> Mở Google Maps</a>
+                            <button type="button" class="btn btn-primary" data-modal-close>Đóng</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card p-6 mt-4 profile-preferences-card" id="travel-preferences">
                     <h3 class="font-bold mb-2">Sở thích du lịch</h3>
                     <p class="text-muted text-sm mb-4">Thông tin này giúp SmartTravel đề xuất lịch trình phù hợp hơn với bạn.</p>

@@ -25,7 +25,14 @@ class Recommendation(BaseModel):
     location: str
 
 
+class ItineraryDay(BaseModel):
+    day: int
+    title: str
+    activities: List[str] = []
+
+
 class ChatResponse(BaseModel):
     message: str
     recommendations: List[Recommendation] = []
+    itinerary: List[ItineraryDay] = []
     weather: WeatherSnapshot
