@@ -70,22 +70,49 @@
                 </div>
 
                 <div class="form-section">
-                    <h3 class="form-section-title"><span class="form-section-number">2</span> Xác minh Danh tính (CCCD / CMND)</h3>
-                    <div class="grid params-grid">
+                    <h3 class="form-section-title"><span class="form-section-number">2</span> Xác minh Căn cước công dân & Ảnh chân dung</h3>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Số Căn cước công dân (12 chữ số)</label>
+                        <input type="text" class="form-control" name="guide_cccd_number" placeholder="VD: 001099012345" pattern="[0-9]{12}" maxlength="12" required>
+                    </div>
+                    <div class="grid params-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
                         <div class="form-group">
                             <label class="form-label">Mặt trước CCCD</label>
-                            <div class="upload-area">
+                            <div class="upload-area" id="area_guide_id_front">
                                 <i class="bx bx-id-card"></i>
-                                <p>Nhấp để tải lên mặt trước</p>
-                                <input type="text" class="form-control" name="guide_id_front" placeholder="Dán link ảnh mặt trước" required>
+                                <p>Nhấp để tải lên mặt trước CCCD</p>
+                                <span class="text-xs text-muted block mt-1">Chọn ảnh từ thiết bị (JPG, PNG)</span>
+                                <input type="file" accept="image/*" class="file-input" style="display: none;">
+                                <input type="hidden" name="guide_id_front">
+                                <div class="upload-preview-box" style="display:none; margin-top:10px;">
+                                    <img src="" class="upload-preview" alt="Mặt trước CCCD" style="max-height:130px; border-radius:6px; object-fit:contain; border:1px solid #cbd5e1; width:100%;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ảnh chân dung thực tế</label>
+                            <div class="upload-area" id="area_guide_portrait">
+                                <i class="bx bx-user-pin"></i>
+                                <p>Nhấp để tải lên ảnh chân dung</p>
+                                <span class="text-xs text-muted block mt-1">Ảnh chụp rõ mặt người thật</span>
+                                <input type="file" accept="image/*" class="file-input" style="display: none;">
+                                <input type="hidden" name="guide_portrait">
+                                <div class="upload-preview-box" style="display:none; margin-top:10px;">
+                                    <img src="" class="upload-preview" alt="Ảnh chân dung" style="max-height:130px; border-radius:6px; object-fit:contain; border:1px solid #86efac; width:100%;">
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Mặt sau CCCD</label>
-                            <div class="upload-area">
+                            <div class="upload-area" id="area_guide_id_back">
                                 <i class="bx bx-credit-card-front"></i>
-                                <p>Nhập link ảnh mặt sau</p>
-                                <input type="text" class="form-control" name="guide_id_back" placeholder="Dán link ảnh mặt sau" required>
+                                <p>Nhấp để tải lên mặt sau CCCD</p>
+                                <span class="text-xs text-muted block mt-1">Chọn ảnh từ thiết bị (JPG, PNG)</span>
+                                <input type="file" accept="image/*" class="file-input" style="display: none;">
+                                <input type="hidden" name="guide_id_back">
+                                <div class="upload-preview-box" style="display:none; margin-top:10px;">
+                                    <img src="" class="upload-preview" alt="Mặt sau CCCD" style="max-height:130px; border-radius:6px; object-fit:contain; border:1px solid #cbd5e1; width:100%;">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -104,6 +131,6 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=2"></script>
 </body>
 </html>

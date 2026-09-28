@@ -8,8 +8,11 @@ class GuideBase(BaseModel):
     areas: List[str] = Field(min_length=1)
     languages: List[str] = Field(min_length=1)
     bio: str = Field(min_length=1)
+    cccd_number: Optional[str] = None
     id_front_url: Optional[str] = None
     id_back_url: Optional[str] = None
+    portrait_url: Optional[str] = None
+    cccd_status: Optional[str] = "verified"
 
 class GuideCreate(GuideBase):
     pass

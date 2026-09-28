@@ -206,7 +206,7 @@ async function loadPendingGuides() {
 
         tbody.innerHTML = '';
         if (guides.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 24px;">Không có hồ sơ chờ duyệt</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px;">Không có hồ sơ chờ duyệt</td></tr>';
             return;
         }
 
@@ -214,6 +214,17 @@ async function loadPendingGuides() {
             var tr = document.createElement('tr');
             var guideName = guide.name || 'Hướng dẫn viên';
             var guideAreas = (guide.areas || []).join(', ') || '--';
+            var cccdHtml = '';
+            if (guide.cccd_number || (guide.id_front_url && guide.portrait_url)) {
+                var cccdNum = guide.cccd_number ? escapeHtml(guide.cccd_number) : 'Đã tải ảnh';
+                cccdHtml =
+                    '<div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">' +
+                    '<span class="badge badge-success"><i class="bx bx-check-shield"></i> ' + (guide.cccd_number ? 'CCCD: ' + cccdNum : 'Đã có CCCD & Chân dung') + '</span>' +
+                    '<button type="button" class="btn btn-xs btn-outline btn-view-cccd" data-id="' + guide.id + '" style="font-size:11px; padding:2px 8px;"><i class="bx bx-show"></i> Xem CCCD & Chân dung</button>' +
+                    '</div>';
+            } else {
+                cccdHtml = '<span class="badge badge-warning">Chưa có CCCD</span>';
+            }
             tr.innerHTML =
                 '<td>' +
                 '<div class="user-info-table">' +
@@ -223,6 +234,7 @@ async function loadPendingGuides() {
                 '</td>' +
                 '<td>' + escapeHtml(String(guide.experience_years || 0)) + ' năm</td>' +
                 '<td>' + escapeHtml(guideAreas) + '</td>' +
+                '<td>' + cccdHtml + '</td>' +
                 '<td><span class="badge badge-warning">Chờ duyệt</span></td>' +
                 '<td>' +
                 '<div class="action-group">' +
@@ -231,6 +243,15 @@ async function loadPendingGuides() {
                 '</div>' +
                 '</td>';
             tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-view-cccd').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var guide = guides.find(function(g) { return String(g.id) === String(id); });
+                if (!guide) return;
+                openCCCDModal(guide);
+            });
         });
 
         document.querySelectorAll('.btn-approve').forEach(function(btn) {
@@ -248,6 +269,37 @@ async function loadPendingGuides() {
         });
 
     } catch(e) {}
+}
+
+function openCCCDModal(guide) {
+    var modal = document.getElementById('cccdModal');
+    if (!modal) return;
+    var infoEl = document.getElementById('cccdModalGuideInfo');
+    if (infoEl) {
+        infoEl.textContent = 'Ứng viên: ' + (guide.name || '') + (guide.cccd_number ? ' | Số CCCD: ' + guide.cccd_number : '');
+    }
+    var frontImg = document.getElementById('cccdModalFrontImg');
+    if (frontImg) frontImg.src = guide.id_front_url || 'https://placehold.co/400x250?text=Chua+co+anh+mat+truoc';
+    var portraitImg = document.getElementById('cccdModalPortraitImg');
+    if (portraitImg) portraitImg.src = guide.portrait_url || 'https://placehold.co/400x250?text=Chua+co+anh+chan+dung';
+    var backImg = document.getElementById('cccdModalBackImg');
+    if (backImg) backImg.src = guide.id_back_url || 'https://placehold.co/400x250?text=Chua+co+anh+mat+sau';
+
+    var approveBtn = document.getElementById('cccdModalApproveBtn');
+    if (approveBtn) {
+        approveBtn.onclick = async function() {
+            modal.classList.remove('is-active');
+            await handleGuideAction(guide.id, 'approve');
+        };
+    }
+    var rejectBtn = document.getElementById('cccdModalRejectBtn');
+    if (rejectBtn) {
+        rejectBtn.onclick = async function() {
+            modal.classList.remove('is-active');
+            await handleGuideAction(guide.id, 'reject');
+        };
+    }
+    modal.classList.add('is-active');
 }
 
 async function loadGuidesList() {

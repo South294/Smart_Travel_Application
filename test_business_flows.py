@@ -14,9 +14,11 @@ from app.routers import admin as admin_router
 from app.routers import auth as auth_router
 from app.routers import bookings as bookings_router
 from app.routers import guides as guides_router
+from app.routers import users as users_router
 from app.schemas.auth import LoginRequest, RegisterRequest
 from app.schemas.booking import BookingCreate
 from app.schemas.guide import GuideCreate
+from app.schemas.user import UserCCCDVerificationRequest
 
 
 class FakeResult:
@@ -274,6 +276,53 @@ class BusinessFlowTests(unittest.IsolatedAsyncioTestCase):
             await admin_router.get_current_admin_user({"id": str(ObjectId()), "role": "user"})
 
         self.assertEqual(context.exception.status_code, 403)
+
+    async def test_user_can_verify_cccd(self):
+        database = FakeDatabase()
+        user_id = ObjectId()
+        database.users.documents.append({
+            "_id": user_id,
+            "email": "user@example.com",
+            "full_name": "Test User",
+            "role": "user"
+        })
+        payload = UserCCCDVerificationRequest(
+            cccd_number="001099012345",
+            full_name="TEST USER",
+            id_front_url="https://example.com/front.jpg",
+            id_back_url="https://example.com/back.jpg",
+            portrait_url="https://example.com/portrait.jpg"
+        )
+        with patch.object(users_router, "get_db", return_value=database):
+            response = await users_router.verify_user_cccd(payload, {"id": str(user_id), "role": "user"})
+            status_resp = await users_router.get_user_cccd_status({"id": str(user_id), "role": "user"})
+
+        self.assertEqual(response["cccd_status"], "verified")
+        self.assertTrue(status_resp["is_verified"])
+        self.assertEqual(status_resp["cccd"]["number"], "0010****2345")
+
+    async def test_guide_can_apply_with_cccd_and_portrait(self):
+        database = FakeDatabase()
+        user_id = str(ObjectId())
+        payload = GuideCreate(
+            name="Guide Name",
+            experience_years=3,
+            price_per_day=500000,
+            areas=["Hà Nội"],
+            languages=["Tiếng Việt"],
+            bio="HDV nhiệt tình",
+            cccd_number="001099012345",
+            id_front_url="https://example.com/front.jpg",
+            id_back_url="https://example.com/back.jpg",
+            portrait_url="https://example.com/portrait.jpg"
+        )
+        with patch.object(guides_router, "get_db", return_value=database):
+            response = await guides_router.apply_guide(payload, {"id": user_id, "role": "user"})
+
+        self.assertEqual(response["status"], "pending")
+        self.assertEqual(response["cccd_status"], "verified")
+        self.assertEqual(response["cccd_number"], "001099012345")
+        self.assertEqual(response["portrait_url"], "https://example.com/portrait.jpg")
 
 
 if __name__ == "__main__":

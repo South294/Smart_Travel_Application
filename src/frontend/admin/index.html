@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="../css/pages/redesign.css">
+    <link rel="stylesheet" href="css/admin.css?v=3">
+    <link rel="stylesheet" href="../css/pages/redesign.css?v=3">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body class="admin-page">
@@ -160,6 +160,7 @@
                                     <th>Hướng dẫn viên</th>
                                     <th>Kinh nghiệm</th>
                                     <th>Khu vực</th>
+                                    <th>Xác thực CCCD</th>
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
@@ -504,6 +505,47 @@
                     <button type="submit" class="btn btn-primary">Phân công tour</button>
                 </div>
             </form>
+        </div>
+    <div class="modal-overlay" id="cccdModal">
+        <div class="modal-content modal-lg" style="max-width: 860px;">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="font-bold text-xl">Đối chiếu Căn cước công dân & Ảnh chân dung</h3>
+                    <p class="text-muted text-sm" id="cccdModalGuideInfo"></p>
+                </div>
+                <button class="btn btn-icon" data-modal-close><i class="bx bx-x"></i></button>
+            </div>
+            <div class="alert-box alert-info mb-4">
+                <i class="bx bx-info-circle"></i>
+                <span>Hãy đối chiếu kỹ khuôn mặt trong ảnh chân dung thực tế với ảnh thẻ in trên mặt trước CCCD trước khi ra quyết định duyệt hồ sơ.</span>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                <div class="card p-3 text-center" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                    <span class="font-bold text-sm block mb-2"><i class="bx bx-id-card"></i> Mặt trước CCCD</span>
+                    <div style="height: 180px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                        <img id="cccdModalFrontImg" src="" alt="Mặt trước CCCD" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="card p-3 text-center" style="background: #f0fdf4; border: 2px solid #86efac;">
+                    <span class="font-bold text-sm block mb-2 text-success"><i class="bx bx-user-pin"></i> Ảnh chân dung thực tế</span>
+                    <div style="height: 180px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 6px; border: 1px dashed #86efac;">
+                        <img id="cccdModalPortraitImg" src="" alt="Chân dung thực tế" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="card p-3 text-center" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                    <span class="font-bold text-sm block mb-2"><i class="bx bx-credit-card-front"></i> Mặt sau CCCD</span>
+                    <div style="height: 180px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                        <img id="cccdModalBackImg" src="" alt="Mặt sau CCCD" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t">
+                <button type="button" class="btn btn-outline" data-modal-close>Đóng</button>
+                <div class="flex gap-2">
+                    <button type="button" class="btn btn-danger" id="cccdModalRejectBtn">Từ chối hồ sơ</button>
+                    <button type="button" class="btn btn-primary" id="cccdModalApproveBtn">Duyệt hồ sơ này</button>
+                </div>
+            </div>
         </div>
     </div>
 

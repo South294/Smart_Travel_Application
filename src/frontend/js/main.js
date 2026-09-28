@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   await initPromoClaim();
   initAdminSidebar();
   initProfileSave();
+  await initCCCDVerification();
   initGuideRegisterForm();
   initGuideHireActions();
   await initGuidesDirectory();
@@ -637,6 +638,85 @@ function closeModal(id) {
   if (modal) modal.classList.remove('is-active');
 }
 
+function initUploadAreas() {
+  var areas = document.querySelectorAll('.upload-area');
+  if (!areas || areas.length === 0) return;
+
+  areas.forEach(function(area) {
+    var fileInput = area.querySelector('input[type="file"]');
+    var hiddenInput = area.querySelector('input[type="hidden"]');
+    var previewBox = area.querySelector('.upload-preview-box');
+    var previewImg = area.querySelector('.upload-preview');
+    var titleEl = area.querySelector('p');
+    var iconEl = area.querySelector('i');
+
+    if (!fileInput) return;
+
+    area.addEventListener('click', function(e) {
+      if (e.target !== fileInput) {
+        fileInput.click();
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(function(eventName) {
+      area.addEventListener(eventName, function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        area.style.borderColor = 'var(--primary-color)';
+        area.style.background = 'rgba(10, 169, 130, 0.08)';
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(function(eventName) {
+      area.addEventListener(eventName, function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!area.classList.contains('has-file')) {
+          area.style.borderColor = '';
+          area.style.background = '';
+        }
+      });
+    });
+
+    area.addEventListener('drop', function(e) {
+      var dt = e.dataTransfer;
+      if (dt && dt.files && dt.files.length > 0) {
+        processUploadedImage(dt.files[0], area, hiddenInput, previewBox, previewImg, titleEl, iconEl);
+      }
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (!fileInput.files || fileInput.files.length === 0) return;
+      processUploadedImage(fileInput.files[0], area, hiddenInput, previewBox, previewImg, titleEl, iconEl);
+    });
+  });
+}
+
+function processUploadedImage(file, area, hiddenInput, previewBox, previewImg, titleEl, iconEl) {
+  if (!file.type.match(/^image\//)) {
+    showToast('Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG, WebP)', 'error');
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    showToast('Kích thước ảnh không được vượt quá 8MB', 'error');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function(evt) {
+    var base64Data = evt.target.result;
+    if (hiddenInput) hiddenInput.value = base64Data;
+    if (previewImg) previewImg.src = base64Data;
+    if (previewBox) previewBox.style.display = 'block';
+    area.classList.add('has-file');
+    area.style.borderColor = 'var(--success)';
+    area.style.background = 'rgba(16, 185, 129, 0.04)';
+    if (titleEl) titleEl.textContent = file.name;
+    if (iconEl) iconEl.className = 'bx bx-check-circle text-success';
+  };
+  reader.readAsDataURL(file);
+}
+
 function showToast(message, type) {
   type = type || 'success';
   var container = document.querySelector('.toast-container');
@@ -984,6 +1064,113 @@ function initProfileSave() {
   });
 }
 
+async function initCCCDVerification() {
+  var form = document.getElementById('cccd-verify-form');
+  var badge = document.getElementById('cccdStatusBadge');
+  var verifiedBox = document.getElementById('cccdVerifiedBox');
+  var verifiedInfo = document.getElementById('cccdVerifiedInfo');
+  if (!form && !badge) return;
+
+  if (localStorage.getItem('access_token')) {
+    try {
+      var res = await fetchApi('/api/users/me/cccd-status');
+      if (res.ok) {
+        var data = await res.json();
+        if (data.is_verified) {
+          if (badge) {
+            badge.className = 'badge badge-success';
+            badge.textContent = 'Đã xác thực CCCD';
+          }
+          if (verifiedBox) {
+            verifiedBox.hidden = false;
+            if (verifiedInfo && data.cccd) {
+              verifiedInfo.textContent = 'Họ tên: ' + (data.cccd.full_name || '') + ' | Số thẻ: ' + (data.cccd.number || '');
+            }
+          }
+          if (form) {
+            form.hidden = true;
+          }
+        } else {
+          if (badge) {
+            badge.className = 'badge badge-warning';
+            badge.textContent = 'Chưa xác thực';
+          }
+          if (verifiedBox) {
+            verifiedBox.hidden = true;
+          }
+          if (form) {
+            form.hidden = false;
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('btnSubmitCCCD');
+      if (btn) {
+        btn.classList.add('is-loading');
+        btn.disabled = true;
+      }
+
+      var fullNameInput = form.querySelector('input[name="cccd_full_name"]');
+      var numberInput = form.querySelector('input[name="cccd_number"]');
+      var frontInput = form.querySelector('input[name="cccd_front_url"]');
+      var backInput = form.querySelector('input[name="cccd_back_url"]');
+      var portraitInput = form.querySelector('input[name="cccd_portrait_url"]');
+
+      var payload = {
+        full_name: fullNameInput ? fullNameInput.value.trim() : '',
+        cccd_number: numberInput ? numberInput.value.trim() : '',
+        id_front_url: frontInput ? frontInput.value.trim() : '',
+        id_back_url: backInput ? backInput.value.trim() : '',
+        portrait_url: portraitInput ? portraitInput.value.trim() : ''
+      };
+
+      if (!payload.cccd_number || payload.cccd_number.length !== 12 || !/^\d{12}$/.test(payload.cccd_number)) {
+        showToast('Số CCCD phải gồm đúng 12 chữ số', 'error');
+        if (btn) {
+          btn.classList.remove('is-loading');
+          btn.disabled = false;
+        }
+        return;
+      }
+
+      if (!payload.id_front_url || !payload.id_back_url || !payload.portrait_url) {
+        showToast('Vui lòng tải lên đầy đủ ảnh mặt trước, mặt sau CCCD và ảnh chân dung thực tế', 'warning');
+        if (btn) {
+          btn.classList.remove('is-loading');
+          btn.disabled = false;
+        }
+        return;
+      }
+
+      try {
+        var resp = await fetchApi('/api/users/me/cccd-verify', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        if (resp.ok) {
+          showToast('Xác thực CCCD thành công!', 'success');
+          setTimeout(function() { location.reload(); }, 1200);
+        } else {
+          var errData = await resp.json();
+          showToast(errData.detail || 'Lỗi khi xác thực CCCD', 'error');
+        }
+      } catch(err) {
+        showToast('Lỗi kết nối máy chủ', 'error');
+      } finally {
+        if (btn) {
+          btn.classList.remove('is-loading');
+          btn.disabled = false;
+        }
+      }
+    });
+  }
+}
+
 function initGuideRegisterForm() {
   var form = document.getElementById('guide-register-form');
   if (!form) return;
@@ -996,6 +1183,14 @@ function initGuideRegisterForm() {
     submitBtn.classList.add('is-loading');
     submitBtn.disabled = true;
 
+    var cccdNumber = document.querySelector('input[name="guide_cccd_number"]') ? document.querySelector('input[name="guide_cccd_number"]').value.trim() : '';
+    if (cccdNumber && (!/^\d{12}$/.test(cccdNumber))) {
+        showToast('Số CCCD phải gồm đúng 12 chữ số', 'error');
+        submitBtn.classList.remove('is-loading');
+        submitBtn.disabled = false;
+        return;
+    }
+
     var data = {
         name: document.querySelector('input[name="guide_name"]') ? document.querySelector('input[name="guide_name"]').value : '',
         experience_years: parseInt(document.querySelector('input[name="guide_experience"]').value, 10) || 0,
@@ -1003,9 +1198,18 @@ function initGuideRegisterForm() {
         areas: (document.querySelector('input[name="guide_areas"]').value || '').split(',').map(function(item) { return item.trim(); }).filter(Boolean),
         languages: (document.querySelector('input[name="guide_languages"]').value || '').split(',').map(function(item) { return item.trim(); }).filter(Boolean),
         bio: document.querySelector('textarea[name="guide_bio"]').value || '',
-        id_front_url: document.querySelector('input[name="guide_id_front"]').value || '',
-        id_back_url: document.querySelector('input[name="guide_id_back"]').value || ''
+        cccd_number: cccdNumber,
+        id_front_url: document.querySelector('input[name="guide_id_front"]') ? document.querySelector('input[name="guide_id_front"]').value.trim() : '',
+        id_back_url: document.querySelector('input[name="guide_id_back"]') ? document.querySelector('input[name="guide_id_back"]').value.trim() : '',
+        portrait_url: document.querySelector('input[name="guide_portrait"]') ? document.querySelector('input[name="guide_portrait"]').value.trim() : ''
     };
+
+    if (!data.id_front_url || !data.id_back_url || !data.portrait_url) {
+        showToast('Vui lòng tải lên đầy đủ ảnh mặt trước, mặt sau CCCD và ảnh chân dung thực tế', 'warning');
+        submitBtn.classList.remove('is-loading');
+        submitBtn.disabled = false;
+        return;
+    }
 
     try {
         var res = await fetchApi('/api/guides/apply', {

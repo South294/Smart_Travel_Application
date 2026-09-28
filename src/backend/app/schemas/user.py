@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List, Dict, Any
 from datetime import date
 
 class UserSettings(BaseModel):
@@ -21,6 +21,7 @@ class UserProfile(BaseModel):
     saved_vouchers: List[str] = []
     settings: UserSettings = UserSettings()
     avatar_url: str = ""
+    cccd: Optional[Dict[str, Any]] = None
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
@@ -36,3 +37,17 @@ class UserPreferencesUpdate(BaseModel):
 
 class UserSettingsUpdate(BaseModel):
     settings: UserSettings
+
+class UserCCCDVerificationRequest(BaseModel):
+    cccd_number: str = Field(min_length=12, max_length=12)
+    full_name: str = Field(min_length=2, max_length=100)
+    birth_date: Optional[str] = None
+    gender: Optional[str] = None
+    id_front_url: str = Field(min_length=1)
+    id_back_url: str = Field(min_length=1)
+    portrait_url: str = Field(min_length=1)
+
+class UserCCCDVerificationResponse(BaseModel):
+    message: str
+    cccd_status: str
+    verified_at: str

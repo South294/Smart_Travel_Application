@@ -30,6 +30,12 @@ async def get_all_guides(admin: dict = Depends(get_current_admin_user)):
 @router.post("/apply", response_model=GuideResponse)
 async def apply_guide(guide: GuideCreate, current_user: dict = Depends(get_current_user)):
     db = get_db()
+    if guide.cccd_number:
+        if not guide.cccd_number.isdigit() or len(guide.cccd_number) != 12:
+            raise HTTPException(status_code=400, detail="Số CCCD phải gồm đúng 12 chữ số")
+
+    cccd_status = "verified" if (guide.cccd_number and guide.id_front_url and guide.id_back_url and guide.portrait_url) else "unverified"
+
     existing = await db.guides.find_one({"user_id": current_user["id"]})
     if existing:
         if existing.get("status") != "rejected":
@@ -38,6 +44,7 @@ async def apply_guide(guide: GuideCreate, current_user: dict = Depends(get_curre
         guide_dict = guide.model_dump()
         guide_dict.update({
             "status": "pending",
+            "cccd_status": cccd_status,
             "created_at": datetime.utcnow().isoformat()
         })
         await db.guides.update_one({"_id": existing["_id"]}, {"$set": guide_dict})
@@ -47,6 +54,7 @@ async def apply_guide(guide: GuideCreate, current_user: dict = Depends(get_curre
     guide_dict = guide.model_dump()
     guide_dict["user_id"] = current_user["id"]
     guide_dict["status"] = "pending"
+    guide_dict["cccd_status"] = cccd_status
     guide_dict["created_at"] = datetime.utcnow().isoformat()
 
     result = await db.guides.insert_one(guide_dict)
