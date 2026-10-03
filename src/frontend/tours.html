@@ -119,9 +119,21 @@
             </aside>
 
             <main class="tours-list">
+                <section class="tour-discovery-panel" id="toursHotSection">
+                    <div class="tour-discovery-heading">
+                        <div>
+                            <span class="tour-section-kicker"><i class="bx bxs-hot"></i> Đang được yêu thích</span>
+                            <h2>Tour hot hôm nay</h2>
+                            <p>Những hành trình được đặt nhiều và đánh giá cao.</p>
+                        </div>
+                        <button class="btn btn-primary" id="showAllToursBtn" type="button"><i class="bx bx-grid-alt"></i> Xem tất cả tour</button>
+                    </div>
+                    <div class="tour-hot-grid" id="toursHotGrid"></div>
+                </section>
+
                 <div class="tours-list-header">
                     <div class="tours-count-badge">
-                        Hiển thị <strong id="toursResultCount">6</strong> chuyến đi phù hợp
+                        Hiển thị <strong id="toursResultCount">0</strong> chuyến đi phù hợp
                     </div>
                     <div class="flex gap-2 items-center">
                         <select class="form-control sort-select">
@@ -133,7 +145,18 @@
                     </div>
                 </div>
 
-                <div class="list-grid" id="toursListGrid">
+                <div class="tour-all-panel" id="toursAllSection" hidden>
+                    <div class="tour-all-heading">
+                        <div>
+                            <span class="tour-section-kicker"><i class="bx bx-map-alt"></i> Danh mục điểm đến</span>
+                            <h2>Tất cả tour có thể đặt</h2>
+                        </div>
+                        <button class="btn btn-ghost" id="showHotToursBtn" type="button"><i class="bx bxs-hot"></i> Về tour hot</button>
+                    </div>
+                    <div class="tour-region-list" id="toursRegionList"></div>
+                </div>
+
+                <div class="list-grid" id="toursListGrid" hidden>
 
                     <div class="card card-interactive tour-card list-card" data-title="Mộc Châu Mộng Mơ - Tour 3N2Đ Siêu Cấp" data-location="Sơn La, Việt Nam" data-category="Núi rừng" data-duration="3" data-price="2800000" data-rating="4.9">
                         <div class="tour-img">

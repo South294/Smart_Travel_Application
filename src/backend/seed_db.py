@@ -853,7 +853,69 @@ async def seed_database():
         }
     ]
 
+    def build_extra_tour(title, slug, category, location, duration_days, price, discount_price, image_query, tags, lat, lng):
+        return {
+            "title": title,
+            "slug": slug,
+            "category": category,
+            "location": location,
+            "duration_days": duration_days,
+            "duration_nights": max(duration_days - 1, 0),
+            "price": price,
+            "discount_price": discount_price,
+            "rating": 4.8,
+            "review_count": 420,
+            "images": [f"https://loremflickr.com/960/640/{image_query.replace(' ', ',')}?lock={slug}"],
+            "tags": tags,
+            "is_active": True,
+            "lat": lat,
+            "lng": lng,
+            "geo_location": {"type": "Point", "coordinates": [lng, lat]},
+            "created_at": datetime.utcnow().isoformat()
+        }
+
+    tours.extend([
+        build_extra_tour("Hà Nội Nghìn Năm - Hoàng Thành Thăng Long & Hồ Tây 2N1Đ", "ha-noi-hoang-thanh-ho-tay", "sight", "Hà Nội", 2, 1450000, 1190000, "hanoi hoang thanh ho tay", ["cultural", "sight", "hà nội"], 21.0285, 105.8542),
+        build_extra_tour("Ninh Bình Tam Cốc - Hang Múa & Vườn Chim Thung Nham 2N1Đ", "ninh-binh-tam-coc-hang-mua", "sight", "Ninh Bình, Tràng An", 2, 1750000, 1490000, "ninh binh tam coc hang mua", ["cultural", "sight", "ninh bình"], 20.2506, 105.9745),
+        build_extra_tour("Hạ Long Ngủ Đêm - Vịnh Bái Tử Long & Làng Chài Vung Viêng 2N1Đ", "ha-long-bai-tu-long", "sea", "Hạ Long, Quảng Ninh", 2, 2950000, 2550000, "ha long bai tu long vietnam", ["sea", "hạ long", "quảng ninh"], 20.9101, 107.1839),
+        build_extra_tour("Cát Bà Hoang Sơ - Vườn Quốc Gia & Vịnh Lan Hạ 3N2Đ", "cat-ba-vuon-quoc-gia", "sea", "Cát Bà, Hải Phòng", 3, 3250000, 2790000, "cat ba lan ha vietnam", ["sea", "nature", "cát bà", "hải phòng"], 20.7278, 107.0482),
+        build_extra_tour("Sapa Bản Tả Phìn - Tắm Lá Dao & Thung Lũng Mường Hoa 2N1Đ", "sapa-ta-phin-muong-hoa", "mountain", "Sa Pa, Lào Cai", 2, 2150000, 1850000, "sapa ta phin muong hoa", ["mountain", "cultural", "sapa", "lào cai"], 22.3364, 103.8438),
+        build_extra_tour("Y Tý Săn Mây - Ruộng Bậc Thang & Chợ Mường Hum 3N2Đ", "y-ty-san-may", "mountain", "Y Tý, Lào Cai", 3, 2950000, 2490000, "y ty lao cai vietnam", ["mountain", "trekking", "y tý", "lào cai"], 22.6333, 103.6833),
+        build_extra_tour("Hà Giang Mùa Hoa Tam Giác Mạch - Đồng Văn & Lũng Cú 3N2Đ", "ha-giang-tam-giac-mach", "mountain", "Hà Giang", 3, 3150000, 2690000, "ha giang dong van vietnam", ["mountain", "adventure", "hà giang", "đồng văn"], 23.2753, 104.9843),
+        build_extra_tour("Hà Giang Sông Nho Quế - Đèo Mã Pì Lèng & Hẻm Tu Sản 4N3Đ", "ha-giang-nho-que-ma-pi-leng", "mountain", "Hà Giang", 4, 3950000, 3390000, "nho que river ma pi leng vietnam", ["mountain", "adventure", "hà giang", "nho quế"], 23.2753, 104.9843),
+        build_extra_tour("Cao Bằng Thác Bản Giốc - Động Ngườm Ngao & Hồ Thang Hen 3N2Đ", "cao-bang-ban-gioc-thang-hen", "mountain", "Cao Bằng", 3, 3050000, 2650000, "ban gioc waterfall cao bang vietnam", ["mountain", "sight", "cao bằng", "bản giốc"], 22.6667, 106.2500),
+        build_extra_tour("Bắc Kạn Ba Bể - Hồ Núi Đá Vôi & Bản Pác Ngòi 2N1Đ", "bac-kan-ho-ba-be", "mountain", "Ba Bể, Bắc Kạn", 2, 2250000, 1890000, "ba be lake bac kan vietnam", ["mountain", "nature", "bắc kạn", "ba bể"], 22.3937, 105.6217),
+        build_extra_tour("Lạng Sơn Xứ Lạng - Động Tam Thanh & Núi Tô Thị 2N1Đ", "lang-son-tam-thanh", "sight", "Lạng Sơn", 2, 1550000, 1290000, "lang son tam thanh cave vietnam", ["sight", "cultural", "lạng sơn"], 21.8537, 106.7610),
+        build_extra_tour("Điện Biên Lịch Sử - Đồi A1 & Hầm Đờ Cát 3N2Đ", "dien-bien-lich-su", "cultural", "Điện Biên Phủ, Điện Biên", 3, 2850000, 2450000, "dien bien phu vietnam", ["cultural", "history", "điện biên"], 21.3860, 103.0230),
+        build_extra_tour("Lai Châu Đèo Ô Quy Hồ - Pu Ta Leng & Bản Sin Suối Hồ 3N2Đ", "lai-chau-pu-ta-leng", "mountain", "Lai Châu", 3, 3250000, 2790000, "lai chau pu ta leng vietnam", ["mountain", "trekking", "lai châu"], 22.3864, 103.4700),
+        build_extra_tour("Mộc Châu Mùa Hoa - Thung Lũng Mận Nà Ka & Rừng Thông Bản Áng 2N1Đ", "moc-chau-na-ka-ban-ang", "mountain", "Mộc Châu, Sơn La", 2, 1950000, 1650000, "moc chau na ka vietnam", ["mountain", "nature", "mộc châu", "sơn la"], 20.8320, 104.6328),
+        build_extra_tour("Sơn La Tà Xùa - Sống Lưng Khủng Long & Săn Mây 3N2Đ", "ta-xua-song-lung-khung-long", "mountain", "Tà Xùa, Sơn La", 3, 2750000, 2290000, "ta xua son la vietnam", ["mountain", "trekking", "tà xùa", "sơn la"], 21.3367, 104.4542),
+        build_extra_tour("Yên Bái Mù Cang Chải - Ruộng Bậc Thang La Pán Tẩn 3N2Đ", "mu-cang-chai-la-pan-tan", "mountain", "Mù Cang Chải, Yên Bái", 3, 2850000, 2450000, "mu cang chai vietnam", ["mountain", "nature", "mù cang chải", "yên bái"], 21.8500, 104.1000),
+        build_extra_tour("Tuyên Quang Na Hang - Hồ Sinh Thái & Thác Khuổi Nhi 2N1Đ", "tuyen-quang-na-hang", "mountain", "Na Hang, Tuyên Quang", 2, 2150000, 1790000, "na hang lake vietnam", ["nature", "mountain", "tuyên quang"], 22.3667, 105.4333),
+        build_extra_tour("Phú Thọ Đồi Chè Long Cốc - Vườn Quốc Gia Xuân Sơn 2N1Đ", "phu-tho-long-coc-xuan-son", "cultural", "Phú Thọ", 2, 1750000, 1490000, "long coc tea hills vietnam", ["cultural", "nature", "phú thọ"], 21.3917, 105.3211),
+        build_extra_tour("Hòa Bình Mai Châu - Bản Lác & Thung Khe 2N1Đ", "hoa-binh-mai-chau-ban-lac", "mountain", "Mai Châu, Hòa Bình", 2, 1650000, 1390000, "mai chau hoa binh vietnam", ["mountain", "cultural", "mai châu", "hòa bình"], 20.6625, 105.0500),
+        build_extra_tour("Vĩnh Phúc Tam Đảo - Nhà Thờ Đá & Thác Bạc 2N1Đ", "vinh-phuc-tam-dao", "mountain", "Tam Đảo, Vĩnh Phúc", 2, 1550000, 1290000, "tam dao vinh phuc vietnam", ["mountain", "nature", "tam đảo", "vĩnh phúc"], 21.4550, 105.6440),
+        build_extra_tour("Bắc Giang Tây Yên Tử - Chùa Vĩnh Nghiêm & Rừng Phật Sơn 2N1Đ", "bac-giang-tay-yen-tu", "cultural", "Bắc Giang", 2, 1450000, 1190000, "tay yen tu bac giang vietnam", ["cultural", "mountain", "bắc giang"], 21.2733, 106.1947),
+        build_extra_tour("Thái Nguyên Hồ Núi Cốc - Không Gian Văn Hóa Trà Việt 2N1Đ", "thai-nguyen-ho-nui-coc", "cultural", "Thái Nguyên", 2, 1350000, 1090000, "thai nguyen tea vietnam", ["cultural", "nature", "thái nguyên"], 21.5928, 105.8442),
+        build_extra_tour("Nam Định Đất Thành Nam - Phủ Dầy & Vườn Quốc Gia Xuân Thủy 2N1Đ", "nam-dinh-phu-day-xuan-thuy", "cultural", "Nam Định", 2, 1550000, 1290000, "xuan thuy national park vietnam", ["cultural", "nature", "nam định"], 20.4200, 106.1680),
+        build_extra_tour("Bắc Hà Sắc Màu Cao Nguyên - Dinh Hoàng A Tưởng & Chợ Phiên 2N1Đ", "bac-ha-cho-phien", "mountain", "Bắc Hà, Lào Cai", 2, 1950000, 1650000, "bac ha lao cai vietnam", ["mountain", "cultural", "bắc hà", "lào cai"], 22.5333, 104.3333),
+        build_extra_tour("Quảng Ngãi Lý Sơn - Cổng Tò Vò & Núi Thới Lới 2N1Đ", "quang-ngai-ly-son", "sea", "Lý Sơn, Quảng Ngãi", 2, 2450000, 2090000, "ly son island vietnam", ["sea", "island", "lý sơn", "quảng ngãi"], 15.3833, 109.1167),
+        build_extra_tour("Buôn Ma Thuột Tây Nguyên - Thác Dray Nur & Hồ Lắk 3N2Đ", "buon-ma-thuot-dray-nur-ho-lak", "mountain", "Buôn Ma Thuột, Đắk Lắk", 3, 2850000, 2450000, "buon ma thuot dray nur vietnam", ["nature", "mountain", "buôn ma thuột"], 12.6667, 108.0500),
+        build_extra_tour("Quy Nhơn Kỳ Co - Eo Gió & Làng Chài Nhơn Hải 2N1Đ", "quy-nhon-ky-co-eo-gio", "sea", "Quy Nhơn, Bình Định", 2, 2250000, 1890000, "ky co eo gio quy nhon vietnam", ["sea", "quy nhơn", "bình định"], 13.7820, 109.2194),
+        build_extra_tour("Đà Nẵng Sơn Trà - Ngũ Hành Sơn & Bãi biển Mỹ Khê 2N1Đ", "da-nang-son-tra-ngu-hanh-son", "sight", "Đà Nẵng", 2, 1850000, 1550000, "son tra peninsula danang vietnam", ["sight", "sea", "đà nẵng"], 16.0544, 108.2022),
+        build_extra_tour("Huế Lăng Tẩm - Minh Mạng, Khải Định & Đồi Vọng Cảnh 2N1Đ", "hue-lang-tam-minh-mang", "sight", "Huế, Thừa Thiên Huế", 2, 1950000, 1650000, "hue minh mang tomb vietnam", ["cultural", "heritage", "huế"], 16.4637, 107.5909),
+        build_extra_tour("Nha Trang Hòn Tằm - Vịnh Nha Trang & Tắm Bùn Khoáng 2N1Đ", "nha-trang-hon-tam-tam-bun", "sea", "Nha Trang, Khánh Hòa", 2, 2350000, 1990000, "nha trang hon tam island vietnam", ["sea", "resort", "nha trang"], 12.2388, 109.1967),
+        build_extra_tour("Đà Lạt Langbiang - Thiền Viện Trúc Lâm & Đồi Chè Cầu Đất 2N1Đ", "da-lat-langbiang-truc-lam", "mountain", "Đà Lạt, Lâm Đồng", 2, 1850000, 1550000, "da lat langbiang vietnam", ["mountain", "nature", "đà lạt"], 11.9404, 108.4583),
+        build_extra_tour("Phú Quốc Nam Đảo - Hòn Móng Tay & Hoàng Hôn Sunset Town 2N1Đ", "phu-quoc-nam-dao-sunset-town", "sea", "Phú Quốc, Kiên Giang", 2, 3250000, 2790000, "phu quoc sunset town vietnam", ["sea", "island", "phú quốc"], 10.2899, 103.9840),
+        build_extra_tour("Côn Đảo Biển Xanh - Bãi Đầm Trầu & Vườn Quốc Gia 2N1Đ", "con-dao-dam-trau-vuon-quoc-gia", "sea", "Côn Đảo, Bà Rịa - Vũng Tàu", 2, 3650000, 3190000, "con dao dam trau vietnam", ["sea", "island", "côn đảo"], 8.6835, 106.6067),
+        build_extra_tour("Cần Thơ Miệt Vườn - Chợ Nổi Cái Răng & Cồn Sơn 2N1Đ", "can-tho-cho-noi-con-son", "sight", "Cần Thơ, Miền Tây", 2, 1550000, 1290000, "can tho floating market vietnam", ["cultural", "food", "cần thơ"], 10.0452, 105.7469),
+        build_extra_tour("Châu Đốc An Giang - Núi Sam & Rừng Tràm Trà Sư 2N1Đ", "chau-doc-tra-su-nui-sam", "sight", "Châu Đốc, An Giang", 2, 1750000, 1450000, "tra su cajuput forest vietnam", ["nature", "cultural", "an giang"], 10.7000, 105.1167),
+        build_extra_tour("Mũi Né Phan Thiết - Bàu Trắng & Suối Tiên 2N1Đ", "mui-ne-bau-trang-suoi-tien", "sea", "Phan Thiết, Bình Thuận", 2, 2150000, 1790000, "mui ne bau trang vietnam", ["sea", "resort", "phan thiết"], 10.9274, 108.1018)
+    ])
+
     for tour in tours:
+        image_query = f"{tour['location']} {tour['title'].split(' - ')[0]}".replace(" ", ",")
+        tour["images"] = [f"https://loremflickr.com/960/640/{image_query}?lock={tour['slug']}"]
         tags = [str(tag).lower() for tag in tour.get("tags", [])]
         tour.setdefault("indoor", any(tag in tags for tag in ["indoor", "museum", "food"]))
         tour.setdefault("outdoor", not tour["indoor"])

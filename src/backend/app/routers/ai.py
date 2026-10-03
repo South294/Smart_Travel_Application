@@ -1190,6 +1190,41 @@ def _extract_city(message: str, requested_city: Optional[str]) -> str:
     return ""
 
 
+def _extract_route(message: str, requested_city: Optional[str]) -> Optional[Dict[str, Any]]:
+    lowered = message.lower()
+    if not re.search(r"\btừ\b", lowered) or not re.search(r"\b(?:đến|tới)\b", lowered):
+        return None
+
+    city_hits = []
+    for key, aliases in LOCATION_ALIASES.items():
+        canonical = CANONICAL_CITY_NAMES.get(key, key.title())
+        for alias in [key] + aliases:
+            match = re.search(r"(?<![a-zA-ZÀ-ỹ0-9])" + re.escape(alias) + r"(?![a-zA-ZÀ-ỹ0-9])", lowered)
+            if match:
+                city_hits.append((match.start(), match.end(), canonical))
+                break
+
+    city_hits.sort(key=lambda item: (item[0], -(item[1] - item[0])))
+    ordered_cities = []
+    for _, _, city in city_hits:
+        if city not in ordered_cities:
+            ordered_cities.append(city)
+
+    destination = _extract_city(message, requested_city)
+    if requested_city and requested_city.strip():
+        destination = _extract_city("", requested_city)
+    if destination and destination not in ordered_cities:
+        ordered_cities.append(destination)
+    if len(ordered_cities) < 2:
+        return None
+
+    return {
+        "origin": ordered_cities[0],
+        "destination": destination or ordered_cities[-1],
+        "stops": ordered_cities[1:-1],
+    }
+
+
 async def _load_history(session_id: Optional[str]) -> List[Dict[str, str]]:
     if not session_id:
         return []
@@ -1369,17 +1404,19 @@ async def _ask_gemini(
     tours: List[Dict[str, Any]],
     history: List[Dict[str, str]],
     max_budget: Optional[float],
+    route: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     if not settings.GEMINI_API_KEY:
         raise HTTPException(status_code=503, detail="Chưa cấu hình GEMINI_API_KEY trong backend/.env")
 
-    city = _extract_city(request.message, request.city)
+    city = route["destination"] if route else _extract_city(request.message, request.city)
     key = city.lower() if city else ""
     city_guide = CITY_HIGHLIGHTS.get(key, {})
 
     prompt = {
         "user_query": request.message,
         "destination": city,
+        "route": route or {},
         "destination_guide": city_guide,
         "conversation_history": history,
         "max_budget": max_budget,
@@ -1389,6 +1426,9 @@ async def _ask_gemini(
             "Trả về duy nhất JSON hợp lệ, không markdown.",
             "Trả lời câu hỏi của người dùng thật đầy đủ, nhiệt tình, logic và tuyệt đối chính xác về địa lý Việt Nam.",
             "Nếu người dùng hỏi về điểm đến, cẩm nang du lịch: Hãy cung cấp danh sách địa điểm nổi bật, nét đặc sắc ẩm thực và lịch trình khám phá chi tiết.",
+            "Nếu route có origin và destination, hãy lập hành trình theo thứ tự origin → các điểm dừng có thể tham quan hợp lý trên đường → destination; tuyệt đối không chỉ liệt kê riêng destination.",
+            "Với tuyến Hà Nội → Ninh Bình, ưu tiên cân nhắc Hà Nam/Phủ Lý và Tam Chúc làm điểm ghé trên đường, sau đó kết thúc bằng Tràng An, Tam Cốc, Bái Đính hoặc Hang Múa ở Ninh Bình; chỉ đưa điểm ghé phù hợp thời gian và ghi rõ đây là gợi ý.",
+            "Trong itinerary, mỗi ngày phải nêu rõ đang ở đâu, điểm ghé nào trên tuyến và điểm kết thúc trong ngày.",
             "Chỉ đề xuất các tour có tour_id nằm trong tour_catalog. Tuyệt đối không bịa đặt tour hoặc id ảo.",
             "Nếu tour_catalog rỗng, để recommendations là mảng rỗng [] và thông báo rõ ràng rằng hiện hệ thống chưa mở bán tour trọn gói trực tiếp tại điểm đến này.",
             "Nếu thời tiết mưa, nhắc người dùng mang ô và ưu tiên các điểm trong nhà.",
@@ -1443,7 +1483,8 @@ def _fallback_result(
     city: str,
     tours: List[Dict[str, Any]],
     weather: WeatherSnapshot,
-    max_budget: Optional[float]
+    max_budget: Optional[float],
+    route: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     key = city.strip().lower() if city else ""
     info = None
@@ -1482,8 +1523,23 @@ def _fallback_result(
             conclusion = f"\n\nHiện tại trên hệ thống SmartTravel chưa mở bán tour trọn gói trực tiếp tại {city}. Dưới đây là lịch trình gợi ý chi tiết cùng các điểm đến đặc sắc để bạn tự túc lên kế hoạch và trải nghiệm thuận tiện nhất nhé:"
             recommendations = []
 
-        message = f"🌟 {title}\n\n{intro}\n\n{spot_lines}{weather_tip}{conclusion}"
+        route_message = ""
+        route_itinerary = []
+        if route:
+            route_key = (route["origin"], route["destination"])
+            route_stops = {
+                ("Hà Nội", "Ninh Bình"): ["Hà Nam - Phủ Lý và Tam Chúc", "Ninh Bình - Tràng An, Tam Cốc, Bái Đính, Hang Múa"],
+            }.get(route_key, [f"Các điểm tham quan phù hợp trên cung đường đến {route['destination']}", route["destination"]])
+            route_message = f"\n\nLộ trình đề xuất: {route['origin']} → {route_stops[0]} → {route['destination']}. Bạn có thể ghé các điểm trên đường theo thời gian thực tế, rồi kết thúc hành trình tại {route['destination']}."
+            route_itinerary = [
+                {"day": 1, "title": f"Từ {route['origin']} đến {route_stops[0]}", "activities": [f"Khởi hành từ {route['origin']}", f"Ghé tham quan {route_stops[0]}", "Tiếp tục di chuyển và nghỉ đêm theo lịch trình"]},
+                {"day": 2, "title": f"Khám phá và kết thúc tại {route['destination']}", "activities": [f"Tham quan {route_stops[1]}", f"Trải nghiệm ẩm thực và cảnh quan tại {route['destination']}", f"Kết thúc hành trình tại {route['destination']}"]},
+            ]
+
+        message = f"🌟 {title}\n\n{intro}\n\n{spot_lines}{route_message}{weather_tip}{conclusion}"
         itinerary = info.get("itinerary", [])
+        if route_itinerary:
+            itinerary = route_itinerary
         return {
             "message": message,
             "itinerary": itinerary,
@@ -1539,7 +1595,8 @@ async def chat(request: ChatRequest, http_request: Request):
     recent.append(now)
     _chat_requests[client_key] = recent
 
-    city = _extract_city(request.message, request.city)
+    route = _extract_route(request.message, request.city)
+    city = route["destination"] if route else _extract_city(request.message, request.city)
     max_budget = _extract_budget(request.message)
 
     coverage_reply = _coverage_reply(request.message)
@@ -1623,12 +1680,12 @@ async def chat(request: ChatRequest, http_request: Request):
     ai_result = None
     if settings.GEMINI_API_KEY:
         try:
-            ai_result = await _ask_gemini(request, weather_snapshot, tours, history, max_budget)
+            ai_result = await _ask_gemini(request, weather_snapshot, tours, history, max_budget, route)
         except Exception:
             ai_result = None
 
     if not ai_result:
-        ai_result = _fallback_result(city, tours, weather_snapshot, max_budget)
+        ai_result = _fallback_result(city, tours, weather_snapshot, max_budget, route)
 
     recommendations = []
     raw_recommendations = ai_result.get("recommendations") or []
