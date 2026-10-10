@@ -49,14 +49,16 @@ async def claim_voucher(code: str, current_user: dict = Depends(get_current_user
         raise HTTPException(status_code=404, detail="Voucher không tồn tại hoặc đã hết hạn")
 
     user_oid = validate_object_id(current_user["id"])
-    user = await db.users.find_one({"_id": user_oid})
-    saved_vouchers = user.get("saved_vouchers", [])
-
-    if code in saved_vouchers:
+    result = await db.users.update_one(
+        {"_id": user_oid, "saved_vouchers": {"$ne": code}},
+        {"$addToSet": {"saved_vouchers": code}}
+    )
+    if result.modified_count == 0:
+        user = await db.users.find_one({"_id": user_oid})
+        if not user:
+            raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
         raise HTTPException(status_code=400, detail="Bạn đã nhận voucher này rồi")
 
-    saved_vouchers.append(code)
-    await db.users.update_one({"_id": user_oid}, {"$set": {"saved_vouchers": saved_vouchers}})
     return {"message": "Nhận voucher thành công"}
 
 @router.get("/me", response_model=List[VoucherResponse])

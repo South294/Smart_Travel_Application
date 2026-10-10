@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from app.db.mongodb import get_db
 from app.schemas.booking import BookingCreate, BookingResponse
 from app.routers.deps import get_current_user
 from app.routers.helpers import validate_object_id, serialize_booking
 from datetime import datetime
 import secrets
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
@@ -77,9 +77,21 @@ async def create_booking(booking: BookingCreate, current_user: dict = Depends(ge
     return booking_dict
 
 @router.get("/me", response_model=List[BookingResponse])
-async def get_my_bookings(current_user: dict = Depends(get_current_user)):
+async def get_my_bookings(
+    page: Optional[int] = Query(None, ge=1),
+    page_size: Optional[int] = Query(None, ge=1, le=100),
+    skip: int = Query(0, ge=0),
+    limit: Optional[int] = Query(None, ge=1, le=100),
+    current_user: dict = Depends(get_current_user)
+):
     db = get_db()
-    cursor = db.bookings.find({"user_id": current_user["id"]})
+    offset = (page - 1) * page_size if (page is not None and page_size is not None) else skip
+    max_items = page_size if page_size is not None else limit
+
+    cursor = db.bookings.find({"user_id": current_user["id"]}).skip(offset)
+    if max_items is not None:
+        cursor = cursor.limit(max_items)
+
     bookings = []
     async for doc in cursor:
         booking = serialize_booking(doc)

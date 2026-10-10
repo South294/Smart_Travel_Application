@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/pages/redesign.css">
-    <link rel="stylesheet" href="css/pages/map.css?v=4">
+    <link rel="stylesheet" href="css/pages/map.css?v=20261010_8">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body class="map-page">
@@ -36,15 +36,46 @@
     <div class="map-container">
         <aside class="map-sidebar" id="mapSidebar">
             <div class="sidebar-header">
-                <h2><i class="bx bx-compass"></i> Điểm Đến Quanh Bạn</h2>
+                <h2><i class="bx bx-compass"></i> Khám Phá Địa Điểm</h2>
                 <div class="location-status-badge" id="locationStatus">Đang cập nhật vị trí...</div>
+            </div>
+
+            <div class="route-mode-switch" id="routeModeSwitch">
+                <button type="button" class="mode-btn active" id="btnModeLocal">
+                    <i class="bx bx-current-location"></i> Quanh bạn (<span id="localCountBadge">0</span>)
+                </button>
+                <button type="button" class="mode-btn" id="btnModeCorridor">
+                    <i class="bx bx-trip"></i> Dọc tuyến (<span id="corridorCountBadge">0</span>)
+                </button>
+            </div>
+
+            <div class="corridor-summary-box" id="corridorSummaryBox" style="display: none;">
+                <div class="corridor-summary-header">
+                    <span class="corridor-title"><i class="bx bx-navigation"></i> Tiện ích dọc tuyến đường</span>
+                    <span class="corridor-route-name" id="corridorRouteName">Hà Nội ➔ Điểm đến</span>
+                </div>
+                <div class="corridor-stats" id="corridorStats">
+                    Đang tính toán các điểm trong phạm vi 10km quanh tuyến đường...
+                </div>
             </div>
 
             <div class="category-tabs" id="categoryTabs">
                 <button class="map-tab active" data-category="all"><i class="bx bx-grid-alt"></i> Tất cả</button>
-                <button class="map-tab" data-category="food"><i class="bx bx-restaurant"></i> Ăn uống</button>
-                <button class="map-tab" data-category="culture"><i class="bx bx-landmark"></i> Văn hóa</button>
-                <button class="map-tab" data-category="fun"><i class="bx bx-party"></i> Vui chơi</button>
+                <button class="map-tab" data-category="tourist"><i class="bx bx-landmark"></i> Du lịch</button>
+                <button class="map-tab" data-category="food"><i class="bx bx-restaurant"></i> Quán ăn & Uống</button>
+                <button class="map-tab" data-category="hotel"><i class="bx bx-hotel"></i> Khách sạn</button>
+                <button class="map-tab" data-category="gas"><i class="bx bx-gas-pump"></i> Trạm xăng</button>
+            </div>
+
+            <div class="radar-box" id="radarBox">
+                <div class="radar-toggle-row">
+                    <label class="radar-switch">
+                        <input type="checkbox" id="chkRadius10km" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span class="radar-label"><i class="bx bx-radar"></i> Bán kính 10km quanh tôi</span>
+                </div>
+                <div class="radar-counter" id="radarCounter">Đang quét vị trí...</div>
             </div>
 
             <div class="search-input-wrap">
@@ -60,11 +91,32 @@
                 <div class="location-gate-icon"><i class="bx bx-current-location"></i></div>
                 <div class="location-gate-body">
                     <h3 id="gateTitle">Bật định vị để nhận gợi ý chuẩn xác</h3>
-                    <p id="gateDesc">Tìm kiếm khoảng cách thực tế đến các điểm ăn uống, văn hóa và giải trí gần bạn nhất.</p>
+                    <p id="gateDesc">Tìm kiếm khoảng cách thực tế đến các điểm du lịch, quán ăn, khách sạn và trạm xăng gần bạn nhất.</p>
                 </div>
                 <div class="location-gate-actions">
                     <button class="btn btn-outline btn-sm" id="btnSkipLocation">Bỏ qua</button>
                     <button class="btn btn-primary btn-sm" id="btnAllowLocation">Bật định vị</button>
+                </div>
+            </div>
+
+            <div class="gmap-embed-card" id="gmapEmbedCard">
+                <div class="gmap-hud" id="gmapHud">
+                    <div class="gmap-hud-meta">
+                        <span class="hud-status" id="hudStatus"><i class="bx bx-navigation"></i> Tuyến đường Google Maps</span>
+                        <span class="hud-metric" id="hudDistance"><i class="bx bx-trip"></i> -- km</span>
+                        <span class="hud-metric" id="hudTime"><i class="bx bx-time-five"></i> -- phút</span>
+                    </div>
+                    <div class="gmap-hud-btns">
+                        <button type="button" class="btn btn-sm btn-outline" id="btnSimulateTrip"><i class="bx bx-play-circle"></i> Mô phỏng di chuyển</button>
+                        <a class="btn btn-sm btn-primary" id="btnExternalMap" href="#" target="_blank" rel="noopener"><i class="bx bx-map-pin"></i> Mở App Google Maps</a>
+                    </div>
+                </div>
+                <div class="live-proactive-banner" id="liveAlertBanner" style="display: none;">
+                    <i class="bx bx-broadcast"></i>
+                    <span id="liveAlertText">Đang di chuyển trên tuyến đường...</span>
+                </div>
+                <div class="gmap-iframe-container">
+                    <iframe id="gmapIframe" class="gmap-iframe" title="Chỉ đường Google Maps" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="about:blank"></iframe>
                 </div>
             </div>
 
@@ -79,6 +131,6 @@
     </div>
 
     <script src="js/main.js"></script>
-    <script src="js/map.js"></script>
+    <script src="js/map.js?v=20261010_8"></script>
 </body>
 </html>

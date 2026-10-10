@@ -765,49 +765,6 @@ function removeToast(toast) {
   }, 300);
 }
 
-function initUploadAreas() {
-  document.querySelectorAll('.upload-area').forEach(function(area) {
-    var fileInput = area.querySelector('input[type="file"]');
-    if (!fileInput) return;
-
-    area.addEventListener('click', function() {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
-
-    fileInput.addEventListener('change', function() {
-      if (this.files && this.files[0]) {
-        var file = this.files[0];
-
-        area.classList.add('has-file');
-
-        var existingPreview = area.querySelector('.upload-preview');
-        if (existingPreview) existingPreview.remove();
-
-        var icon = area.querySelector('i');
-        var text = area.querySelector('p');
-
-        if (file.type.startsWith('image/')) {
-          var reader = new FileReader();
-          reader.onload = function(e) {
-            var img = document.createElement('img');
-            img.src = e.target.result;
-            img.className = 'upload-preview';
-            area.appendChild(img);
-          };
-          reader.readAsDataURL(file);
-        }
-
-        if (icon) icon.className = 'bx bx-check-circle';
-        if (text) text.textContent = file.name;
-      }
-    });
-  });
-}
-
 async function initPromoClaim() {
   var saved = await getStoredSavedVouchers();
 
@@ -1062,6 +1019,101 @@ function initProfileSave() {
         btn.disabled = false;
     }
   });
+
+  var uploadAvatarBtn = document.getElementById('btn-upload-avatar');
+  var avatarFileInput = document.getElementById('profile-avatar-file');
+  var avatarDisplay = document.querySelector('.profile-initials');
+
+  if (uploadAvatarBtn && avatarFileInput) {
+    uploadAvatarBtn.addEventListener('click', function() {
+      avatarFileInput.click();
+    });
+
+    avatarFileInput.addEventListener('change', function() {
+      if (!this.files || !this.files[0]) return;
+      var file = this.files[0];
+      if (!file.type.match(/^image\//)) {
+        showToast('Vui lòng chọn file hình ảnh hợp lệ (JPG, PNG, WebP)', 'error');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Kích thước ảnh không được vượt quá 5MB', 'error');
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onload = async function(evt) {
+        var base64 = evt.target.result;
+        if (avatarDisplay) {
+          avatarDisplay.style.backgroundImage = 'url(' + base64 + ')';
+          avatarDisplay.style.backgroundSize = 'cover';
+          avatarDisplay.style.backgroundPosition = 'center';
+          avatarDisplay.textContent = '';
+        }
+        try {
+          var res = await fetchApi('/api/users/me', {
+            method: 'PUT',
+            body: JSON.stringify({ avatar_url: base64 })
+          });
+          if (res.ok) {
+            showToast('Cập nhật ảnh đại diện thành công!', 'success');
+            localStorage.removeItem('userProfile');
+          } else {
+            showToast('Không thể lưu ảnh đại diện', 'error');
+          }
+        } catch (err) {
+          showToast('Lỗi kết nối khi cập nhật ảnh đại diện', 'error');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  var changePasswordBtn = document.getElementById('btn-change-password');
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', async function() {
+      var newPass = document.getElementById('profile-new-password') ? document.getElementById('profile-new-password').value : '';
+      var confirmPass = document.getElementById('profile-confirm-password') ? document.getElementById('profile-confirm-password').value : '';
+      var emailInput = document.querySelector('.profile-input-email');
+      var email = emailInput ? emailInput.value.trim() : '';
+
+      if (!newPass || newPass.length < 6) {
+        showToast('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showToast('Mật khẩu xác nhận không trùng khớp', 'error');
+        return;
+      }
+      if (!email) {
+        showToast('Không tìm thấy thông tin email tài khoản', 'error');
+        return;
+      }
+
+      changePasswordBtn.disabled = true;
+      changePasswordBtn.classList.add('is-loading');
+
+      try {
+        var res = await fetchApi('/api/auth/reset-password', {
+          method: 'POST',
+          body: JSON.stringify({ email: email, new_password: newPass })
+        });
+        var data = await res.json();
+        if (res.ok) {
+          showToast(data.message || 'Đổi mật khẩu thành công!', 'success');
+          if (document.getElementById('profile-new-password')) document.getElementById('profile-new-password').value = '';
+          if (document.getElementById('profile-confirm-password')) document.getElementById('profile-confirm-password').value = '';
+        } else {
+          showToast(data.detail || 'Không thể đổi mật khẩu', 'error');
+        }
+      } catch (err) {
+        showToast('Lỗi kết nối khi đổi mật khẩu', 'error');
+      } finally {
+        changePasswordBtn.disabled = false;
+        changePasswordBtn.classList.remove('is-loading');
+      }
+    });
+  }
 }
 
 async function initCCCDVerification() {

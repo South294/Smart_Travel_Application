@@ -122,6 +122,11 @@ async def vnpay_return(request: Request):
     if not booking:
         return RedirectResponse(f"{settings.PAYMENT_FRONTEND_URL}?payment=missing")
 
+    if booking.get("payment_status") == "paid":
+        return RedirectResponse(
+            f"{settings.PAYMENT_FRONTEND_URL}?payment=success&booking_id={booking['_id']}"
+        )
+
     paid = response_code == "00"
     await db.bookings.update_one(
         {"_id": booking["_id"]},

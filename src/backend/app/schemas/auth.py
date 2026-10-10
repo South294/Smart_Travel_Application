@@ -13,3 +13,7 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str
     user: dict
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    new_password: str = Field(min_length=6, max_length=128)

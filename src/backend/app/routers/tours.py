@@ -13,7 +13,11 @@ async def get_tours(
     category: Optional[str] = None,
     lat: Optional[float] = Query(None),
     lng: Optional[float] = Query(None),
-    radius_km: Optional[float] = Query(50)
+    radius_km: Optional[float] = Query(50),
+    page: Optional[int] = Query(None, ge=1),
+    page_size: Optional[int] = Query(None, ge=1, le=100),
+    skip: int = Query(0, ge=0),
+    limit: Optional[int] = Query(None, ge=1, le=100)
 ):
     db = get_db()
     query = {"is_active": True}
@@ -31,7 +35,13 @@ async def get_tours(
             }
         }
 
-    cursor = db.tours.find(query)
+    offset = (page - 1) * page_size if (page is not None and page_size is not None) else skip
+    max_items = page_size if page_size is not None else limit
+
+    cursor = db.tours.find(query).skip(offset)
+    if max_items is not None:
+        cursor = cursor.limit(max_items)
+
     tours = []
     async for doc in cursor:
         tours.append(serialize_tour(doc))
@@ -243,7 +253,7 @@ async def update_tour(id: str, tour_update: TourUpdate, admin: dict = Depends(ge
 async def delete_tour(id: str, admin: dict = Depends(get_current_admin_user)):
     db = get_db()
     oid = validate_object_id(id)
-    result = await db.tours.delete_one({"_id": oid})
-    if result.deleted_count == 0:
+    result = await db.tours.update_one({"_id": oid}, {"$set": {"is_active": False}})
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Không tìm thấy tour")
     return {"message": "Xóa tour thành công"}

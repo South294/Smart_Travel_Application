@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.db.mongodb import get_db
 from app.core.security import hash_password, verify_password, create_access_token
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, ResetPasswordRequest
 from datetime import datetime
 
 router = APIRouter()
@@ -59,3 +59,17 @@ async def login(data: LoginRequest):
             "role": user["role"]
         }
     }
+
+@router.post("/reset-password")
+async def reset_password(data: ResetPasswordRequest):
+    db = get_db()
+    user = await db.users.find_one({"email": data.email})
+    if not user:
+        raise HTTPException(status_code=404, detail="Email không tồn tại trong hệ thống")
+    if user.get("is_active") is False:
+        raise HTTPException(status_code=403, detail="Tài khoản đã bị khóa")
+    await db.users.update_one(
+        {"_id": user["_id"]},
+        {"$set": {"password_hash": hash_password(data.new_password)}}
+    )
+    return {"message": "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay bây giờ."}

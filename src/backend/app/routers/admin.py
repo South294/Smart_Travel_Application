@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from typing import Optional
 from app.db.mongodb import get_db
 from app.routers.deps import get_current_admin_user
 from app.routers.helpers import serialize_user, serialize_booking, serialize_guide, validate_object_id
@@ -40,9 +41,21 @@ async def get_dashboard_stats(admin: dict = Depends(get_current_admin_user)):
     }
 
 @router.get("/users")
-async def get_all_users(admin: dict = Depends(get_current_admin_user)):
+async def get_all_users(
+    page: Optional[int] = Query(None, ge=1),
+    page_size: Optional[int] = Query(None, ge=1, le=100),
+    skip: int = Query(0, ge=0),
+    limit: Optional[int] = Query(None, ge=1, le=100),
+    admin: dict = Depends(get_current_admin_user)
+):
     db = get_db()
-    cursor = db.users.find({}, {"password_hash": 0})
+    offset = (page - 1) * page_size if (page is not None and page_size is not None) else skip
+    max_items = page_size if page_size is not None else limit
+
+    cursor = db.users.find({}, {"password_hash": 0}).skip(offset)
+    if max_items is not None:
+        cursor = cursor.limit(max_items)
+
     users = []
     async for doc in cursor:
         users.append(serialize_user(doc))
@@ -63,9 +76,21 @@ async def update_user_status(user_id: str, payload: UserStatusUpdate, admin: dic
     return {"message": "Cập nhật trạng thái thành công"}
 
 @router.get("/bookings")
-async def get_all_bookings(admin: dict = Depends(get_current_admin_user)):
+async def get_all_bookings(
+    page: Optional[int] = Query(None, ge=1),
+    page_size: Optional[int] = Query(None, ge=1, le=100),
+    skip: int = Query(0, ge=0),
+    limit: Optional[int] = Query(None, ge=1, le=100),
+    admin: dict = Depends(get_current_admin_user)
+):
     db = get_db()
-    cursor = db.bookings.find()
+    offset = (page - 1) * page_size if (page is not None and page_size is not None) else skip
+    max_items = page_size if page_size is not None else limit
+
+    cursor = db.bookings.find().skip(offset)
+    if max_items is not None:
+        cursor = cursor.limit(max_items)
+
     bookings = []
     async for doc in cursor:
         booking = serialize_booking(doc)
@@ -96,9 +121,21 @@ async def get_pending_guides(admin: dict = Depends(get_current_admin_user)):
     return guides
 
 @router.get("/guides")
-async def get_all_guides(admin: dict = Depends(get_current_admin_user)):
+async def get_all_guides(
+    page: Optional[int] = Query(None, ge=1),
+    page_size: Optional[int] = Query(None, ge=1, le=100),
+    skip: int = Query(0, ge=0),
+    limit: Optional[int] = Query(None, ge=1, le=100),
+    admin: dict = Depends(get_current_admin_user)
+):
     db = get_db()
-    cursor = db.guides.find()
+    offset = (page - 1) * page_size if (page is not None and page_size is not None) else skip
+    max_items = page_size if page_size is not None else limit
+
+    cursor = db.guides.find().skip(offset)
+    if max_items is not None:
+        cursor = cursor.limit(max_items)
+
     guides = []
     async for doc in cursor:
         guides.append(serialize_guide(doc))

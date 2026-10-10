@@ -64,7 +64,8 @@
                         <div class="flex items-center gap-4">
                             <div class="user-avatar user-avatar-lg profile-initials">ST</div>
                             <div>
-                                <button class="btn btn-outline btn-sm">Tải ảnh lên</button>
+                                <input type="file" id="profile-avatar-file" accept="image/*" style="display: none;">
+                                <button type="button" class="btn btn-outline btn-sm" id="btn-upload-avatar">Tải ảnh lên</button>
                                 <p class="text-muted text-xs mt-1">JPG, PNG tối đa 2MB</p>
                             </div>
                         </div>
@@ -298,6 +299,22 @@
                             <option value="vi">Tiếng Việt</option>
                             <option value="en">English</option>
                         </select>
+                    </div>
+
+                    <div class="mt-6 pt-6" style="border-top: 1px solid #e2e8f0;">
+                        <h4 class="font-bold mb-2">Đổi mật khẩu tài khoản</h4>
+                        <p class="text-muted text-sm mb-4">Thiết lập mật khẩu mới an toàn hơn cho tài khoản của bạn.</p>
+                        <div class="grid params-grid">
+                            <div class="form-group">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <input type="password" id="profile-new-password" class="form-control" placeholder="Tối thiểu 6 ký tự" minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Xác nhận mật khẩu mới</label>
+                                <input type="password" id="profile-confirm-password" class="form-control" placeholder="Nhập lại mật khẩu mới" minlength="6">
+                            </div>
+                        </div>
+                        <button type="button" id="btn-change-password" class="btn btn-outline btn-sm mt-3">Cập nhật mật khẩu</button>
                     </div>
                 </div>
             </div>
