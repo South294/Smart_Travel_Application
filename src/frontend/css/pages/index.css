@@ -409,22 +409,27 @@
   min-height: 200px;
   max-height: none;
   overflow-y: auto;
-  padding: 16px 18px 12px;
+  padding: 16px 18px 20px;
   scrollbar-width: thin;
   scrollbar-color: #cad8c6 transparent;
+  scroll-behavior: smooth;
 }
 
-.chat-widget-panel .chat-messages::-webkit-scrollbar {
-  width: 5px;
+.chat-widget-panel .chat-messages > * {
+  flex-shrink: 0;
 }
 
-.chat-widget-panel .chat-messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.chat-widget-panel .chat-messages::-webkit-scrollbar-thumb {
-  background: #cad8c6;
-  border-radius: 999px;
+.chat-combo-action {
+  flex-shrink: 0 !important;
+  margin: 10px 16px 24px !important;
+  padding: 14px 16px !important;
+  border: 1.5px solid #0aa982 !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(10, 169, 130, 0.12) !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  display: block !important;
 }
 
 .chat-widget-panel .chat-prompts {

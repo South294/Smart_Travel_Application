@@ -36,3 +36,5 @@ class ChatResponse(BaseModel):
     recommendations: List[Recommendation] = []
     itinerary: List[ItineraryDay] = []
     weather: WeatherSnapshot
+    map_url: Optional[str] = None
+

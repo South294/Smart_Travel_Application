@@ -853,22 +853,45 @@ function initCheckoutPayment() {
     btn.disabled = true;
 
     try {
-      var bookingPayload = buildBookingPayload();
-      if (!bookingPayload) {
-        btn.classList.remove('is-loading');
-        btn.disabled = false;
-        return;
-      }
+      var params = new URLSearchParams(window.location.search);
+      var isComboMode = params.get('mode') === 'combo' || localStorage.getItem('checkout_mode') === 'combo';
+      var res;
+      var data;
 
-      var res = await fetchApi('/api/bookings', {
-        method: 'POST',
-        body: JSON.stringify(bookingPayload)
-      });
-
-      var data = await res.json();
-      if (!res.ok) {
-        showToast(data.detail || 'Không thể tạo booking', 'error');
-        return;
+      if (isComboMode) {
+        var comboPayload = buildComboBookingPayload();
+        if (!comboPayload) {
+          btn.classList.remove('is-loading');
+          btn.disabled = false;
+          return;
+        }
+        res = await fetchApi('/api/bookings/combo', {
+          method: 'POST',
+          body: JSON.stringify(comboPayload)
+        });
+        data = await res.json();
+        if (!res.ok) {
+          showToast(data.detail || 'Không thể tạo đơn đặt combo', 'error');
+          return;
+        }
+        localStorage.removeItem('checkout_combo_items');
+        localStorage.removeItem('checkout_mode');
+      } else {
+        var bookingPayload = buildBookingPayload();
+        if (!bookingPayload) {
+          btn.classList.remove('is-loading');
+          btn.disabled = false;
+          return;
+        }
+        res = await fetchApi('/api/bookings', {
+          method: 'POST',
+          body: JSON.stringify(bookingPayload)
+        });
+        data = await res.json();
+        if (!res.ok) {
+          showToast(data.detail || 'Không thể tạo booking', 'error');
+          return;
+        }
       }
 
       await submitSelectedGuideRequest();
@@ -912,7 +935,8 @@ function initCheckoutPayment() {
         return;
       }
 
-      var paymentRes = await fetchApi('/api/payments/vnpay/create', {
+      var paymentUrlEndpoint = isComboMode ? '/api/payments/vnpay/create-combo' : '/api/payments/vnpay/create';
+      var paymentRes = await fetchApi(paymentUrlEndpoint, {
         method: 'POST',
         body: JSON.stringify({ booking_id: data.id })
       });
@@ -1654,18 +1678,23 @@ function initCheckoutData() {
   if (!isCheckout) return;
 
   var params = new URLSearchParams(window.location.search);
+  var isComboMode = params.get('mode') === 'combo' || localStorage.getItem('checkout_mode') === 'combo';
+  var comboItems = [];
+  if (isComboMode) {
+    try {
+      comboItems = JSON.parse(localStorage.getItem('checkout_combo_items') || '[]');
+      if (!Array.isArray(comboItems)) comboItems = [];
+    } catch (e) {
+      comboItems = [];
+    }
+  }
+
   var title = params.get('title');
   var price = parseInt(params.get('price'));
   var originalPrice = parseInt(params.get('original'));
   var duration = params.get('duration');
   var img = params.get('img');
   var tourId = params.get('tourId');
-
-  if (!title || !price) {
-    var titleEl = document.getElementById('checkoutTourTitle');
-    if (titleEl) titleEl.textContent = 'Vui lòng chọn tour từ trang Tour du lịch';
-    return;
-  }
 
   var titleEl = document.getElementById('checkoutTourTitle');
   var imgEl = document.getElementById('checkoutTourImg');
@@ -1684,24 +1713,55 @@ function initCheckoutData() {
   var voucherValue = document.getElementById('checkoutVoucherValue');
   var travelDateInput = document.getElementById('checkoutTravelDate');
   var dateLabel = document.getElementById('checkoutTourDate');
+  var payBtn = document.getElementById('checkoutPayBtn');
 
-  if (titleEl) titleEl.textContent = title;
-  if (imgEl && img) imgEl.src = img;
-  if (durationEl && duration) durationEl.innerHTML = '<i class="bx bx-time"></i> ' + duration;
+  var comboCard = document.getElementById('checkoutComboCard');
+  var comboList = document.getElementById('checkoutComboList');
+  var comboBadge = document.getElementById('checkoutComboBadge');
+
+  if (!isComboMode && (!title || !price)) {
+    if (titleEl) titleEl.textContent = 'Vui lòng chọn tour từ trang Tour du lịch';
+    return;
+  }
+  if (isComboMode && comboItems.length === 0 && (!title || !price)) {
+    if (titleEl) titleEl.textContent = 'Combo chưa có chuyến đi nào. Vui lòng chọn lộ trình từ chatbot';
+    if (payBtn) payBtn.disabled = true;
+    return;
+  }
 
   var currentVoucher = null;
+
+  function getBasePrice() {
+    if (isComboMode) {
+      return comboItems.reduce(function(acc, item) {
+        return acc + (Number(item.price) || 0);
+      }, 0);
+    }
+    return Number(price) || 0;
+  }
 
   function updateCheckoutTotals() {
     var fmt = new Intl.NumberFormat('vi-VN');
     var adults = getPassengerCount(adultsSelect, 2);
     var children = getPassengerCount(childrenSelect, 0);
     var insurance = insuranceCheckbox && insuranceCheckbox.checked ? 150000 : 0;
-    var adultTotal = price * adults;
-    var childTotal = Math.round(price * 0.5) * children;
+    var basePrice = getBasePrice();
+    var adultTotal = basePrice * adults;
+    var childTotal = Math.round(basePrice * 0.5) * children;
     var insuranceTotal = insurance * (adults + children);
     var subtotal = adultTotal + childTotal + insuranceTotal;
     var discount = calculateVoucherDiscount(currentVoucher, subtotal, insuranceTotal);
     var total = Math.max(0, subtotal - discount);
+
+    if (isComboMode) {
+      if (titleEl) titleEl.textContent = 'Combo lộ trình (' + comboItems.length + ' chuyến)';
+      if (durationEl) durationEl.innerHTML = '<i class="bx bx-time"></i> ' + comboItems.length + ' chặng di chuyển';
+      if (imgEl && comboItems.length > 0 && comboItems[0].image) imgEl.src = comboItems[0].image;
+    } else {
+      if (titleEl) titleEl.textContent = title;
+      if (imgEl && img) imgEl.src = img;
+      if (durationEl && duration) durationEl.innerHTML = '<i class="bx bx-time"></i> ' + duration;
+    }
 
     if (adultLabel) adultLabel.textContent = 'Người lớn x' + adults;
     if (adultPrice) adultPrice.textContent = fmt.format(adultTotal) + '₫';
@@ -1710,6 +1770,55 @@ function initCheckoutData() {
     if (insurancePrice) insurancePrice.textContent = fmt.format(insuranceTotal) + '₫';
     if (voucherValue) voucherValue.textContent = discount ? '-' + fmt.format(discount) + '₫' : '--';
     if (totalEl) totalEl.textContent = fmt.format(total) + '₫';
+  }
+
+  function renderComboItemsList() {
+    if (!isComboMode || !comboList) return;
+    if (comboCard) comboCard.style.display = 'block';
+
+    if (comboItems.length === 0) {
+      comboList.innerHTML = '<div class="card p-4 text-center text-muted" style="border: 1px dashed #cbd5e1; border-radius: 8px;">Bạn đã bỏ tất cả các chuyến trong combo. Vui lòng quay lại chatbot hoặc danh sách tour để chọn lại.</div>';
+      if (comboBadge) comboBadge.textContent = '0 chuyến';
+      if (payBtn) payBtn.disabled = true;
+      updateCheckoutTotals();
+      return;
+    }
+
+    if (payBtn) payBtn.disabled = false;
+    if (comboBadge) comboBadge.textContent = comboItems.length + ' chuyến';
+
+    comboList.innerHTML = comboItems.map(function(item, index) {
+      var itemPrice = Number(item.price) || 0;
+      var itemImg = item.image || 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=150&q=80';
+      return (
+        '<div class="flex items-center justify-between gap-3 p-3 border rounded-lg bg-white" data-combo-tour-id="' + escapeHtml(item.tour_id) + '" style="border: 1px solid var(--border-color); border-radius: 10px; background: #fff; margin-bottom: 8px;">' +
+          '<div class="flex items-center gap-3" style="min-width: 0; flex: 1;">' +
+            '<img src="' + escapeHtml(itemImg) + '" alt="' + escapeHtml(item.title) + '" style="width: 54px; height: 54px; border-radius: 8px; object-fit: cover; flex-shrink: 0;">' +
+            '<div style="min-width: 0;">' +
+              '<h4 class="font-semibold text-sm" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;">' + escapeHtml(item.title) + '</h4>' +
+              '<p class="text-muted text-xs" style="margin-bottom: 2px;"><i class="bx bx-map-pin"></i> ' + escapeHtml(item.location || 'Điểm đến') + '</p>' +
+              '<span class="font-bold text-primary text-sm">' + formatCurrency(itemPrice) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" class="btn btn-outline btn-small checkout-remove-leg-btn" data-index="' + index + '" style="color: #ef4444; border-color: #fca5a5; padding: 6px 12px; font-size: 13px; border-radius: 6px; flex-shrink: 0;">' +
+            '<i class="bx bx-trash"></i> Bỏ chuyến này' +
+          '</button>' +
+        '</div>'
+      );
+    }).join('');
+
+    comboList.querySelectorAll('.checkout-remove-leg-btn').forEach(function(removeBtn) {
+      removeBtn.addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-index'), 10);
+        if (Number.isInteger(idx) && idx >= 0 && idx < comboItems.length) {
+          var removed = comboItems.splice(idx, 1)[0];
+          localStorage.setItem('checkout_combo_items', JSON.stringify(comboItems));
+          showToast('Đã bỏ "' + (removed.title || 'chuyến đi') + '" ra khỏi combo', 'warning');
+          renderComboItemsList();
+          updateCheckoutTotals();
+        }
+      });
+    });
   }
 
   function syncTravelDateLabel() {
@@ -1749,14 +1858,20 @@ function initCheckoutData() {
     });
   }
 
+  if (isComboMode) {
+    renderComboItemsList();
+  }
+
   syncTravelDateLabel();
   updateCheckoutTotals();
   initCheckoutGuides();
 
-  if (!tourId) {
-    resolveTourIdFromTitle(title);
-  } else {
-    localStorage.setItem('checkout_tour_id', tourId);
+  if (!isComboMode) {
+    if (!tourId) {
+      resolveTourIdFromTitle(title);
+    } else {
+      localStorage.setItem('checkout_tour_id', tourId);
+    }
   }
 }
 
@@ -1823,6 +1938,59 @@ async function resolveTourIdFromTitle(title) {
       localStorage.setItem('checkout_tour_id', matched.id);
     }
   } catch (e) {}
+}
+
+function buildComboBookingPayload() {
+  var raw = localStorage.getItem('checkout_combo_items');
+  var comboItems = [];
+  try {
+    comboItems = JSON.parse(raw || '[]');
+  } catch (e) {
+    comboItems = [];
+  }
+  if (!Array.isArray(comboItems) || comboItems.length === 0) {
+    showToast('Combo chưa có chuyến đi nào, vui lòng chọn lại tour', 'warning');
+    return null;
+  }
+
+  var travelDate = document.getElementById('checkoutTravelDate') ? document.getElementById('checkoutTravelDate').value : '';
+  var adults = getPassengerCount(document.getElementById('checkoutAdults'), 2);
+  var children = getPassengerCount(document.getElementById('checkoutChildren'), 0);
+  var insurance = document.getElementById('checkoutInsurance') ? document.getElementById('checkoutInsurance').checked : false;
+  var phone = document.getElementById('checkoutContactPhone') ? document.getElementById('checkoutContactPhone').value.trim() : '';
+  var note = document.getElementById('checkoutNote') ? document.getElementById('checkoutNote').value.trim() : '';
+  var voucherCode = document.getElementById('checkoutVoucher') ? document.getElementById('checkoutVoucher').value.trim().toUpperCase() : '';
+
+  var selectedOption = document.querySelector('.payment-option.selected');
+  var paymentMethod = selectedOption ? selectedOption.getAttribute('data-method') : 'credit_card';
+  if (paymentMethod === 'qr') {
+    paymentMethod = 'bank_transfer';
+  }
+
+  if (!travelDate) {
+    showToast('Vui lòng chọn ngày khởi hành', 'warning');
+    return null;
+  }
+  if (!phone) {
+    showToast('Vui lòng nhập số điện thoại liên hệ', 'warning');
+    return null;
+  }
+
+  return {
+    items: comboItems.map(function(item) {
+      return {
+        tour_id: item.tour_id,
+        travel_date: travelDate
+      };
+    }),
+    adults: adults,
+    children: children,
+    insurance: insurance,
+    coupon_code: voucherCode || null,
+    payment_method: paymentMethod,
+    contact_phone: phone,
+    note: note || null
+  };
 }
 
 function buildBookingPayload() {

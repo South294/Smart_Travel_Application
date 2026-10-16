@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SmartTravel AI - Trợ lý lập kế hoạch du lịch thông minh, gợi ý tour theo sở thích và ngân sách.">
+    <meta name="description"
+        content="SmartTravel AI - Trợ lý lập kế hoạch du lịch thông minh, gợi ý tour theo sở thích và ngân sách.">
     <title>SmartTravel AI - Lên đường theo cách của bạn</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
@@ -15,6 +19,7 @@
     <link rel="stylesheet" href="css/pages/index.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
+
 <body class="chat-home">
     <header class="header">
         <div class="container navbar">
@@ -43,10 +48,13 @@
                 <div class="home-hero-intro">
                     <span class="eyebrow"><i class="bx bx-paper-plane"></i> Nền Tảng Du Lịch Thông Minh</span>
                     <h1>Khám Phá Việt Nam Cùng Trải Nghiệm Đáng Nhớ</h1>
-                    <p>Hơn 500+ hành trình độc đáo, hướng dẫn viên tận tâm và công nghệ trợ lý AI sẵn sàng hỗ trợ bạn lập kế hoạch mọi lúc mọi nơi.</p>
+                    <p>Hơn 500+ hành trình độc đáo, hướng dẫn viên tận tâm và công nghệ trợ lý AI sẵn sàng hỗ trợ bạn
+                        lập kế hoạch mọi lúc mọi nơi.</p>
                     <div class="home-hero-actions">
-                        <a href="tours.html" class="btn btn-primary btn-large"><i class="bx bx-compass"></i> Khám phá Tour ngay</a>
-                        <button type="button" class="btn btn-outline-hero btn-large" id="heroOpenChatBtn"><i class="bx bx-bot"></i> Hỏi Trợ lý AI</button>
+                        <a href="tours.html" class="btn btn-primary btn-large"><i class="bx bx-compass"></i> Khám phá
+                            Tour ngay</a>
+                        <button type="button" class="btn btn-outline-hero btn-large" id="heroOpenChatBtn"><i
+                                class="bx bx-bot"></i> Hỏi Trợ lý AI</button>
                     </div>
                     <div class="chat-trust-row">
                         <span><i class="bx bx-cloud-rain"></i> Gợi ý theo thời tiết</span>
@@ -100,7 +108,8 @@
                     <div class="showcase-title-wrap">
                         <span class="eyebrow"><i class="bx bx-sparkles"></i> Dành riêng cho bạn</span>
                         <h2>Gợi Ý Cá Nhân Hóa Theo Gu & Ngân Sách</h2>
-                        <p id="recSubtitle">Tự động đề xuất theo sở thích, lịch sử hành trình và mức chi tiêu của bạn</p>
+                        <p id="recSubtitle">Tự động đề xuất theo sở thích, lịch sử hành trình và mức chi tiêu của bạn
+                        </p>
                     </div>
                 </div>
 
@@ -153,7 +162,8 @@
                 </a>
                 <a class="quick-card quick-card-orange" href="promotions.html">
                     <i class="bx bx-purchase-tag"></i>
-                    <span><strong>Săn ưu đãi hôm nay</strong><small>Voucher và chương trình đang hoạt động</small></span>
+                    <span><strong>Săn ưu đãi hôm nay</strong><small>Voucher và chương trình đang hoạt
+                            động</small></span>
                     <i class="bx bx-right-arrow-alt"></i>
                 </a>
             </div>
@@ -183,13 +193,16 @@
                     </div>
                 </div>
                 <div class="chat-header-actions">
-                    <div class="chat-weather" id="chatWeather"><i class="bx bx-cloud"></i><span>Hà Nội</span><strong>--</strong><small>Chờ thời tiết</small></div>
-                    <button type="button" class="chat-widget-close" id="chatWidgetClose" aria-label="Đóng trợ lý AI"><i class="bx bx-x"></i></button>
+                    <div class="chat-weather" id="chatWeather"><i class="bx bx-cloud"></i><span>Hà
+                            Nội</span><strong>--</strong><small>Chờ thời tiết</small></div>
+                    <button type="button" class="chat-widget-close" id="chatWidgetClose" aria-label="Đóng trợ lý AI"><i
+                            class="bx bx-x"></i></button>
                 </div>
             </div>
             <div class="chat-context">
                 <label for="chatCity"><i class="bx bx-map-pin"></i> Điểm đến</label>
-                <input id="chatCity" type="text" maxlength="100" autocomplete="address-level2" placeholder="Để trống để tìm mọi nơi">
+                <input id="chatCity" type="text" maxlength="100" autocomplete="address-level2"
+                    placeholder="Để trống để tìm mọi nơi">
                 <span><i class="bx bx-globe"></i> Toàn quốc</span>
             </div>
             <div class="chat-messages" id="travelChatMessages">
@@ -201,16 +214,21 @@
             <div class="chat-prompts" aria-label="Gợi ý câu hỏi">
                 <button type="button" data-chat-prompt="Hôm nay Hà Nội mưa, tôi nên đi đâu?">Ngày mưa đi đâu?</button>
                 <button type="button" data-chat-prompt="Tôi muốn đi chơi dưới 500.000đ ở Hà Nội">Dưới 500.000đ</button>
-                <button type="button" data-chat-prompt="Tìm một nơi yên tĩnh để uống cà phê và làm việc">Nơi yên tĩnh</button>
+                <button type="button" data-chat-prompt="Tìm một nơi yên tĩnh để uống cà phê và làm việc">Nơi yên
+                    tĩnh</button>
             </div>
             <form class="chat-composer" id="travelChatForm">
-                <input id="travelChatInput" type="text" maxlength="2000" autocomplete="off" placeholder="Ví dụ: Lập lịch trình 2 ngày ở Hà Nội..." aria-label="Tin nhắn cho trợ lý AI">
-                <button id="travelChatSend" class="chat-send" type="submit" aria-label="Gửi tin nhắn"><i class="bx bx-up-arrow-alt"></i></button>
+                <input id="travelChatInput" type="text" maxlength="2000" autocomplete="off"
+                    placeholder="Ví dụ: Lập lịch trình 2 ngày ở Hà Nội..." aria-label="Tin nhắn cho trợ lý AI">
+                <button id="travelChatSend" class="chat-send" type="submit" aria-label="Gửi tin nhắn"><i
+                        class="bx bx-up-arrow-alt"></i></button>
             </form>
-            <p class="chat-disclaimer"><i class="bx bx-info-circle"></i> Gợi ý được tạo từ dữ liệu tour hiện có. Hãy kiểm tra giá trước khi đặt.</p>
+            <p class="chat-disclaimer"><i class="bx bx-info-circle"></i> Gợi ý được tạo từ dữ liệu tour hiện có. Hãy
+                kiểm tra giá trước khi đặt.</p>
         </div>
 
-        <button type="button" class="chat-floating-btn" id="chatFloatingBtn" aria-label="Trợ lý Du lịch SmartTravel AI" title="Hỏi Trợ lý Du lịch AI">
+        <button type="button" class="chat-floating-btn" id="chatFloatingBtn" aria-label="Trợ lý Du lịch SmartTravel AI"
+            title="Hỏi Trợ lý Du lịch AI">
             <span class="chat-btn-pulse"></span>
             <div class="chat-btn-inner">
                 <i class="bx bx-bot chat-icon-open"></i>
@@ -223,7 +241,8 @@
 
     <div class="chat-tour-modal" id="chatTourDetailModal" aria-hidden="true">
         <div class="chat-tour-modal-panel" role="dialog" aria-modal="true" aria-labelledby="chatTourDetailTitle">
-            <button type="button" class="chat-tour-modal-close" data-tour-modal-close aria-label="Đóng thông tin tour"><i class="bx bx-x"></i></button>
+            <button type="button" class="chat-tour-modal-close" data-tour-modal-close
+                aria-label="Đóng thông tin tour"><i class="bx bx-x"></i></button>
             <div id="chatTourDetailLoading" class="chat-tour-detail-loading">Đang tải thông tin tour...</div>
             <div id="chatTourDetailContent" hidden>
                 <img id="chatTourDetailImage" class="chat-tour-detail-image" src="" alt="">
@@ -237,10 +256,13 @@
                     <p id="chatTourDetailDescription" class="chat-tour-detail-description"></p>
                     <p id="chatTourDetailTags" class="chat-tour-detail-tags"></p>
                     <strong id="chatTourDetailPrice" class="chat-tour-detail-price"></strong>
-                    <iframe id="chatTourDetailMap" class="chat-tour-detail-map" title="Bản đồ vị trí tour" loading="lazy"></iframe>
+                    <iframe id="chatTourDetailMap" class="chat-tour-detail-map" title="Bản đồ vị trí tour"
+                        loading="lazy"></iframe>
                     <div class="chat-tour-detail-actions">
-                        <a id="chatTourGoogleMap" class="btn btn-outline" href="#" target="_blank" rel="noopener"><i class="bx bx-map-alt"></i> Google Maps</a>
-                        <a id="chatTourBookLink" class="btn btn-primary" href="">Đặt tour <i class="bx bx-right-arrow-alt"></i></a>
+                        <a id="chatTourGoogleMap" class="btn btn-outline" href="#" target="_blank" rel="noopener"><i
+                                class="bx bx-map-alt"></i> Google Maps</a>
+                        <a id="chatTourBookLink" class="btn btn-primary" href="">Đặt tour <i
+                                class="bx bx-right-arrow-alt"></i></a>
                         <button type="button" class="btn btn-outline" data-tour-modal-close>Đóng</button>
                     </div>
                 </div>
@@ -251,4 +273,5 @@
     <script src="js/main.js"></script>
     <script src="js/chat.js"></script>
 </body>
+
 </html>

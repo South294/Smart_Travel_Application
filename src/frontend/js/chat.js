@@ -56,21 +56,83 @@
         if (item && item.content && (item.type === 'user' || item.type === 'bot')) {
           addMessage(container, item.content, item.type);
         }
+        if (item && item.kind === 'map') renderMapActions(container, item.data);
         if (item && item.kind === 'itinerary') renderItinerary(container, item.data);
         if (item && item.kind === 'recommendations') renderRecommendations(container, item.data);
+        if (item && item.kind === 'combo') renderComboAction(container, item.data);
       });
     } catch (error) {
     }
+  }
+
+  function renderMapActions(container, mapUrl) {
+    if (!mapUrl) return;
+    var section = document.createElement('div');
+    section.className = 'chat-map-actions';
+    section.style.cssText = 'display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; margin-bottom: 12px;';
+    section.innerHTML =
+      '<a href="' + escapeHtml(mapUrl) + '" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; border-radius: 8px; font-size: 13px;">' +
+      '<i class="bx bx-map-pin"></i> Mở lộ trình trên Google Maps</a>' +
+      '<a href="map.html" class="btn btn-outline btn-small" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; border-radius: 8px; font-size: 13px;">' +
+      '<i class="bx bx-navigation"></i> Xem trên Bản đồ SmartTravel</a>';
+    container.appendChild(section);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function renderComboAction(container, recommendations) {
+    if (!Array.isArray(recommendations) || recommendations.length < 2) return;
+    var totalEstimated = recommendations.reduce(function (sum, item) {
+      return sum + (Number(item.estimated_price) || 0);
+    }, 0);
+    var section = document.createElement('div');
+    section.className = 'chat-combo-action';
+    section.innerHTML =
+      '<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px;">' +
+      '<strong style="color: #0aa982; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;"><i class="bx bx-package" style="font-size: 18px;"></i> Combo trọn gói (' + recommendations.length + ' chuyến)</strong>' +
+      '<span style="font-weight: 700; color: #0aa982; font-size: 15px;">' + formatCurrency(totalEstimated) + '</span>' +
+      '</div>' +
+      '<p style="font-size: 12.5px; color: #64748b; line-height: 1.45; margin: 0 0 10px 0;">Gộp tất cả các chuyến trong lộ trình thành 1 combo để thanh toán chung một lần. Bạn có thể bỏ bớt chuyến tại trang thanh toán.</p>' +
+      '<button type="button" class="btn btn-primary btn-small chat-book-combo-btn" style="width: 100%; border-radius: 8px; padding: 9px 12px; font-weight: 600; justify-content: center; gap: 6px;">' +
+      '<i class="bx bx-check-shield"></i> Gộp thành Combo và Thanh toán chung</button>';
+    container.appendChild(section);
+    var btn = section.querySelector('.chat-book-combo-btn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var comboItems = recommendations.map(function (item) {
+          return {
+            tour_id: item.tour_id,
+            title: item.title,
+            location: item.location,
+            price: Number(item.estimated_price) || 0,
+            image: item.image_url || 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80'
+          };
+        });
+        localStorage.setItem('checkout_mode', 'combo');
+        localStorage.setItem('checkout_combo_items', JSON.stringify(comboItems));
+        window.location.href = 'checkout.html?mode=combo';
+      });
+    }
+    container.scrollTop = container.scrollHeight;
+    setTimeout(function () {
+      if (typeof section.scrollIntoView === 'function') {
+        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      container.scrollTop = container.scrollHeight;
+    }, 100);
+    setTimeout(function () {
+      container.scrollTop = container.scrollHeight;
+    }, 300);
   }
 
   function renderRecommendations(container, recommendations) {
     if (!Array.isArray(recommendations) || recommendations.length === 0) return;
     var section = document.createElement('div');
     section.className = 'chat-recommendations';
+    var fallbackImg = 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80';
     section.innerHTML = recommendations.map(function (item) {
-      var image = item.image_url || 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80';
+      var image = item.image_url || fallbackImg;
       return '<article class="recommendation-card">' +
-        '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '">' +
+        '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" onerror="this.onerror=null;this.src=\'' + fallbackImg + '\';">' +
         '<div class="recommendation-content">' +
         '<span class="recommendation-location"><i class="bx bx-map-pin"></i> ' + escapeHtml(item.location) + '</span>' +
         '<h3>' + escapeHtml(item.title) + '</h3>' +
@@ -219,13 +281,22 @@
       }
       addMessage(messages, data.message, 'bot');
       saveChatMessage(data.message, 'bot');
+      if (data.map_url) {
+        renderMapActions(messages, data.map_url);
+        saveChatEntry({ kind: 'map', data: data.map_url });
+      }
       renderItinerary(messages, data.itinerary);
+
       if (Array.isArray(data.itinerary) && data.itinerary.length) {
         saveChatEntry({ kind: 'itinerary', data: data.itinerary });
       }
       renderRecommendations(messages, data.recommendations);
       if (Array.isArray(data.recommendations) && data.recommendations.length) {
         saveChatEntry({ kind: 'recommendations', data: data.recommendations });
+      }
+      if (Array.isArray(data.recommendations) && data.recommendations.length >= 2) {
+        renderComboAction(messages, data.recommendations);
+        saveChatEntry({ kind: 'combo', data: data.recommendations });
       }
       updateWeather(data.weather);
     } catch (error) {

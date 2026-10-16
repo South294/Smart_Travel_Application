@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 CITY_COORDINATES: Dict[str, tuple] = {
     "hà nội": (21.0285, 105.8542),
@@ -991,4 +991,162 @@ CITY_HIGHLIGHTS: Dict[str, Dict[str, Any]] = {
         ]
     }
 }
+
+
+CITY_FOOD_AND_PLAY: Dict[str, Dict[str, Any]] = {
+    "hà nội": {
+        "delicacies": ["Phở bò gia truyền", "Bún chả nướng than hoa", "Chả cá Lã Vọng", "Bún đậu mắm tôm", "Bánh cuốn Thanh Trì", "Cà phê trứng", "Kem Tràng Tiền"],
+        "famous_restaurants": [
+            "Phở Bát Đàn (49 Bát Đàn, Hoàn Kiếm)",
+            "Phở Thìn (13 Lò Đúc, Hai Bà Trưng)",
+            "Bún chả Hương Liên (24 Lê Văn Hưu)",
+            "Bún chả Đắc Kim (1 Hàng Mành)",
+            "Chả cá Thăng Long (19 Đường Thành)",
+            "Cà phê Giảng (39 Nguyễn Hữu Huân)",
+            "Bún đậu ngõ Tràng Tiền (2 Phan Chu Trinh)"
+        ],
+        "entertainment_spots": [
+            "Phố đi bộ Hồ Gươm và Chợ đêm Phố Cổ",
+            "Phố đường tàu Phùng Hưng check-in",
+            "Tổ hợp vui chơi Mega Grand World Hà Nội",
+            "Trung tâm thương mại Lotte Mall Tây Hồ & Thủy cung",
+            "Khu giải trí VinKE & Thủy cung Vinpearl Times City",
+            "Khu du lịch sinh thái Công viên Yên Sở",
+            "Làng gốm Bát Tràng trải nghiệm nặn gốm"
+        ]
+    },
+    "ninh bình": {
+        "delicacies": ["Thịt dê núi 7 món", "Cơm cháy sốt tim cật", "Ốc núi Tam Điệp", "Gỏi cá nhệch Kim Sơn", "Rượu cần Nho Quan"],
+        "famous_restaurants": [
+            "Nhà hàng Dũng Phố Núi (gần Hang Múa)",
+            "Nhà hàng Thăng Long (Tràng An, Trường Yên)",
+            "Nhà hàng Hoàng Giang (núi Hang Cá, Trường Yên)",
+            "Dê núi Chính Thư (Hoa Lư, Ninh Bình)",
+            "Cơm cháy Quốc Quân (Khu du lịch Tràng An)"
+        ],
+        "entertainment_spots": [
+            "Khu du lịch sinh thái Thung Nham ngắm vườn chim",
+            "Phố cổ Hoa Lư về đêm lung linh ánh đèn",
+            "Chèo thuyền kayak tại Quần thể Tràng An",
+            "Check-in Thung Nắng và Tuyệt Tình Cốc (Động Am Tiên)"
+        ]
+    },
+    "đà nẵng": {
+        "delicacies": ["Bánh tráng cuốn thịt heo hai đầu da", "Mì Quảng ếch", "Bún chả cá", "Gỏi cá Nam Ô", "Bánh xèo nem lụi", "Chè sầu Liên"],
+        "famous_restaurants": [
+            "Bánh tráng thịt heo Trần (04 Lê Duẩn)",
+            "Mì Quảng Bà Mua (95K Nguyễn Tri Phương)",
+            "Bún chả cá 109 Nguyễn Chí Thanh",
+            "Hải sản Năm Đảnh (K139/H59/38 Trần Quang Khải)",
+            "Bánh xèo Bà Dưỡng (K280/23 Hoàng Diệu)"
+        ],
+        "entertainment_spots": [
+            "Công viên giải trí Sun World Asia Park",
+            "Bà Nà Hills và Cầu Vàng",
+            "Khu du lịch suối khoáng nóng Núi Thần Tài",
+            "Chợ đêm Helio và Phố đi bộ Bạch Đằng",
+            "Trải nghiệm lướt ván cano tại Bãi biển Mỹ Khê"
+        ]
+    },
+    "hồ chí minh": {
+        "delicacies": ["Cơm tấm sườn bì chả", "Hủ tiếu Nam Vang", "Bánh mì Sài Gòn", "Bánh tráng trộn", "Lẩu cá kèo", "Ốc đêm chợ Bến Thành"],
+        "famous_restaurants": [
+            "Cơm tấm Ba Ghiền (84 Đặng Văn Ngữ, Phú Nhuận)",
+            "Hủ tiếu Nam Vang Nhân Quán (122 Nguyễn Trãi, Q.5)",
+            "Bánh mì Huỳnh Hoa (26 Lê Thị Riêng, Q.1)",
+            "Phở Lệ (415 Nguyễn Trãi, Q.5)",
+            "Quán Ốc Oanh (534 Vĩnh Khánh, Q.4)"
+        ],
+        "entertainment_spots": [
+            "Phố đi bộ Nguyễn Huệ & Phố Tây Bùi Viện",
+            "Đài quan sát Landmark 81 SkyView",
+            "Thảo Cầm Viên Sài Gòn",
+            "Khu du lịch Suối Tiên và Đầm Sen",
+            "Trải nghiệm Waterbus Bạch Đằng trên sông Sài Gòn"
+        ]
+    },
+    "đà lạt": {
+        "delicacies": ["Lẩu gà lá é", "Lẩu bò Ba Toa", "Bánh ướt lòng gà", "Bánh tráng nướng", "Nem nướng Đà Lạt", "Kem bơ sáp", "Sữa đậu nành nóng"],
+        "famous_restaurants": [
+            "Lẩu gà lá é Tao Ngộ (05 đường 3 Tháng 4)",
+            "Lẩu bò Quán Gỗ Ba Toa (1/29 Hoàng Diệu)",
+            "Bánh ướt lòng gà Trang (15F Tăng Bạt Hổ)",
+            "Nem nướng Bà Hùng (328 Phan Đình Phùng)",
+            "Kem bơ Thanh Thảo (76 Nguyễn Văn Trỗi)"
+        ],
+        "entertainment_spots": [
+            "Máng trượt dài nhất Đông Nam Á tại Thác Datanla",
+            "Khu du lịch Nông trại Cún Puppy Farm",
+            "Tổ hợp sống ảo Mongo Land Đà Lạt",
+            "Quảng trường Lâm Viên & Đạp vịt Hồ Xuân Hương",
+            "Chợ đêm Đà Lạt ăn vặt phố núi"
+        ]
+    },
+    "sa pa": {
+        "delicacies": ["Lẩu cá tầm, cá hồi Thác Bạc", "Thịt lợn cắp nách", "Thịt trâu gác bếp", "Thắng cố A Quỳnh", "Gà đen nướng mật ong", "Đồ nướng phố cổ"],
+        "famous_restaurants": [
+            "Thắng cố A Quỳnh Sa Pa (15 Thạch Sơn)",
+            "Nhà hàng Cá Hồi Vua Sa Pa (15 Lê Văn Tám)",
+            "Nhà hàng Ô Quý Hồ (08 Thạch Sơn)",
+            "Quán đồ nướng than phố Cầu Mây"
+        ],
+        "entertainment_spots": [
+            "Khu du lịch Sun World Fansipan Legend",
+            "Cầu kính Rồng Mây đèo Ô Quy Hồ",
+            "Bản Cát Cát và Thung lũng Mường Hoa",
+            "Khu du lịch Núi Hàm Rồng ngắm toàn cảnh Sa Pa"
+        ]
+    },
+    "hạ long": {
+        "delicacies": ["Chả mực giã tay Thoan", "Bún bề bề", "Ngán biển nướng mỡ hành", "Sá sùng xào tỏi", "Bánh gật gù Tiên Yên", "Sam biển 7 món"],
+        "famous_restaurants": [
+            "Chả mực Thoan (Kiot 36-37 Chợ Hạ Long 1)",
+            "Bún bề bề Bãi Cháy (Huy Chiên, Cái Dăm)",
+            "Hải sản Cua Vàng (32 Phan Chu Trinh, Bãi Cháy)",
+            "Hải sản Hồng Hạnh (Hoàng Quốc Việt, Bãi Cháy)"
+        ],
+        "entertainment_spots": [
+            "Quần thể công viên Sun World Hạ Long Complex",
+            "Tuyến Cáp treo Nữ Hoàng & Vòng quay Mặt Trời",
+            "Chèo thuyền kayak và lướt cano vịnh Bãi Cháy",
+            "Phố cổ Bãi Cháy và Chợ đêm Hạ Long Marina"
+        ]
+    },
+    "phú quốc": {
+        "delicacies": ["Bún quậy Kiến Xây", "Gỏi cá trích", "Hải sản Hàm Ninh", "Còi biên mai nướng muối ớt", "Nấm tràm Phú Quốc"],
+        "famous_restaurants": [
+            "Bún quậy Kiến Xây (28 Bạch Đằng, Dương Đông)",
+            "Quán Ra Khơi (131 đường 30 Tháng 4)",
+            "Gỏi cá trích Sông Xanh (đường 30 Tháng 4)",
+            "Làng chài bè nổi Hàm Ninh"
+        ],
+        "entertainment_spots": [
+            "Tổ hợp Grand World Phú Quốc thành phố không ngủ",
+            "Công viên chủ đề VinWonders & Safari bán hoang dã",
+            "Cáp treo vượt biển Hòn Thơm & Công viên nước Aquatopia",
+            "Lặn ngắm san hô cano 4 đảo An Thới"
+        ]
+    }
+}
+
+
+def build_google_maps_route_url(origin: str, destination: str, waypoints: Optional[List[str]] = None) -> str:
+    import urllib.parse
+    params = {
+        "api": "1",
+        "origin": origin.strip(),
+        "destination": destination.strip(),
+        "travelmode": "driving"
+    }
+    if waypoints:
+        cleaned_points = [p.strip() for p in waypoints if p and p.strip()]
+        if cleaned_points:
+            params["waypoints"] = "|".join(cleaned_points)
+    return f"https://www.google.com/maps/dir/?{urllib.parse.urlencode(params)}"
+
+
+def build_google_maps_search_url(query: str) -> str:
+    import urllib.parse
+    return f"https://www.google.com/maps/search/?api=1&query={urllib.parse.quote(query.strip())}"
+
 

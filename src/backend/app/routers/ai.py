@@ -10,7 +10,13 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from app.core.config import settings
 from app.db.mongodb import get_db
 from app.schemas.ai import ChatRequest, ChatResponse, ItineraryDay, Recommendation, WeatherSnapshot
-from app.services.ai_knowledge import CITY_HIGHLIGHTS, LOCATION_ALIASES
+from app.services.ai_knowledge import (
+    CITY_HIGHLIGHTS,
+    CITY_FOOD_AND_PLAY,
+    LOCATION_ALIASES,
+    build_google_maps_route_url,
+    build_google_maps_search_url,
+)
 from app.services.weather_service import _get_weather, _cached_weather
 from app.services.nlp_service import (
     _casual_reply,
@@ -20,7 +26,9 @@ from app.services.nlp_service import (
     _is_weather_request,
     _extract_budget,
     _extract_city,
+    _extract_route,
 )
+
 
 router = APIRouter()
 _chat_requests: Dict[str, List[float]] = {}
@@ -146,12 +154,14 @@ async def _ask_gemini(
     city = route["destination"] if route else _extract_city(request.message, request.city)
     key = city.lower() if city else ""
     city_guide = CITY_HIGHLIGHTS.get(key, {})
+    food_and_play = CITY_FOOD_AND_PLAY.get(key, {})
 
     prompt = {
         "user_query": request.message,
         "destination": city,
         "route": route or {},
         "destination_guide": city_guide,
+        "destination_food_and_play": food_and_play,
         "conversation_history": history,
         "max_budget": max_budget,
         "weather": weather.model_dump(),
@@ -159,10 +169,10 @@ async def _ask_gemini(
         "instructions": [
             "Trả về duy nhất JSON hợp lệ, không markdown.",
             "Trả lời câu hỏi của người dùng thật đầy đủ, nhiệt tình, logic và tuyệt đối chính xác về địa lý Việt Nam.",
-            "Nếu người dùng hỏi về điểm đến, cẩm nang du lịch: Hãy cung cấp danh sách địa điểm nổi bật, nét đặc sắc ẩm thực và lịch trình khám phá chi tiết.",
-            "Nếu route có origin và destination, hãy lập hành trình theo thứ tự origin → các điểm dừng có thể tham quan hợp lý trên đường → destination; tuyệt đối không chỉ liệt kê riêng destination.",
-            "Với tuyến Hà Nội → Ninh Bình, ưu tiên cân nhắc Hà Nam/Phủ Lý và Tam Chúc làm điểm ghé trên đường, sau đó kết thúc bằng Tràng An, Tam Cốc, Bái Đính hoặc Hang Múa ở Ninh Bình; chỉ đưa điểm ghé phù hợp thời gian và ghi rõ đây là gợi ý.",
-            "Trong itinerary, mỗi ngày phải nêu rõ đang ở đâu, điểm ghé nào trên tuyến và điểm kết thúc trong ngày.",
+            "Nếu người dùng hỏi về điểm đến, quán ăn, ẩm thực hoặc khu vui chơi: Hãy cung cấp danh sách địa điểm vui chơi nổi bật, nét đặc sắc ẩm thực, các quán ăn ngon cụ thể kèm địa chỉ và lịch trình khám phá chi tiết.",
+            "Nếu route có origin và destination, hãy lập hành trình theo thứ tự origin → các điểm dừng tham quan và quán ăn ngon trên đường → destination; tuyệt đối không chỉ liệt kê riêng destination.",
+            "Với tuyến Hà Nội → Ninh Bình, ưu tiên cân nhắc Hà Nam/Phủ Lý và Tam Chúc làm điểm ghé thưởng thức ẩm thực (bánh cuốn Phủ Lý) trên đường, sau đó kết thúc bằng Tràng An, Tam Cốc, Bái Đính hoặc Hang Múa ở Ninh Bình; chỉ đưa điểm ghé phù hợp thời gian và ghi rõ đây là gợi ý.",
+            "Trong itinerary, mỗi ngày phải nêu rõ đang ở đâu, điểm vui chơi, quán ăn nào trên tuyến và điểm kết thúc trong ngày.",
             "Chỉ đề xuất các tour có tour_id nằm trong tour_catalog. Tuyệt đối không bịa đặt tour hoặc id ảo.",
             "Nếu tour_catalog rỗng, để recommendations là mảng rỗng [] và thông báo rõ ràng rằng hiện hệ thống chưa mở bán tour trọn gói trực tiếp tại điểm đến này.",
             "Nếu thời tiết mưa, nhắc người dùng mang ô và ưu tiên các điểm trong nhà.",
@@ -230,6 +240,25 @@ def _fallback_result(
                     info = v
                     break
 
+    food_play = CITY_FOOD_AND_PLAY.get(key)
+    food_play_section = ""
+    if food_play:
+        delicacies = ", ".join(food_play.get("delicacies", []))
+        restaurants = "\n".join([f"  • {r}" for r in food_play.get("famous_restaurants", [])[:4]])
+        entertainment = "\n".join([f"  • {e}" for e in food_play.get("entertainment_spots", [])[:4]])
+        food_play_section = (
+            f"\n\n🍜 Ẩm thực & Quán ăn ngon tại {city}:\n"
+            f"• Món đặc sản nên thử: {delicacies}\n"
+            f"• Quán ăn ngon gợi ý:\n{restaurants}\n\n"
+            f"🎡 Khu vui chơi & Giải trí nổi bật:\n{entertainment}"
+        )
+
+    map_url = None
+    if route and route.get("origin") and route.get("destination"):
+        map_url = build_google_maps_route_url(route["origin"], route["destination"], route.get("stops"))
+    elif city:
+        map_url = build_google_maps_search_url(f"Điểm du lịch và quán ăn ngon tại {city}")
+
     if info:
         title = info.get("title", f"Khám phá {city}")
         intro = info.get("intro", f"{city} là điểm đến tuyệt vời với cảnh quan thiên nhiên và trải nghiệm đặc sắc.")
@@ -262,15 +291,16 @@ def _fallback_result(
         if route:
             route_key = (route["origin"], route["destination"])
             route_stops = {
-                ("Hà Nội", "Ninh Bình"): ["Hà Nam - Phủ Lý và Tam Chúc", "Ninh Bình - Tràng An, Tam Cốc, Bái Đính, Hang Múa"],
-            }.get(route_key, [f"Các điểm tham quan phù hợp trên cung đường đến {route['destination']}", route["destination"]])
-            route_message = f"\n\nLộ trình đề xuất: {route['origin']} → {route_stops[0]} → {route['destination']}. Bạn có thể ghé các điểm trên đường theo thời gian thực tế, rồi kết thúc hành trình tại {route['destination']}."
+                ("Hà Nội", "Ninh Bình"): ["Hà Nam - Phủ Lý (thưởng thức bánh cuốn chả) và chùa Tam Chúc", "Ninh Bình - Tràng An, Tam Cốc, Bái Đính, thưởng thức dê núi cơm cháy"],
+            }.get(route_key, [f"Các điểm tham quan và quán ăn ngon trên cung đường đến {route['destination']}", route["destination"]])
+            route_message = f"\n\nLộ trình đề xuất: {route['origin']} → {route_stops[0]} → {route['destination']}. Bạn có thể ghé các điểm ăn uống và ngắm cảnh trên đường, rồi kết thúc hành trình tại {route['destination']}."
             route_itinerary = [
-                {"day": 1, "title": f"Từ {route['origin']} đến {route_stops[0]}", "activities": [f"Khởi hành từ {route['origin']}", f"Ghé tham quan {route_stops[0]}", "Tiếp tục di chuyển và nghỉ đêm theo lịch trình"]},
+                {"day": 1, "title": f"Từ {route['origin']} đến {route_stops[0]}", "activities": [f"Khởi hành từ {route['origin']}", f"Ghé tham quan và thưởng thức đặc sản tại {route_stops[0]}", "Tiếp tục di chuyển và nghỉ đêm theo lịch trình"]},
                 {"day": 2, "title": f"Khám phá và kết thúc tại {route['destination']}", "activities": [f"Tham quan {route_stops[1]}", f"Trải nghiệm ẩm thực và cảnh quan tại {route['destination']}", f"Kết thúc hành trình tại {route['destination']}"]},
             ]
 
-        message = f"🌟 {title}\n\n{intro}\n\n{spot_lines}{route_message}{weather_tip}{conclusion}"
+        map_tip = "\n\n🗺️ Bạn có thể bấm nút 'Xem lộ trình trên Google Maps' bên dưới để nhận chỉ dẫn đường đi chi tiết từng chặng." if map_url else ""
+        message = f"🌟 {title}\n\n{intro}\n\n{spot_lines}{food_play_section}{route_message}{weather_tip}{conclusion}{map_tip}"
         itinerary = info.get("itinerary", [])
         if route_itinerary:
             itinerary = route_itinerary
@@ -278,7 +308,9 @@ def _fallback_result(
             "message": message,
             "itinerary": itinerary,
             "recommendations": recommendations,
+            "map_url": map_url,
         }
+
 
     if city and not tours:
         return {
@@ -407,7 +439,19 @@ async def chat(request: ChatRequest, http_request: Request):
         await _save_history(request.session_id, request.message, response.message)
         return response
 
-    tours = await _find_tours(city, weather_snapshot, max_budget)
+    if route and route.get("origin") and route.get("destination"):
+        origin_tours = await _find_tours(route["origin"], weather_snapshot, max_budget)
+        dest_tours = await _find_tours(route["destination"], weather_snapshot, max_budget)
+        combined_tours = []
+        seen_ids = set()
+        for tour in origin_tours[:2] + dest_tours[:4]:
+            tid = str(tour.get("_id"))
+            if tid not in seen_ids:
+                seen_ids.add(tid)
+                combined_tours.append(tour)
+        tours = combined_tours or dest_tours
+    else:
+        tours = await _find_tours(city, weather_snapshot, max_budget)
     catalog_by_id = {str(tour.get("_id")): tour for tour in tours}
     history = await _load_history(request.session_id)
 
@@ -460,11 +504,20 @@ async def chat(request: ChatRequest, http_request: Request):
             )
         )
 
+    map_url = ai_result.get("map_url")
+    if not map_url:
+        if route and route.get("origin") and route.get("destination"):
+            map_url = build_google_maps_route_url(route["origin"], route["destination"], route.get("stops"))
+        elif city:
+            map_url = build_google_maps_search_url(f"Điểm du lịch và quán ăn ngon tại {city}")
+
     response = ChatResponse(
         message=ai_result.get("message", "Mình đã tìm thấy một số lựa chọn phù hợp."),
         recommendations=recommendations,
         itinerary=itinerary[:7],
         weather=weather_snapshot,
+        map_url=map_url,
     )
     await _save_history(request.session_id, request.message, response.message)
     return response
+
