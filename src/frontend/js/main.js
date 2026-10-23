@@ -209,6 +209,43 @@ async function renderMyBookings() {
     }
 
     var bookings = await res.json();
+    var vipTripCountText = document.getElementById('vipTripCountText');
+    var vipProgressBar = document.getElementById('vipProgressBar');
+    var vipStatusBadge = document.getElementById('vipStatusBadge');
+    var btnUpgradeVip = document.getElementById('btnUpgradeVip');
+    var tripCount = Array.isArray(bookings) ? bookings.length : 0;
+
+    if (vipTripCountText) {
+      vipTripCountText.textContent = tripCount + '/10 chuyến';
+    }
+    if (vipProgressBar) {
+      var pct = Math.min(100, Math.round((tripCount / 10) * 100));
+      vipProgressBar.style.width = pct + '%';
+    }
+    if (vipStatusBadge && tripCount >= 10 && localStorage.getItem('isVipUser') === 'true') {
+      vipStatusBadge.innerHTML = '<i class="bx bxs-crown"></i> Hội Viên VIP';
+      vipStatusBadge.style.background = '#dcfce7';
+      vipStatusBadge.style.color = '#15803d';
+      vipStatusBadge.style.borderColor = '#86efac';
+    }
+
+    if (btnUpgradeVip) {
+      btnUpgradeVip.onclick = function() {
+        if (tripCount < 10) {
+          showToast('Bạn cần hoàn thành tối thiểu 10 chuyến đi để đủ điều kiện nâng hạng VIP (hiện tại: ' + tripCount + '/10 chuyến).', 'warning');
+          return;
+        }
+        localStorage.setItem('isVipUser', 'true');
+        showToast('Chúc mừng bạn đã nâng cấp thành công Hội viên VIP SmartTravel!', 'success');
+        if (vipStatusBadge) {
+          vipStatusBadge.innerHTML = '<i class="bx bxs-crown"></i> Hội Viên VIP';
+          vipStatusBadge.style.background = '#dcfce7';
+          vipStatusBadge.style.color = '#15803d';
+          vipStatusBadge.style.borderColor = '#86efac';
+        }
+      };
+    }
+
     if (!Array.isArray(bookings) || bookings.length === 0) {
       listWrap.innerHTML = '<div class="text-muted text-sm">Chưa có chuyến đi nào.</div>';
       return;
@@ -260,11 +297,58 @@ function openBookingDetail(booking) {
   setText('bookingDetailLocation', booking.tour_location || 'Đang cập nhật');
   setText('bookingDetailStatus', mapBookingStatus(booking.status));
   setText('bookingDetailTotal', formatCurrency(booking.total_amount || 0));
+
+  var tripTypeTag = document.getElementById('bookingDetailTripTypeTag');
+  if (tripTypeTag) {
+    tripTypeTag.textContent = booking.trip_type === 'inter_provincial'
+      ? 'Chuyến đi trọn gói liên tuyến (Cả đi và đến kèm xe đưa đón)'
+      : 'Chuyến đi khám phá tại điểm đến (Khám phá toàn diện địa phương)';
+  }
+
+  setText('bookingDetailGuideName', booking.guide_name || 'Vũ Văn Sơn (HDV SmartTravel)');
+  setText('bookingDetailGuideExp', booking.guide_experience || '5 năm kinh nghiệm dẫn đoàn');
+  setText('bookingDetailGuidePhone', booking.guide_phone || '0912 345 678');
+  setText('bookingDetailTransportation', booking.transportation || 'Xe ô tô du lịch chất lượng cao đời mới phục vụ suốt tuyến, đón trả tận nơi.');
+
+  var timelineContainer = document.getElementById('bookingDetailTimeline');
+  if (timelineContainer) {
+    var itinerary = booking.itinerary_details;
+    if (Array.isArray(itinerary) && itinerary.length > 0) {
+      timelineContainer.innerHTML = itinerary.map(function(dayPlan) {
+        var items = dayPlan.timeline || [];
+        var dayTitle = dayPlan.title ? '<div class="font-bold text-sm text-primary mb-2"><i class="bx bx-calendar-star"></i> ' + escapeHtml(dayPlan.title) + '</div>' : '';
+        var itemsHtml = items.map(function(item) {
+          var typeIcon = item.type === 'dining' ? 'bx-restaurant' : (item.type === 'departure' || item.type === 'return' ? 'bx-car' : 'bx-map-pin');
+          var typeColor = item.type === 'dining' ? '#f59e0b' : (item.type === 'departure' || item.type === 'return' ? '#3b82f6' : '#10b981');
+          return (
+            '<div class="flex items-start gap-3 p-3" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">' +
+              '<div style="background: ' + typeColor + '15; color: ' + typeColor + '; border-radius: 6px; padding: 6px 10px; font-weight: 700; font-size: 12px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">' +
+                '<i class="bx ' + typeIcon + '"></i> ' + escapeHtml(item.time || '--') +
+              '</div>' +
+              '<div class="flex-1">' +
+                '<p class="text-sm mb-0 text-dark" style="line-height: 1.5;">' + escapeHtml(item.activity || '') + '</p>' +
+                (item.location ? '<span class="text-xs text-muted mt-1 block"><i class="bx bx-current-location"></i> ' + escapeHtml(item.location) + '</span>' : '') +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+        return '<div>' + dayTitle + '<div class="flex flex-col gap-2">' + itemsHtml + '</div></div>';
+      }).join('');
+    } else {
+      timelineContainer.innerHTML = '<div class="text-muted text-sm p-3 bg-light rounded">Lịch trình đang được hướng dẫn viên cập nhật chi tiết theo chuyến đi.</div>';
+    }
+  }
+
   var mapLink = document.getElementById('bookingDetailMapLink');
   if (mapLink) {
-    var query = booking.tour_lat && booking.tour_lng ? booking.tour_lat + ',' + booking.tour_lng : booking.tour_location || booking.tour_title;
-    mapLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+    if (booking.route_map_url) {
+      mapLink.href = booking.route_map_url;
+    } else {
+      var query = booking.tour_lat && booking.tour_lng ? booking.tour_lat + ',' + booking.tour_lng : booking.tour_location || booking.tour_title;
+      mapLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+    }
   }
+
   openModal('bookingDetailModal');
 }
 
@@ -1911,10 +1995,12 @@ async function initCheckoutGuides() {
     var guides = await res.json();
     if (!Array.isArray(guides) || guides.length === 0) return;
 
-    guides.forEach(function(guide) {
+    select.innerHTML = '';
+    guides.forEach(function(guide, idx) {
       var option = document.createElement('option');
       option.value = guide.id;
-      option.textContent = guide.name + ' - ' + formatCurrency(guide.price_per_day) + '/ngay';
+      option.textContent = guide.name + ' (' + (guide.experience_years || 3) + ' năm kinh nghiệm) - Hướng dẫn viên trong gói';
+      if (idx === 0) option.selected = true;
       select.appendChild(option);
     });
   } catch (e) {}
@@ -2023,6 +2109,10 @@ function buildBookingPayload() {
     return null;
   }
 
+  var guideSelect = document.getElementById('checkoutGuideSelect');
+  var guideId = guideSelect && guideSelect.value ? guideSelect.value : null;
+  var guideNote = document.getElementById('checkoutGuideNote') ? document.getElementById('checkoutGuideNote').value.trim() : null;
+
   return {
     tour_id: tourId,
     travel_date: travelDate,
@@ -2032,7 +2122,9 @@ function buildBookingPayload() {
     coupon_code: voucherCode || null,
     payment_method: paymentMethod,
     contact_phone: phone,
-    note: note || null
+    note: note || null,
+    guide_id: guideId,
+    guide_note: guideNote
   };
 }
 

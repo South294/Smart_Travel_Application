@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 VALID_PAYMENT_METHODS = ["credit_card", "e_wallet", "bank_transfer", "qr"]
 
@@ -13,6 +13,8 @@ class BookingBase(BaseModel):
     payment_method: str = Field(min_length=1)
     contact_phone: str = Field(min_length=1)
     note: Optional[str] = None
+    guide_id: Optional[str] = None
+    guide_note: Optional[str] = None
 
 class BookingCreate(BookingBase):
     pass
@@ -31,3 +33,10 @@ class BookingResponse(BookingBase):
     tour_location: Optional[str] = None
     tour_lat: Optional[float] = None
     tour_lng: Optional[float] = None
+    guide_name: Optional[str] = None
+    guide_phone: Optional[str] = None
+    guide_experience: Optional[str] = None
+    transportation: Optional[str] = None
+    trip_type: Optional[str] = None
+    route_map_url: Optional[str] = None
+    itinerary_details: Optional[List[Dict[str, Any]]] = None

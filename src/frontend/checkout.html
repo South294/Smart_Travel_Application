@@ -119,17 +119,19 @@
                 </div>
 
                 <div class="card p-6 mb-4">
-                    <h2 class="font-bold mb-2 flex items-center gap-2"><i class="bx bx-user-voice text-primary"></i> Hướng dẫn viên bản địa (tùy chọn)</h2>
-                    <p class="text-muted text-sm mb-4">Chọn hướng dẫn viên phù hợp hoặc bỏ qua nếu bạn tự túc.</p>
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="font-bold mb-0 flex items-center gap-2"><i class="bx bx-user-voice text-primary"></i> Hướng dẫn viên bản địa đồng hành</h2>
+                        <span class="badge badge-success"><i class="bx bx-check-shield"></i> Bao gồm trong gói</span>
+                    </div>
+                    <p class="text-muted text-sm mb-4">Chuyến đi đã bao gồm 1 hướng dẫn viên chuyên nghiệp phụ trách chăm sóc và đồng hành cùng đoàn trong suốt lịch trình.</p>
                     <div class="form-group">
-                        <label class="form-label">Chọn hướng dẫn viên</label>
-                        <select class="form-control" id="checkoutGuideSelect">
-                            <option value="">Không cần hướng dẫn viên</option>
+                        <label class="form-label">Chọn hướng dẫn viên phụ trách</label>
+                        <select class="form-control" id="checkoutGuideSelect" required>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ghi chú cho hướng dẫn viên</label>
-                        <textarea class="form-control" id="checkoutGuideNote" rows="3" placeholder="Ví dụ: Có trẻ em/ người lớn tuổi, ưu tiên lịch nhẹ..."></textarea>
+                        <textarea class="form-control" id="checkoutGuideNote" rows="3" placeholder="Ví dụ: Có trẻ em/ người lớn tuổi, lưu ý về thể lực hoặc chế độ ăn uống..."></textarea>
                     </div>
                 </div>
 

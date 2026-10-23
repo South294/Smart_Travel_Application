@@ -56,8 +56,6 @@
         if (item && item.content && (item.type === 'user' || item.type === 'bot')) {
           addMessage(container, item.content, item.type);
         }
-        if (item && item.kind === 'map') renderMapActions(container, item.data);
-        if (item && item.kind === 'itinerary') renderItinerary(container, item.data);
         if (item && item.kind === 'recommendations') renderRecommendations(container, item.data);
         if (item && item.kind === 'combo') renderComboAction(container, item.data);
       });
@@ -65,19 +63,7 @@
     }
   }
 
-  function renderMapActions(container, mapUrl) {
-    if (!mapUrl) return;
-    var section = document.createElement('div');
-    section.className = 'chat-map-actions';
-    section.style.cssText = 'display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; margin-bottom: 12px;';
-    section.innerHTML =
-      '<a href="' + escapeHtml(mapUrl) + '" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; border-radius: 8px; font-size: 13px;">' +
-      '<i class="bx bx-map-pin"></i> Mở lộ trình trên Google Maps</a>' +
-      '<a href="map.html" class="btn btn-outline btn-small" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; border-radius: 8px; font-size: 13px;">' +
-      '<i class="bx bx-navigation"></i> Xem trên Bản đồ SmartTravel</a>';
-    container.appendChild(section);
-    container.scrollTop = container.scrollHeight;
-  }
+  function renderMapActions(container, mapUrl) {}
 
   function renderComboAction(container, recommendations) {
     if (!Array.isArray(recommendations) || recommendations.length < 2) return;
@@ -219,20 +205,7 @@
     modal.setAttribute('aria-hidden', 'true');
   }
 
-  function renderItinerary(container, itinerary) {
-    if (!Array.isArray(itinerary) || itinerary.length === 0) return;
-    var section = document.createElement('section');
-    section.className = 'chat-itinerary';
-    section.innerHTML = '<strong><i class="bx bx-calendar-event"></i> Lịch trình gợi ý</strong>' + itinerary.map(function (day) {
-      var activities = Array.isArray(day.activities) ? day.activities : [];
-      return '<div class="chat-itinerary-day"><b>Ngày ' + escapeHtml(day.day) + ': ' + escapeHtml(day.title) + '</b>' +
-        (activities.length ? '<ul>' + activities.map(function (activity) {
-          return '<li>' + escapeHtml(activity) + '</li>';
-        }).join('') + '</ul>' : '') + '</div>';
-    }).join('');
-    container.appendChild(section);
-    container.scrollTop = container.scrollHeight;
-  }
+  function renderItinerary(container, itinerary) {}
 
   function updateWeather(weather) {
     var element = document.getElementById('chatWeather');
@@ -281,15 +254,6 @@
       }
       addMessage(messages, data.message, 'bot');
       saveChatMessage(data.message, 'bot');
-      if (data.map_url) {
-        renderMapActions(messages, data.map_url);
-        saveChatEntry({ kind: 'map', data: data.map_url });
-      }
-      renderItinerary(messages, data.itinerary);
-
-      if (Array.isArray(data.itinerary) && data.itinerary.length) {
-        saveChatEntry({ kind: 'itinerary', data: data.itinerary });
-      }
       renderRecommendations(messages, data.recommendations);
       if (Array.isArray(data.recommendations) && data.recommendations.length) {
         saveChatEntry({ kind: 'recommendations', data: data.recommendations });
