@@ -191,8 +191,13 @@ function renderTourCard(tour) {
   var price = Number(tour.discount_price || tour.price || 0);
   var oldPrice = tour.discount_price && Number(tour.discount_price) < Number(tour.price) ? '<span class="tour-card-old-price">' + formatTourCurrency(tour.price) + '</span>' : '';
   var badge = tags.indexOf('hot') !== -1 || tags.indexOf('best-seller') !== -1 ? '<span class="tour-card-badge"><i class="bx bxs-hot"></i> HOT</span>' : '';
-  var duration = tour.duration_days ? tour.duration_days + 'N' + (tour.duration_nights || 0) + 'Đ' : '';
-  return '<article class="tour-api-card"><div class="tour-api-image"><img src="' + escapeTourHTML(image) + '" alt="' + escapeTourHTML(tour.title) + '" loading="lazy">' + badge + '</div><div class="tour-api-body"><div class="tour-api-meta"><span><i class="bx bx-map"></i> ' + escapeTourHTML(tour.location || 'Việt Nam') + '</span><span><i class="bx bx-time-five"></i> ' + duration + '</span></div><h3>' + escapeTourHTML(tour.title) + '</h3><div class="tour-api-rating"><i class="bx bxs-star"></i> ' + Number(tour.rating || 0).toFixed(1) + ' <span>(' + Number(tour.review_count || 0) + ' đánh giá)</span></div><div class="tour-api-footer"><div>' + oldPrice + '<strong>' + formatTourCurrency(price) + '</strong><small>/ khách</small></div><a href="checkout.html?tour_id=' + encodeURIComponent(tour.id || '') + '" class="btn-book-tour"><i class="bx bx-calendar-check"></i> Đặt tour</a></div></div></article>';
+  var bookingUrl = 'checkout.html?tour_id=' + encodeURIComponent(tour.id || '') +
+    '&title=' + encodeURIComponent(tour.title || '') +
+    '&price=' + encodeURIComponent(price) +
+    '&duration=' + encodeURIComponent(duration) +
+    '&img=' + encodeURIComponent(image) +
+    '&location=' + encodeURIComponent(tour.location || '');
+  return '<article class="tour-api-card"><div class="tour-api-image"><img src="' + escapeTourHTML(image) + '" alt="' + escapeTourHTML(tour.title) + '" loading="lazy">' + badge + '</div><div class="tour-api-body"><div class="tour-api-meta"><span><i class="bx bx-map"></i> ' + escapeTourHTML(tour.location || 'Việt Nam') + '</span><span><i class="bx bx-time-five"></i> ' + duration + '</span></div><h3>' + escapeTourHTML(tour.title) + '</h3><div class="tour-api-rating"><i class="bx bxs-star"></i> ' + Number(tour.rating || 0).toFixed(1) + ' <span>(' + Number(tour.review_count || 0) + ' đánh giá)</span></div><div class="tour-api-footer"><div>' + oldPrice + '<strong>' + formatTourCurrency(price) + '</strong><small>/ khách</small></div><a href="' + bookingUrl + '" class="btn-book-tour"><i class="bx bx-calendar-check"></i> Đặt tour</a></div></div></article>';
 }
 
 function sortTours(tours, sortValue) {

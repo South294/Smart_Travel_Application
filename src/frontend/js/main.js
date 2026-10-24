@@ -13,6 +13,17 @@ async function fetchApi(url, options = {}) {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[href*="checkout.html"]');
+    if (link) {
+      var href = link.getAttribute('href') || '';
+      if (href.indexOf('mode=combo') === -1) {
+        localStorage.removeItem('checkout_mode');
+        localStorage.removeItem('checkout_combo_items');
+      }
+    }
+  });
+
   initNavigation();
   initMobileMenu();
   await initAuthState();
@@ -139,7 +150,7 @@ var profile = await getStoredUserProfile();
     if (container.closest('.admin-page')) return;
     var links = '';
     if (showGuideDashboard) {
-      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HĐV Dashboard</a>';
+      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HDV Dashboard</a>';
     }
     links += '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
     container.innerHTML = links;
@@ -149,7 +160,7 @@ var profile = await getStoredUserProfile();
     if (container.closest('.admin-page')) return;
     var links = '';
     if (showGuideDashboard) {
-      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HĐV Dashboard</a>';
+      links += '<a href="guide-dashboard.html" class="btn btn-ghost">HDV Dashboard</a>';
     }
     links += '<a href="profile.html" class="user-avatar" title="Trang cá nhân">' + initials + '</a>';
     container.innerHTML = links;
@@ -247,24 +258,43 @@ async function renderMyBookings() {
     }
 
     if (!Array.isArray(bookings) || bookings.length === 0) {
-      listWrap.innerHTML = '<div class="text-muted text-sm">Chưa có chuyến đi nào.</div>';
+      listWrap.innerHTML = '<div class="empty-state p-6 text-center text-muted"><i class="bx bx-compass" style="font-size: 2.4rem; color: var(--primary-color);"></i><p class="mt-2 mb-0">Bạn chưa có chuyến đi nào được đặt. Hãy khám phá ngay các tour hấp dẫn!</p></div>';
       return;
     }
 
     listWrap.innerHTML = bookings.map(function(booking) {
       var statusText = mapBookingStatus(booking.status);
       var statusClass = mapBookingStatusClass(booking.status);
+      var bookingCode = booking.booking_code || ('ST-' + String(booking.id || '').slice(-8).toUpperCase());
+      var thumb = getBookingThumbnail(booking);
+      var cleanTitle = (booking.tour_title || 'Tour du lịch khám phá').replace(/\s*-\s*Tour\s*\d+N\d+Đ/i, '');
+
       return (
-        '<button type="button" class="trip-item trip-clickable flex items-center gap-4 pb-4 border-b" data-booking-id="' + escapeHtml(booking.id) + '">' +
-        '<div class="icon-circle icon-circle-primary"><i class="bx bx-map-pin"></i></div>' +
-        '<div class="flex-1">' +
-        '<h4 class="font-semibold">' + escapeHtml(booking.tour_title || 'Tour') + '</h4>' +
-        '<p class="text-muted text-sm">' + escapeHtml(booking.tour_location || '--') + ' · ' + escapeHtml(booking.travel_date || '--') + '</p>' +
-        '</div>' +
-        '<span class="badge ' + statusClass + '">' + statusText + '</span>' +
-        '</button>'
+        '<div class="my-trip-card" data-booking-id="' + escapeHtml(booking.id) + '">' +
+          '<div class="my-trip-media">' +
+            '<img src="' + escapeHtml(thumb) + '" alt="' + escapeHtml(booking.tour_title || 'Tour') + '" class="my-trip-img" onerror="this.onerror=null;this.src=\'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80\';">' +
+            '<span class="my-trip-code-tag">' + escapeHtml(bookingCode) + '</span>' +
+          '</div>' +
+          '<div class="my-trip-content">' +
+            '<div class="my-trip-top-row">' +
+              '<h4 class="my-trip-heading">' + escapeHtml(cleanTitle) + '</h4>' +
+              '<span class="badge ' + statusClass + '">' + statusText + '</span>' +
+            '</div>' +
+            '<div class="my-trip-info-grid">' +
+              '<div class="my-trip-info-cell"><i class="bx bx-map-pin text-primary"></i> <span>' + escapeHtml(booking.tour_location || 'Việt Nam') + '</span></div>' +
+              '<div class="my-trip-info-cell"><i class="bx bx-calendar text-primary"></i> <span>Ngày đi: <strong>' + escapeHtml(booking.travel_date || '--') + '</strong></span></div>' +
+              '<div class="my-trip-info-cell"><i class="bx bx-user-voice text-primary"></i> <span>HDV: <strong>' + escapeHtml(booking.guide_name || 'Vũ Văn Sơn (HDV SmartTravel)') + '</strong></span></div>' +
+              '<div class="my-trip-info-cell"><i class="bx bx-wallet text-primary"></i> <span>Tổng tiền: <strong class="text-primary">' + formatCurrency(booking.total_amount || 0) + '</strong></span></div>' +
+            '</div>' +
+            '<div class="my-trip-bottom-row">' +
+              '<span class="text-xs text-muted"><i class="bx bx-shield-quarter text-success"></i> Gói tour có HDV & Bảo hiểm</span>' +
+              '<button type="button" class="btn btn-outline btn-sm btn-trip-detail"><i class="bx bx-calendar-star"></i> Xem chi tiết lịch trình</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
       );
     }).join('');
+
     listWrap.querySelectorAll('[data-booking-id]').forEach(function(item) {
       item.addEventListener('click', function() {
         var booking = bookings.find(function(entry) { return entry.id === item.getAttribute('data-booking-id'); });
@@ -274,6 +304,33 @@ async function renderMyBookings() {
   } catch (e) {
     listWrap.innerHTML = '<div class="text-muted text-sm">Không thể tải danh sách chuyến đi.</div>';
   }
+}
+
+function getBookingThumbnail(booking) {
+  if (booking && booking.tour_image) return booking.tour_image;
+  var text = ((booking && booking.tour_location) || '') + ' ' + ((booking && booking.tour_title) || '');
+  var textLower = text.toLowerCase();
+  if (textLower.indexOf('phú quốc') !== -1) return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('sapa') !== -1 || textLower.indexOf('sa pa') !== -1 || textLower.indexOf('fansipan') !== -1) return 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('hà giang') !== -1) return 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('hạ long') !== -1) return 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('mộc châu') !== -1) return 'https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('tam đảo') !== -1) return 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('cát bà') !== -1) return 'https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('nha trang') !== -1 || textLower.indexOf('vĩnh hy') !== -1) return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80';
+  if (textLower.indexOf('hồ hoàn kiếm') !== -1 || textLower.indexOf('hà nội') !== -1) return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80';
+  return 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80';
+}
+
+function cleanItineraryText(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/Vinpearl Safari & Grand World Không Ngủ \d+N\d+Đ/g, 'Vinpearl Safari & Grand World')
+    .replace(/Phú Quốc Nghỉ Dưỡng Thượng Lưu\s*-\s*/g, '')
+    .replace(/Trekking Sapa\s*-\s*Chinh phục Fansipan \d+N\d+Đ/g, 'Sa Pa & Fansipan Legend')
+    .replace(/Hà Giang Loop\s*-\s*Cung đèo Hạnh Phúc \d+N\d+Đ/g, 'Đèo Mã Pí Lèng & Cao nguyên đá Hà Giang')
+    .replace(/Du thuyền Vịnh Hạ Long 5 Sao/g, 'Vịnh Hạ Long')
+    .replace(/Hồ Hoàn Kiếm\s*-\s*/g, 'Hà Nội');
 }
 
 function formatBookingDate(value) {
@@ -301,7 +358,7 @@ function openBookingDetail(booking) {
   var tripTypeTag = document.getElementById('bookingDetailTripTypeTag');
   if (tripTypeTag) {
     tripTypeTag.textContent = booking.trip_type === 'inter_provincial'
-      ? 'Chuyến đi trọn gói liên tuyến (Cả đi và đến kèm xe đưa đón)'
+      ? 'Chuyến đi trọn gói liên tuyến (Cả đi và đến kèm xe đưa đón du lịch)'
       : 'Chuyến đi khám phá tại điểm đến (Khám phá toàn diện địa phương)';
   }
 
@@ -316,26 +373,29 @@ function openBookingDetail(booking) {
     if (Array.isArray(itinerary) && itinerary.length > 0) {
       timelineContainer.innerHTML = itinerary.map(function(dayPlan) {
         var items = dayPlan.timeline || [];
-        var dayTitle = dayPlan.title ? '<div class="font-bold text-sm text-primary mb-2"><i class="bx bx-calendar-star"></i> ' + escapeHtml(dayPlan.title) + '</div>' : '';
+        var cleanDayTitle = cleanItineraryText(dayPlan.title || 'Lịch trình chi tiết');
+        var dayTitle = '<div class="booking-day-header"><i class="bx bx-calendar-star"></i> ' + escapeHtml(cleanDayTitle) + '</div>';
         var itemsHtml = items.map(function(item) {
           var typeIcon = item.type === 'dining' ? 'bx-restaurant' : (item.type === 'departure' || item.type === 'return' ? 'bx-car' : 'bx-map-pin');
-          var typeColor = item.type === 'dining' ? '#f59e0b' : (item.type === 'departure' || item.type === 'return' ? '#3b82f6' : '#10b981');
+          var badgeClass = item.type === 'dining' ? 'badge-dining' : (item.type === 'departure' ? 'badge-departure' : (item.type === 'return' ? 'badge-return' : 'badge-sightseeing'));
+          var activityClean = cleanItineraryText(item.activity || '');
+          var locationClean = cleanItineraryText(item.location || '');
           return (
-            '<div class="flex items-start gap-3 p-3" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">' +
-              '<div style="background: ' + typeColor + '15; color: ' + typeColor + '; border-radius: 6px; padding: 6px 10px; font-weight: 700; font-size: 12px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">' +
+            '<div class="timeline-step-card">' +
+              '<div class="timeline-step-badge ' + badgeClass + '">' +
                 '<i class="bx ' + typeIcon + '"></i> ' + escapeHtml(item.time || '--') +
               '</div>' +
-              '<div class="flex-1">' +
-                '<p class="text-sm mb-0 text-dark" style="line-height: 1.5;">' + escapeHtml(item.activity || '') + '</p>' +
-                (item.location ? '<span class="text-xs text-muted mt-1 block"><i class="bx bx-current-location"></i> ' + escapeHtml(item.location) + '</span>' : '') +
+              '<div class="timeline-step-body">' +
+                '<p class="timeline-step-text">' + escapeHtml(activityClean) + '</p>' +
+                (locationClean ? '<span class="timeline-step-loc"><i class="bx bx-current-location"></i> ' + escapeHtml(locationClean) + '</span>' : '') +
               '</div>' +
             '</div>'
           );
         }).join('');
-        return '<div>' + dayTitle + '<div class="flex flex-col gap-2">' + itemsHtml + '</div></div>';
+        return '<div class="booking-day-block">' + dayTitle + '<div class="timeline-step-list">' + itemsHtml + '</div></div>';
       }).join('');
     } else {
-      timelineContainer.innerHTML = '<div class="text-muted text-sm p-3 bg-light rounded">Lịch trình đang được hướng dẫn viên cập nhật chi tiết theo chuyến đi.</div>';
+      timelineContainer.innerHTML = '<div class="text-muted text-sm p-4 bg-light rounded text-center">Lịch trình chi tiết đang được hướng dẫn viên cập nhật theo thời gian thực của chuyến đi.</div>';
     }
   }
 
@@ -938,7 +998,8 @@ function initCheckoutPayment() {
 
     try {
       var params = new URLSearchParams(window.location.search);
-      var isComboMode = params.get('mode') === 'combo' || localStorage.getItem('checkout_mode') === 'combo';
+      var tourIdParam = params.get('tourId') || params.get('tour_id');
+      var isComboMode = params.get('mode') === 'combo' && !tourIdParam && !params.get('title');
       var res;
       var data;
 
@@ -961,6 +1022,8 @@ function initCheckoutPayment() {
         localStorage.removeItem('checkout_combo_items');
         localStorage.removeItem('checkout_mode');
       } else {
+        localStorage.removeItem('checkout_combo_items');
+        localStorage.removeItem('checkout_mode');
         var bookingPayload = buildBookingPayload();
         if (!bookingPayload) {
           btn.classList.remove('is-loading');
@@ -1757,12 +1820,164 @@ function formatCurrency(value) {
   return new Intl.NumberFormat('vi-VN').format(value) + '₫';
 }
 
+function renderCheckoutTimelinePreview(title, location) {
+  var container = document.getElementById('checkoutTimelineList');
+  if (!container) return;
+  var text = (title || '') + ' ' + (location || '');
+  var textLower = text.toLowerCase();
+  var dest = 'Điểm đến du lịch';
+  var origin = 'Hà Nội';
+  var spot1 = 'Danh thắng trung tâm';
+  var spot2 = 'Khu du lịch sinh thái';
+  var delicacy = 'Đặc sản ẩm thực truyền thống';
+  var dining = 'Nhà hàng ẩm thực bản địa';
+
+  if (textLower.indexOf('phú quốc') !== -1) {
+    dest = 'Phú Quốc';
+    origin = 'Sân bay / Bến tàu Phú Quốc';
+    spot1 = 'Grand World Phú Quốc & Bãi Dài';
+    spot2 = 'Vinpearl Safari & Rạn san hô Nam Đảo';
+    delicacy = 'Hải sản tươi sống, bún quậy Kiến Xây & gỏi cá trích';
+    dining = 'Nhà hàng ẩm thực biển Phú Quốc';
+  } else if (textLower.indexOf('sapa') !== -1 || textLower.indexOf('sa pa') !== -1 || textLower.indexOf('fansipan') !== -1) {
+    dest = 'Sa Pa';
+    origin = 'Hà Nội (hoặc điểm đón trung tâm Sa Pa)';
+    spot1 = 'Bản Cát Cát & Thung lũng Mường Hoa';
+    spot2 = 'Đỉnh Fansipan nóc nhà Đông Dương';
+    delicacy = 'Thắng cố, gà đen nướng mật ong & lẩu cá hồi Tây Bắc';
+    dining = 'Nhà hàng đặc sản Sa Pa mây ngàn';
+  } else if (textLower.indexOf('hà giang') !== -1) {
+    dest = 'Hà Giang';
+    origin = 'Hà Nội (hoặc Cột mốc số 0 Hà Giang)';
+    spot1 = 'Cổng trời Quản Bạ & Núi đôi Cô Tiên';
+    spot2 = 'Đèo Mã Pí Lèng & Du thuyền hẻm Tu Sản';
+    delicacy = 'Bánh tam giác mạch, thắng cố & cháo ấu tẩu';
+    dining = 'Nhà hàng đặc sản cao nguyên đá';
+  } else if (textLower.indexOf('hạ long') !== -1) {
+    dest = 'Hạ Long';
+    origin = 'Cảng tàu khách quốc tế Tuần Châu';
+    spot1 = 'Hang Sửng Sốt & Đảo Titop';
+    spot2 = 'Hang Luồn chèo thuyền Kayak ngắm vịnh';
+    delicacy = 'Chả mực Hạ Long giã tay, tôm hùm & tu hài nướng';
+    dining = 'Nhà hàng du thuyền 5 sao trên vịnh';
+  } else if (textLower.indexOf('mộc châu') !== -1) {
+    dest = 'Mộc Châu';
+    origin = 'Hà Nội';
+    spot1 = 'Đồi chè Trái Tim & Rừng thông Bản Áng';
+    spot2 = 'Thác Dải Yếm & Cầu kính Bạch Long';
+    delicacy = 'Bê chao Mộc Châu, cá suối chiên giòn & sữa tươi';
+    dining = 'Nhà hàng ẩm thực núi rừng Mộc Châu';
+  } else if (textLower.indexOf('tam đảo') !== -1) {
+    dest = 'Tam Đảo';
+    origin = 'Hà Nội';
+    spot1 = 'Quảng trường Tam Đảo & Nhà thờ đá cổ';
+    spot2 = 'Cầu Mây & Thác Bạc mờ sương';
+    delicacy = 'Ngọn su su xào tỏi, gà đồi nướng đất & lợn mán';
+    dining = 'Nhà hàng ẩm thực phố mây Tam Đảo';
+  } else if (textLower.indexOf('nha trang') !== -1 || textLower.indexOf('vĩnh hy') !== -1) {
+    dest = 'Nha Trang';
+    origin = 'Sân bay Cam Ranh / Cảng du lịch';
+    spot1 = 'Vịnh Vĩnh Hy & Hang Rái';
+    spot2 = 'Vườn nho Ninh Thuận & Đảo Hòn Tằm';
+    delicacy = 'Nem nướng Ninh Hòa, bún sứa & hải sản vịnh';
+    dining = 'Nhà hàng hải sản tươi sống';
+  } else if (textLower.indexOf('hồ hoàn kiếm') !== -1 || textLower.indexOf('hà nội') !== -1) {
+    dest = 'Hà Nội';
+    origin = 'Nhà hát Lớn Hà Nội / Phố Cổ';
+    spot1 = 'Hồ Hoàn Kiếm, Đền Ngọc Sơn & Tháp Rùa';
+    spot2 = 'Văn Miếu Quốc Tử Giám & Chùa Một Cột';
+    delicacy = 'Phở bò gia truyền, Bún chả & Cà phê trứng';
+    dining = 'Nhà hàng tinh hoa ẩm thực Tràng An';
+  } else if (location) {
+    dest = location;
+    origin = 'Điểm hẹn đón khách';
+    spot1 = 'Danh thắng trung tâm ' + location;
+    spot2 = 'Khu du lịch sinh thái & check-in ' + location;
+    delicacy = 'Món ngon đặc sản nổi tiếng ' + location;
+    dining = 'Nhà hàng đặc sản địa phương ' + location;
+  }
+
+  var timelineSteps = [
+    {
+      time: '07:30 - 08:30',
+      badgeClass: 'badge-departure',
+      icon: 'bx-car',
+      title: 'Khởi hành & Đón khách tại điểm hẹn',
+      sub: 'Tập trung tại ' + origin + ', HDV đón đoàn và phổ biến lưu ý hành trình.'
+    },
+    {
+      time: '09:30 - 10:30',
+      badgeClass: 'badge-transit',
+      icon: 'bx-compass',
+      title: 'Đến điểm tham quan mở đầu',
+      sub: 'Check-in và khám phá danh lam: ' + spot1 + '.'
+    },
+    {
+      time: '12:00 - 13:30',
+      badgeClass: 'badge-dining',
+      icon: 'bx-restaurant',
+      title: 'Dùng bữa trưa đặc sản vùng miền',
+      sub: 'Thưởng thức ẩm thực tại ' + dining + ' (' + delicacy + ').'
+    },
+    {
+      time: '14:00 - 17:00',
+      badgeClass: 'badge-sightseeing',
+      icon: 'bx-camera',
+      title: 'Khám phá danh lam thắng cảnh biểu tượng',
+      sub: 'Tham quan và trải nghiệm văn hóa tại: ' + spot2 + '.'
+    },
+    {
+      time: '17:30 - 19:00',
+      badgeClass: 'badge-sightseeing',
+      icon: 'bx-sun',
+      title: 'Thưởng ngoạn hoàng hôn & Mua sắm đặc sản',
+      sub: 'Ngắm cảnh chiều tà và tự do mua đặc sản chính gốc ' + dest + ' làm quà.'
+    },
+    {
+      time: '19:00 - 20:30',
+      badgeClass: 'badge-dining',
+      icon: 'bx-dish',
+      title: 'Bữa tối phong vị truyền thống',
+      sub: 'Thư giãn thưởng thức bữa tối trong không gian ấm cúng.'
+    },
+    {
+      time: '20:30 - 22:00',
+      badgeClass: 'badge-return',
+      icon: 'bx-check-circle',
+      title: 'Hoàn tất chặng trong ngày & Nghỉ ngơi',
+      sub: 'Xe và HDV đưa quý khách trở về khách sạn / điểm xuất phát ban đầu an toàn.'
+    }
+  ];
+
+  container.innerHTML = timelineSteps.map(function(step) {
+    return (
+      '<div class="checkout-timeline-item">' +
+        '<div class="checkout-timeline-badge ' + step.badgeClass + '">' +
+          '<i class="bx ' + step.icon + '"></i> ' + escapeHtml(step.time) +
+        '</div>' +
+        '<div class="checkout-timeline-body">' +
+          '<h5 class="checkout-timeline-title">' + escapeHtml(step.title) + '</h5>' +
+          '<p class="checkout-timeline-sub"><i class="bx bx-map-pin"></i> ' + escapeHtml(step.sub) + '</p>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+}
+
 function initCheckoutData() {
   var isCheckout = window.location.pathname.endsWith('checkout.html');
   if (!isCheckout) return;
 
   var params = new URLSearchParams(window.location.search);
-  var isComboMode = params.get('mode') === 'combo' || localStorage.getItem('checkout_mode') === 'combo';
+  var tourId = params.get('tourId') || params.get('tour_id');
+  var hasSingleTourParam = Boolean(tourId || params.get('title'));
+
+  if (hasSingleTourParam || params.get('mode') !== 'combo') {
+    localStorage.removeItem('checkout_mode');
+    localStorage.removeItem('checkout_combo_items');
+  }
+
+  var isComboMode = params.get('mode') === 'combo' && !hasSingleTourParam;
   var comboItems = [];
   if (isComboMode) {
     try {
@@ -1778,7 +1993,7 @@ function initCheckoutData() {
   var originalPrice = parseInt(params.get('original'));
   var duration = params.get('duration');
   var img = params.get('img');
-  var tourId = params.get('tourId');
+  var locationParam = params.get('location') || '';
 
   var titleEl = document.getElementById('checkoutTourTitle');
   var imgEl = document.getElementById('checkoutTourImg');
@@ -1803,7 +2018,26 @@ function initCheckoutData() {
   var comboList = document.getElementById('checkoutComboList');
   var comboBadge = document.getElementById('checkoutComboBadge');
 
-  if (!isComboMode && (!title || !price)) {
+  if (tourId && (!title || !price)) {
+    fetchApi('/api/tours/' + encodeURIComponent(tourId)).then(function(res) {
+      if (res.ok) return res.json();
+      return null;
+    }).then(function(tourData) {
+      if (!tourData) return;
+      title = tourData.title || title;
+      price = tourData.discount_price || tourData.price || price;
+      duration = (tourData.duration_days || 1) + 'N' + (tourData.duration_nights || 0) + 'Đ';
+      img = (tourData.images && tourData.images[0]) || img;
+      locationParam = tourData.location || locationParam;
+      if (titleEl) titleEl.textContent = title;
+      if (imgEl && img) imgEl.src = img;
+      if (durationEl && duration) durationEl.innerHTML = '<i class="bx bx-time"></i> ' + duration;
+      renderCheckoutTimelinePreview(title, locationParam);
+      updateCheckoutTotals();
+    }).catch(function() {});
+  }
+
+  if (!isComboMode && (!title || !price) && !tourId) {
     if (titleEl) titleEl.textContent = 'Vui lòng chọn tour từ trang Tour du lịch';
     return;
   }
@@ -1812,6 +2046,8 @@ function initCheckoutData() {
     if (payBtn) payBtn.disabled = true;
     return;
   }
+
+  renderCheckoutTimelinePreview(title, locationParam);
 
   var currentVoucher = null;
 
@@ -2248,7 +2484,7 @@ function renderTourCardHTML(tour, showReason) {
             oldPriceHTML +
             '<span class="tour-price-current">' + formatCurrency(priceVal) + '</span>' +
           '</div>' +
-          '<a href="checkout.html?tour_id=' + escapeHtml(tour.id) + '" class="btn-book-card"><i class="bx bx-calendar-check"></i> Đặt tour</a>' +
+          '<a href="checkout.html?tour_id=' + escapeHtml(tour.id) + '&title=' + encodeURIComponent(tour.title || '') + '&price=' + encodeURIComponent(priceVal) + '&duration=' + encodeURIComponent(durationText) + '&img=' + encodeURIComponent(img) + '&location=' + encodeURIComponent(tour.location || '') + '" class="btn-book-card"><i class="bx bx-calendar-check"></i> Đặt tour</a>' +
         '</div>' +
       '</div>' +
     '</div>'

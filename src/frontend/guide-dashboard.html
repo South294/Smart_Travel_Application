@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cổng làm việc riêng dành cho hướng dẫn viên SmartTravel.">
-    <title>Cổng hướng dẫn viên - SmartTravel</title>
+    <title>HDV Dashboard - SmartTravel</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/global.css">
@@ -24,10 +24,10 @@
             <nav class="nav-links guide-section-nav" id="guideSidebar" aria-label="Điều hướng hướng dẫn viên">
                 <button type="button" class="guide-side-link active" data-guide-view="guideMapView" data-guide-title="Bản đồ chuyến đi"><i class="bx bx-map-alt"></i> Bản đồ</button>
                 <button type="button" class="guide-side-link" data-guide-view="guideWorkView" data-guide-title="Thu nhập & công việc"><i class="bx bx-wallet"></i> Thu nhập & công việc</button>
-                <button type="button" class="guide-side-link" data-guide-view="guideProfileView" data-guide-title="Hồ sơ hướng dẫn viên"><i class="bx bx-user-circle"></i> Hồ sơ</button>
+                <button type="button" class="guide-side-link" data-guide-view="guideProfileView" data-guide-title="Hồ sơ HDV"><i class="bx bx-user-circle"></i> Hồ sơ HDV</button>
             </nav>
             <div class="nav-actions guide-user-actions">
-                <span class="guide-user-name" id="guideUserName">Hướng dẫn viên</span>
+                <span class="guide-user-name" id="guideUserName">HDV SmartTravel</span>
                 <div class="guide-user-avatar user-avatar" id="guideUserAvatar">HD</div>
                 <button type="button" class="btn btn-outline btn-sm guide-logout" id="guideLogoutBtn"><i class="bx bx-log-out"></i> Đăng xuất</button>
             </div>
@@ -39,7 +39,7 @@
             <div class="flex items-center gap-4">
                 <div>
                     <h1 class="guide-topbar-title" id="guideViewTitle">Bản đồ chuyến đi</h1>
-                    <p class="guide-topbar-subtitle">Không gian làm việc riêng của bạn</p>
+                    <p class="guide-topbar-subtitle">Không gian làm việc & điều phối tour chuyên nghiệp</p>
                 </div>
             </div>
             <a href="index.html" class="guide-return-link"><i class="bx bx-arrow-back"></i> Về trang khách hàng</a>
@@ -89,14 +89,14 @@
                 <div class="guide-profile-layout">
                     <div class="card guide-profile-card">
                         <div class="guide-profile-avatar" id="guideProfileAvatar">HD</div>
-                        <h2 id="guideProfileName">Hướng dẫn viên</h2>
+                        <h2 id="guideProfileName">HDV SmartTravel</h2>
                         <p id="guideProfileEmail">Đang tải email...</p>
                         <span class="badge badge-success">Hồ sơ đã duyệt</span>
                     </div>
                     <div class="card guide-panel">
-                        <div class="guide-panel-header"><h3>Thông tin hướng dẫn viên</h3><span class="badge badge-success">Đang hoạt động</span></div>
+                        <div class="guide-panel-header"><h3>Thông tin hồ sơ HDV</h3><span class="badge badge-success">Đang hoạt động</span></div>
                         <div class="guide-info-list">
-                            <div class="guide-info-item"><span>Họ và tên</span><strong id="guideInfoName">--</strong></div>
+                            <div class="guide-info-item"><span>Họ và tên HDV</span><strong id="guideInfoName">--</strong></div>
                             <div class="guide-info-item"><span>Email</span><strong id="guideInfoEmail">--</strong></div>
                             <div class="guide-info-item"><span>Kinh nghiệm</span><strong id="guideInfoExperience">--</strong></div>
                             <div class="guide-info-item"><span>Mức giá mỗi ngày</span><strong id="guideInfoPrice">--</strong></div>

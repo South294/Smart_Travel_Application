@@ -20,40 +20,48 @@ def build_trip_itinerary_and_route(tour: dict, guide_name: str) -> dict:
     loc_clean = location.strip().lower()
     title_clean = title.strip().lower()
 
-    origin = "Hà Nội"
-    destination = location
-    trip_type = "single_destination"
+    KNOWN_CITIES = {
+        "phú quốc": ("Phú Quốc", "TP. Hồ Chí Minh"),
+        "sa pa": ("Sa Pa", "Hà Nội"),
+        "sapa": ("Sa Pa", "Hà Nội"),
+        "hà giang": ("Hà Giang", "Hà Nội"),
+        "hạ long": ("Hạ Long", "Hà Nội"),
+        "nha trang": ("Nha Trang", "TP. Hồ Chí Minh"),
+        "đà lạt": ("Đà Lạt", "TP. Hồ Chí Minh"),
+        "mộc châu": ("Mộc Châu", "Hà Nội"),
+        "tam đảo": ("Tam Đảo", "Hà Nội"),
+        "ninh bình": ("Ninh Bình", "Hà Nội"),
+        "hà nội": ("Hà Nội", "Nhà hát Lớn Hà Nội"),
+        "hồ chí minh": ("TP. Hồ Chí Minh", "Chợ Bến Thành"),
+        "đà nẵng": ("Đà Nẵng", "Sân bay Đà Nẵng"),
+        "hội an": ("Hội An", "Đà Nẵng"),
+        "huế": ("Huế", "Đà Nẵng"),
+        "vũng tàu": ("Vũng Tàu", "TP. Hồ Chí Minh"),
+        "cần thơ": ("Cần Thơ", "TP. Hồ Chí Minh"),
+        "quy nhơn": ("Quy Nhơn", "TP. Hồ Chí Minh"),
+        "phú yên": ("Phú Yên", "TP. Hồ Chí Minh"),
+        "mũi né": ("Mũi Né", "TP. Hồ Chí Minh"),
+        "phan thiết": ("Phan Thiết", "TP. Hồ Chí Minh"),
+        "mai châu": ("Mai Châu", "Hà Nội"),
+        "cao bằng": ("Cao Bằng", "Hà Nội"),
+        "phú thọ": ("Phú Thọ", "Hà Nội"),
+        "quảng bình": ("Quảng Bình", "Hà Nội")
+    }
 
-    if " - " in title:
-        parts = title.split(" - ")
-        if len(parts) >= 2:
-            origin = parts[0].strip()
-            destination = parts[1].strip()
-            trip_type = "inter_provincial"
-    elif " – " in title:
-        parts = title.split(" – ")
-        if len(parts) >= 2:
-            origin = parts[0].strip()
-            destination = parts[1].strip()
-            trip_type = "inter_provincial"
-    elif " -> " in title:
-        parts = title.split(" -> ")
-        if len(parts) >= 2:
-            origin = parts[0].strip()
-            destination = parts[1].strip()
-            trip_type = "inter_provincial"
-    elif any(k in loc_clean for k in ["ninh bình", "sa pa", "sapa", "hạ long", "mộc châu", "hà giang", "mai châu", "tam đảo", "phú thọ", "cao bằng"]):
-        origin = "Hà Nội"
-        destination = location
-        trip_type = "inter_provincial"
-    elif any(k in loc_clean for k in ["vũng tàu", "mũi né", "phan thiết", "đà lạt", "bến tre", "cần thơ"]):
-        origin = "Hồ Chí Minh"
-        destination = location
-        trip_type = "inter_provincial"
-    elif any(k in loc_clean for k in ["hội an", "huế"]):
-        origin = "Đà Nẵng"
-        destination = location
-        trip_type = "inter_provincial"
+    matched_city = None
+    for k, v in KNOWN_CITIES.items():
+        if k in loc_clean or k in title_clean:
+            matched_city = v
+            break
+
+    if matched_city:
+        destination = matched_city[0]
+        origin = matched_city[1]
+        trip_type = "single_destination" if destination == "Hà Nội" or destination == "TP. Hồ Chí Minh" else "inter_provincial"
+    else:
+        destination = location if location else "Điểm đến trải nghiệm"
+        origin = "Điểm hẹn trung tâm"
+        trip_type = "single_destination"
 
     transportation = "Xe du lịch đời mới 16-29 chỗ trang bị máy lạnh, wifi, nước suối và khăn lạnh suốt hành trình"
     if any(k in loc_clean or k in title_clean for k in ["biển", "đảo", "vịnh", "phú quốc", "nha trang", "hạ long", "côn đảo"]):
@@ -75,38 +83,38 @@ def build_trip_itinerary_and_route(tour: dict, guide_name: str) -> dict:
             break
 
     spots = city_info.get("spots", []) if city_info else []
-    spot1 = spots[0] if len(spots) > 0 else f"Trung tâm danh thắng {destination}"
+    spot1 = spots[0] if len(spots) > 0 else f"Thắng cảnh nổi tiếng {destination}"
     spot2 = spots[1] if len(spots) > 1 else f"Khu du lịch sinh thái {destination}"
-    spot3 = spots[2] if len(spots) > 2 else f"Điểm ngắm cảnh và check-in {destination}"
+    spot3 = spots[2] if len(spots) > 2 else f"Điểm ngắm hoàng hôn và check-in {destination}"
 
     delicacies = food_info.get("delicacies", []) if food_info else []
-    delicacies_text = ", ".join(delicacies[:3]) if delicacies else f"Đặc sản phong vị địa phương {destination}"
+    delicacies_text = ", ".join(delicacies[:3]) if delicacies else f"Ẩm thực đặc sản {destination}"
 
     restaurants = food_info.get("famous_restaurants", []) if food_info else []
     res1 = restaurants[0] if len(restaurants) > 0 else f"Nhà hàng ẩm thực truyền thống {destination}"
-    res2 = restaurants[1] if len(restaurants) > 1 else f"Nhà hàng đặc sản bản địa {destination}"
+    res2 = restaurants[1] if len(restaurants) > 1 else f"Nhà hàng đặc sản địa phương {destination}"
 
     entertainment = food_info.get("entertainment_spots", []) if food_info else []
-    ent1 = entertainment[0] if len(entertainment) > 0 else f"Trải nghiệm văn hóa và cảnh quan tại {destination}"
+    ent1 = entertainment[0] if len(entertainment) > 0 else f"Trải nghiệm cảnh sắc và văn hóa {destination}"
 
     itinerary_details = []
     if trip_type == "inter_provincial":
         timeline_items = [
             {
                 "time": "07:30 - 08:30",
-                "activity": f"Tập trung và khởi hành từ {origin}. Xe du lịch tour cấp đón quý khách tại điểm hẹn. Hướng dẫn viên {guide_name} đón đoàn, phổ biến lịch trình và phát nước uống đóng chai.",
+                "activity": f"Tập trung và khởi hành từ {origin}. Xe du lịch cao cấp đón quý khách tại điểm hẹn. Hướng dẫn viên {guide_name} đón đoàn, phổ biến lịch trình và phát nước uống đóng chai.",
                 "type": "departure",
                 "location": origin
             },
             {
                 "time": "09:30 - 10:30",
-                "activity": f"Di chuyển trên cung đường kết nối {origin} - {destination}. Dừng chân tại trạm nghỉ ngơi giải lao, thưởng thức bữa sáng nhẹ hoặc đặc sản trên tuyến đường di chuyển.",
+                "activity": f"Di chuyển đến {destination}. Dừng chân tại trạm nghỉ ngơi giải lao, thưởng thức bữa sáng nhẹ và chiêm ngưỡng cảnh quan trên cung đường kết nối.",
                 "type": "transit",
-                "location": f"Tuyến đường {origin} - {destination}"
+                "location": f"Tuyến đường đến {destination}"
             },
             {
                 "time": "10:30 - 12:00",
-                "activity": f"Đến {destination}. Hướng dẫn viên {guide_name} dẫn đoàn tham quan danh thắng nổi tiếng: {spot1}. Check-in chụp ảnh và chiêm ngưỡng cảnh quan thiên nhiên.",
+                "activity": f"Đến {destination}. Hướng dẫn viên {guide_name} đưa đoàn tham quan danh thắng biểu tượng: {spot1}. Check-in chụp ảnh và tìm hiểu nét đẹp văn hóa.",
                 "type": "sightseeing",
                 "location": spot1
             },
@@ -124,26 +132,26 @@ def build_trip_itinerary_and_route(tour: dict, guide_name: str) -> dict:
             },
             {
                 "time": "17:30 - 19:00",
-                "activity": f"Ghé thăm {spot3}, tận hưởng không khí trong lành, ngắm hoàng hôn và mua sắm đặc sản làm quà cho người thân.",
+                "activity": f"Ghé thăm {spot3}, tận hưởng không khí trong lành, ngắm hoàng hôn và mua sắm đặc sản chính gốc làm quà cho người thân.",
                 "type": "sightseeing",
                 "location": spot3
             },
             {
                 "time": "19:00 - 20:30",
-                "activity": f"Thưởng thức bữa tối ngon miệng tại {res2} với các món ẩm thực địa phương hấp dẫn.",
+                "activity": f"Thưởng thức bữa tối ngon miệng tại {res2} với các món ẩm thực địa phương đặc sắc trong không gian thư giãn.",
                 "type": "dining",
                 "location": res2
             },
             {
                 "time": "20:30 - 22:00",
-                "activity": f"Xe ô tô du lịch và HDV {guide_name} đưa quý khách trở về điểm đón ban đầu tại {origin} (hoặc trả về khách sạn đối với tour nhiều ngày). Kết thúc chuyến đi trọn vẹn và an toàn.",
+                "activity": f"Xe du lịch và HDV {guide_name} đưa quý khách trở về khách sạn nghỉ ngơi hoặc trả về điểm đón ban đầu. Kết thúc lịch trình an toàn và trọn vẹn.",
                 "type": "return",
                 "location": origin
             }
         ]
         itinerary_details.append({
             "day": 1,
-            "title": f"Hành trình trọn gói {origin} đến {destination}",
+            "title": f"Hành trình trọn gói khám phá {destination}",
             "timeline": timeline_items
         })
         route_map_url = build_google_maps_route_url(origin=origin, destination=destination, waypoints=[spot1, res1, spot2])
@@ -151,13 +159,13 @@ def build_trip_itinerary_and_route(tour: dict, guide_name: str) -> dict:
         timeline_items = [
             {
                 "time": "08:00 - 08:30",
-                "activity": f"Hướng dẫn viên {guide_name} và phương tiện tour cấp đón quý khách tại khách sạn / điểm hẹn trung tâm {destination}. Phổ biến lịch trình và kiểm tra trang thiết bị.",
+                "activity": f"Hướng dẫn viên {guide_name} và xe du lịch đón quý khách tại điểm hẹn trung tâm {destination}. Phổ biến lịch trình và bắt đầu hành trình.",
                 "type": "departure",
                 "location": destination
             },
             {
                 "time": "09:00 - 11:30",
-                "activity": f"Khám phá danh lam thắng cảnh biểu tượng: {spot1}. Thưởng ngoạn cảnh sắc, chụp ảnh check-in và nghe thuyết minh về lịch sử, văn hóa.",
+                "activity": f"Khám phá danh thắng nổi tiếng: {spot1}. Thưởng ngoạn cảnh sắc tuyệt đẹp, chụp ảnh check-in và nghe thuyết minh văn hóa.",
                 "type": "sightseeing",
                 "location": spot1
             },
@@ -169,7 +177,7 @@ def build_trip_itinerary_and_route(tour: dict, guide_name: str) -> dict:
             },
             {
                 "time": "13:30 - 16:30",
-                "activity": f"Di chuyển đến {spot2}. Trải nghiệm hoạt động: {ent1}. Tìm hiểu đời sống văn hóa đặc sắc cùng hướng dẫn viên.",
+                "activity": f"Di chuyển đến {spot2}. Trải nghiệm hoạt động: {ent1}. Khám phá không gian sinh thái và đời sống văn hóa đặc sắc.",
                 "type": "sightseeing",
                 "location": spot2
             },
@@ -181,13 +189,13 @@ def build_trip_itinerary_and_route(tour: dict, guide_name: str) -> dict:
             },
             {
                 "time": "18:30 - 20:00",
-                "activity": f"Thưởng thức bữa tối ẩm thực đặc sắc tại {res2} với không gian ấm cúng, thư giãn.",
+                "activity": f"Thưởng thức bữa tối ẩm thực đặc sắc tại {res2} với không gian ấm cúng, thư thái.",
                 "type": "dining",
                 "location": res2
             },
             {
                 "time": "20:00 - 20:30",
-                "activity": f"Xe và HDV {guide_name} đưa quý khách về lại điểm đón / khách sạn. Hỗ trợ khách chu đáo và kết thúc hành trình trong ngày.",
+                "activity": f"Xe và HDV {guide_name} đưa quý khách về lại điểm đón / khách sạn. Kết thúc hành trình trọn vẹn trong ngày.",
                 "type": "return",
                 "location": destination
             }

@@ -67,62 +67,286 @@
   margin-top: 0;
 }
 
-.trip-item {
-  transition: var(--transition);
-  padding: 12px 0;
+.my-trip-card {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 12px);
+  padding: 14px;
+  margin-bottom: 16px;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.trip-item:hover {
-  padding-left: 8px;
+.my-trip-card:hover {
+  border-color: #0aa982;
+  box-shadow: 0 6px 16px rgba(10, 169, 130, 0.12);
+  transform: translateY(-2px);
 }
 
-.trip-clickable {
-  cursor: pointer;
+.my-trip-media {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f1f5f9;
 }
 
-.trip-clickable:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-  border-radius: var(--radius-md);
+.my-trip-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.trip-info-icon {
-  font-size: 1.2rem;
-  color: var(--primary-color);
+.my-trip-card:hover .my-trip-img {
+  transform: scale(1.05);
+}
+
+.my-trip-code-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.my-trip-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.my-trip-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.my-trip-heading {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.my-trip-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.my-trip-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #475569;
+}
+
+.my-trip-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.btn-trip-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.84rem;
+  border-radius: 8px;
+  padding: 6px 14px;
 }
 
 .trip-modal-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
 }
 
 .trip-modal-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(10, 169, 130, 0.06);
-  border: 1px solid rgba(10, 169, 130, 0.16);
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md, 8px);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
 }
 
 .trip-modal-item i {
   color: var(--primary-color);
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
-.booking-detail-modal { padding: 24px; }
-.booking-code-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border: 1px dashed var(--primary-color); border-radius: var(--radius-md); background: rgba(10, 169, 130, .07); }
-.booking-code-box span { color: var(--text-muted); font-size: .85rem; }
-.booking-code-box strong { color: var(--primary-color); font-size: 1.15rem; letter-spacing: .08em; }
-.booking-detail-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.booking-detail-modal {
+  padding: 28px;
+}
 
-@media (max-width: 600px) {
-  .booking-detail-modal { padding: 18px; }
-  .booking-code-box { align-items: flex-start; flex-direction: column; gap: 5px; }
-  .booking-detail-actions { flex-direction: column; }
-  .booking-detail-actions .btn { justify-content: center; width: 100%; }
+.booking-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px dashed var(--primary-color);
+  border-radius: var(--radius-md, 10px);
+  background: rgba(10, 169, 130, 0.06);
+}
+
+.booking-code-box span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.booking-code-box strong {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+}
+
+.booking-day-block {
+  margin-bottom: 16px;
+}
+
+.booking-day-header {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timeline-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeline-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md, 8px);
+  transition: all 0.2s ease;
+}
+
+.timeline-step-card:hover {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.timeline-step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.timeline-step-badge.badge-departure {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.timeline-step-badge.badge-transit {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.timeline-step-badge.badge-sightseeing {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.timeline-step-badge.badge-dining {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.timeline-step-badge.badge-return {
+  background: rgba(139, 92, 246, 0.12);
+  color: #7c3aed;
+}
+
+.timeline-step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeline-step-text {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.timeline-step-loc {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.booking-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .my-trip-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .my-trip-media {
+    height: 160px;
+  }
+  .booking-detail-modal {
+    padding: 18px;
+  }
+  .booking-code-box {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .my-trip-bottom-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .btn-trip-detail {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .voucher-list {
