@@ -70,6 +70,20 @@ services:
     networks:
       - smart-travel-net
 
+  envoy:
+    image: envoyproxy/envoy:v1.30-latest
+    container_name: smart-travel-envoy
+    restart: unless-stopped
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - smart-travel-net
+
   seed:
     build:
       context: ./src/backend

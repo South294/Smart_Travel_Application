@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.db.mongodb import get_db
+from app.core.security import hash_password, verify_password
 from app.routers.deps import get_current_user
 from app.routers.helpers import serialize_user, validate_object_id
+from app.schemas.auth import ChangePasswordRequest
 from app.schemas.user import UserUpdate, UserPreferencesUpdate, UserSettingsUpdate, UserCCCDVerificationRequest, UserCCCDVerificationResponse
 from datetime import datetime
 
@@ -42,10 +44,31 @@ async def update_user_settings(data: UserSettingsUpdate, current_user: dict = De
     )
     return {"message": "Cập nhật cài đặt thành công"}
 
+@router.post("/me/change-password")
+async def change_user_password(data: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
+    db = get_db()
+    user_oid = validate_object_id(current_user["id"])
+    user = await db.users.find_one({"_id": user_oid})
+    if not user:
+        raise HTTPException(status_code=404, detail="Người dùng không tồn tại")
+    if not verify_password(data.old_password, user["password_hash"]):
+        raise HTTPException(status_code=400, detail="Mật khẩu hiện tại không chính xác")
+    await db.users.update_one(
+        {"_id": user_oid},
+        {"$set": {"password_hash": hash_password(data.new_password)}}
+    )
+    return {"message": "Đổi mật khẩu thành công"}
+
 @router.post("/me/cccd-verify", response_model=UserCCCDVerificationResponse)
 async def verify_user_cccd(data: UserCCCDVerificationRequest, current_user: dict = Depends(get_current_user)):
     if not data.cccd_number.isdigit() or len(data.cccd_number) != 12:
         raise HTTPException(status_code=400, detail="Số CCCD phải gồm đúng 12 chữ số")
+    valid_prefixes = ("data:image/jpeg;base64,", "data:image/png;base64,", "data:image/webp;base64,", "data:image/jpg;base64,", "http://", "https://")
+    for img_field, img_val in (("Mặt trước", data.id_front_url), ("Mặt sau", data.id_back_url), ("Chân dung", data.portrait_url)):
+        if len(img_val) > 7000000:
+            raise HTTPException(status_code=400, detail=f"Ảnh {img_field} vượt quá dung lượng tối đa cho phép (5MB)")
+        if not any(img_val.startswith(p) for p in valid_prefixes):
+            raise HTTPException(status_code=400, detail=f"Định dạng ảnh {img_field} không hợp lệ")
     now = datetime.utcnow().isoformat()
     cccd_info = {
         "number": data.cccd_number,

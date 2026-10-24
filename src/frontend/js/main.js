@@ -1,9 +1,50 @@
+function getDeviceFingerprint() {
+    var stored = sessionStorage.getItem('smart_travel_device_fingerprint');
+    if (stored) return stored;
+    var canvasData = '';
+    try {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(100, 1, 50, 20);
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillText('SmartTravel2026', 2, 12);
+            canvasData = canvas.toDataURL();
+        }
+    } catch (e) {
+        canvasData = 'canvas_na';
+    }
+    var rawStr = [
+        navigator.userAgent || '',
+        navigator.language || '',
+        screen.colorDepth || '',
+        (screen.width || '') + 'x' + (screen.height || ''),
+        new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency || '',
+        canvasData.slice(-80)
+    ].join('||');
+    var hash = 0;
+    for (var i = 0; i < rawStr.length; i++) {
+        var charCode = rawStr.charCodeAt(i);
+        hash = ((hash << 5) - hash) + charCode;
+        hash = hash & hash;
+    }
+    var fp = 'dev_' + Math.abs(hash).toString(16) + '_' + (navigator.hardwareConcurrency || 4);
+    sessionStorage.setItem('smart_travel_device_fingerprint', fp);
+    return fp;
+}
+
 async function fetchApi(url, options = {}) {
     const token = localStorage.getItem('access_token');
+    const deviceFp = getDeviceFingerprint();
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (token) headers['Authorization'] = 'Bearer ' + token;
-  const apiBase = window.SMART_TRAVEL_API_URL || 'http://localhost:8000';
-  const res = await fetch(apiBase + url, { ...options, headers });
+    if (deviceFp) headers['X-Device-Fingerprint'] = deviceFp;
+    const apiBase = window.SMART_TRAVEL_API_URL || 'http://localhost:8000';
+    const res = await fetch(apiBase + url, { ...options, headers });
     if (res.status === 401) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('isLoggedIn');
@@ -1359,11 +1400,14 @@ function initProfileSave() {
   var changePasswordBtn = document.getElementById('btn-change-password');
   if (changePasswordBtn) {
     changePasswordBtn.addEventListener('click', async function() {
+      var oldPass = document.getElementById('profile-old-password') ? document.getElementById('profile-old-password').value : '';
       var newPass = document.getElementById('profile-new-password') ? document.getElementById('profile-new-password').value : '';
       var confirmPass = document.getElementById('profile-confirm-password') ? document.getElementById('profile-confirm-password').value : '';
-      var emailInput = document.querySelector('.profile-input-email');
-      var email = emailInput ? emailInput.value.trim() : '';
 
+      if (!oldPass) {
+        showToast('Vui lòng nhập mật khẩu hiện tại', 'error');
+        return;
+      }
       if (!newPass || newPass.length < 6) {
         showToast('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
         return;
@@ -1372,22 +1416,19 @@ function initProfileSave() {
         showToast('Mật khẩu xác nhận không trùng khớp', 'error');
         return;
       }
-      if (!email) {
-        showToast('Không tìm thấy thông tin email tài khoản', 'error');
-        return;
-      }
 
       changePasswordBtn.disabled = true;
       changePasswordBtn.classList.add('is-loading');
 
       try {
-        var res = await fetchApi('/api/auth/reset-password', {
+        var res = await fetchApi('/api/users/me/change-password', {
           method: 'POST',
-          body: JSON.stringify({ email: email, new_password: newPass })
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass })
         });
         var data = await res.json();
         if (res.ok) {
           showToast(data.message || 'Đổi mật khẩu thành công!', 'success');
+          if (document.getElementById('profile-old-password')) document.getElementById('profile-old-password').value = '';
           if (document.getElementById('profile-new-password')) document.getElementById('profile-new-password').value = '';
           if (document.getElementById('profile-confirm-password')) document.getElementById('profile-confirm-password').value = '';
         } else {

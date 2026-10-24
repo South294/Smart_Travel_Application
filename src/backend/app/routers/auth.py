@@ -1,8 +1,9 @@
+import secrets
+from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException
 from app.db.mongodb import get_db
 from app.core.security import hash_password, verify_password, create_access_token
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, ResetPasswordRequest
-from datetime import datetime
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, ResetPasswordRequest, ForgotPasswordRequest
 
 router = APIRouter()
 
@@ -60,6 +61,26 @@ async def login(data: LoginRequest):
         }
     }
 
+@router.post("/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest):
+    db = get_db()
+    user = await db.users.find_one({"email": data.email})
+    if not user:
+        raise HTTPException(status_code=404, detail="Email không tồn tại trong hệ thống")
+    if user.get("is_active") is False:
+        raise HTTPException(status_code=403, detail="Tài khoản đã bị khóa")
+    otp_code = str(secrets.randbelow(900000) + 100000)
+    expires_at = (datetime.utcnow() + timedelta(minutes=10)).isoformat()
+    hashed_otp = hash_password(otp_code)
+    await db.users.update_one(
+        {"_id": user["_id"]},
+        {"$set": {"reset_otp": hashed_otp, "reset_otp_expires_at": expires_at}}
+    )
+    return {
+        "message": "Mã xác thực OTP đã được gửi và có hiệu lực trong 10 phút.",
+        "otp_demo": otp_code
+    }
+
 @router.post("/reset-password")
 async def reset_password(data: ResetPasswordRequest):
     db = get_db()
@@ -68,8 +89,19 @@ async def reset_password(data: ResetPasswordRequest):
         raise HTTPException(status_code=404, detail="Email không tồn tại trong hệ thống")
     if user.get("is_active") is False:
         raise HTTPException(status_code=403, detail="Tài khoản đã bị khóa")
+    stored_otp = user.get("reset_otp")
+    expires_at_str = user.get("reset_otp_expires_at")
+    if not stored_otp or not expires_at_str:
+        raise HTTPException(status_code=400, detail="Yêu cầu đặt lại mật khẩu chưa được khởi tạo hoặc mã OTP đã bị vô hiệu")
+    if datetime.fromisoformat(expires_at_str) < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Mã OTP đã hết hạn. Vui lòng yêu cầu mã xác thực mới.")
+    if not verify_password(data.otp, stored_otp):
+        raise HTTPException(status_code=400, detail="Mã xác thực OTP không chính xác")
     await db.users.update_one(
         {"_id": user["_id"]},
-        {"$set": {"password_hash": hash_password(data.new_password)}}
+        {
+            "$set": {"password_hash": hash_password(data.new_password)},
+            "$unset": {"reset_otp": "", "reset_otp_expires_at": ""}
+        }
     )
     return {"message": "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay bây giờ."}
