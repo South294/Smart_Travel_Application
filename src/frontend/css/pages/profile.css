@@ -200,6 +200,12 @@
 
 .booking-detail-modal {
   padding: 28px;
+  width: 95% !important;
+  max-width: 980px !important;
+}
+
+.booking-detail-modal > * {
+  flex-shrink: 0;
 }
 
 .booking-code-box {

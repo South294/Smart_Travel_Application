@@ -237,7 +237,7 @@
                 </div>
 
                 <div class="modal-overlay" id="bookingDetailModal">
-                    <div class="modal-content modal-lg booking-detail-modal" style="max-width: 820px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-content modal-lg booking-detail-modal" style="max-width: 980px; width: 95%; max-height: 90vh; overflow-y: auto;">
                         <div class="flex justify-between items-start gap-4 mb-4 pb-3 border-b">
                             <div>
                                 <span class="badge badge-primary mb-1"><i class="bx bx-calendar-check"></i> Chi tiết & Lịch trình chuyến đi</span>
@@ -262,26 +262,34 @@
                             <div class="trip-modal-item"><i class="bx bx-wallet"></i><span>Tổng thanh toán: <b id="bookingDetailTotal">--</b></span></div>
                         </div>
 
-                        <div class="card p-4 mt-4" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-bold text-success flex items-center gap-2 mb-0">
-                                    <i class="bx bx-user-voice" style="font-size: 20px;"></i> Hướng dẫn viên đồng hành trong gói
-                                </h4>
-                                <span class="badge badge-success"><i class="bx bx-check-shield"></i> Đã bao gồm 1 HDV</span>
+                        <div class="grid params-grid mt-4" style="gap: 16px;">
+                            <div class="card p-4" style="background: #f0fdf4; border: 1px solid #bbf7d0; margin-top: 0;">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-success flex items-center gap-2 mb-0">
+                                        <i class="bx bx-user-voice" style="font-size: 20px;"></i> Hướng dẫn viên đồng hành
+                                    </h4>
+                                    <span class="badge badge-success"><i class="bx bx-check-shield"></i> Trong gói</span>
+                                </div>
+                                <div class="flex flex-col gap-2 mt-2 text-sm">
+                                    <div>Họ và tên: <strong id="bookingDetailGuideName">Vũ Văn Sơn</strong></div>
+                                    <div>Kinh nghiệm: <span id="bookingDetailGuideExp" class="text-muted">5 năm kinh nghiệm</span></div>
+                                    <div>Hotline hỗ trợ: <strong id="bookingDetailGuidePhone" class="text-primary">0912 345 678</strong></div>
+                                    <div>Trách nhiệm: <span class="text-muted">Đón trả, thuyết minh văn hóa & đồng hành</span></div>
+                                </div>
                             </div>
-                            <div class="grid params-grid mt-2 text-sm" style="gap: 8px;">
-                                <div>Họ và tên: <strong id="bookingDetailGuideName">Vũ Văn Sơn</strong></div>
-                                <div>Kinh nghiệm: <span id="bookingDetailGuideExp" class="text-muted">5 năm kinh nghiệm</span></div>
-                                <div>Hotline hỗ trợ đoàn: <strong id="bookingDetailGuidePhone" class="text-primary">0912 345 678</strong></div>
-                                <div>Trách nhiệm: <span class="text-muted">Đón trả, thuyết minh văn hóa và đồng hành suốt chuyến</span></div>
-                            </div>
-                        </div>
 
-                        <div class="card p-4 mt-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                            <h4 class="font-bold flex items-center gap-2 mb-2 text-dark">
-                                <i class="bx bx-car text-primary" style="font-size: 20px;"></i> Phương tiện du lịch tour cấp
-                            </h4>
-                            <p class="text-sm mb-0 text-dark" id="bookingDetailTransportation">Xe ô tô du lịch chất lượng cao đời mới phục vụ suốt tuyến, đón trả tận nơi.</p>
+                            <div class="card p-4" style="background: #f8fafc; border: 1px solid #e2e8f0; margin-top: 0;">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold flex items-center gap-2 mb-0 text-dark">
+                                        <i class="bx bx-car text-primary" style="font-size: 20px;"></i> Phương tiện du lịch tour cấp
+                                    </h4>
+                                    <span class="badge badge-info"><i class="bx bx-check"></i> Đưa đón</span>
+                                </div>
+                                <p class="text-sm mb-3 text-dark" id="bookingDetailTransportation">Xe ô tô du lịch chất lượng cao đời mới phục vụ suốt tuyến, đón trả tận nơi.</p>
+                                <div class="text-xs text-muted flex items-center gap-1">
+                                    <i class="bx bx-shield-quarter text-success"></i> Đảm bảo an toàn, điều hòa suốt hành trình
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-4">
