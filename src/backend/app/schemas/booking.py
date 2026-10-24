@@ -12,6 +12,8 @@ class BookingBase(BaseModel):
     coupon_code: Optional[str] = None
     payment_method: str = Field(min_length=1)
     contact_phone: str = Field(min_length=1)
+    contact_name: Optional[str] = None
+    contact_email: Optional[str] = None
     note: Optional[str] = None
     guide_id: Optional[str] = None
     guide_note: Optional[str] = None
@@ -27,6 +29,8 @@ class BookingResponse(BookingBase):
     payment_status: str = "unpaid"
     created_at: str
     booking_code: Optional[str] = None
+    contract_code: Optional[str] = None
+    contract_sent: bool = False
     paid_at: Optional[str] = None
     is_free: bool = False
     tour_title: Optional[str] = None

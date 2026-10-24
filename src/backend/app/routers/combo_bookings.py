@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.db.mongodb import get_db
 from app.routers.deps import get_current_user
 from app.routers.helpers import validate_object_id
+from app.services.itinerary_service import build_tour_itinerary
 from app.schemas.combo import ComboBookingCreate, ComboBookingResponse
 
 router = APIRouter()
@@ -61,6 +62,20 @@ async def create_combo_booking(payload: ComboBookingCreate, current_user: dict =
 
     total_amount = max(0, total_amount)
     now = datetime.utcnow().isoformat()
+
+    locations = [item["location"] for item in combo_items if item.get("location")]
+    titles = [item["title"] for item in combo_items if item.get("title")]
+    combo_title = " - ".join(titles) if titles else "Combo du lịch"
+    duration_days = max(1, len(combo_items))
+    itinerary_data = await build_tour_itinerary(
+        tour_title=combo_title,
+        locations=locations,
+        duration_days=duration_days,
+        guide_name="Vũ Văn Sơn (HDV SmartTravel)",
+        is_combo=True
+    )
+    sorted_destinations = itinerary_data.get("sorted_destinations", locations)
+
     booking = {
         "user_id": current_user["id"],
         "tour_id": combo_items[0]["tour_id"],
@@ -83,6 +98,15 @@ async def create_combo_booking(payload: ComboBookingCreate, current_user: dict =
         "booking_code": f"ST-C{secrets.token_hex(4).upper()}",
         "is_combo": True,
         "is_free": total_amount == 0,
+        "tour_title": f"Combo Du Lịch ({len(combo_items)} Điểm Đến)",
+        "tour_location": " - ".join(sorted_destinations if isinstance(sorted_destinations, list) else locations),
+        "guide_name": "Vũ Văn Sơn (HDV SmartTravel)",
+        "guide_phone": "0912 345 678",
+        "guide_experience": "5 năm kinh nghiệm dẫn đoàn",
+        "transportation": itinerary_data["transportation"],
+        "trip_type": "inter_provincial",
+        "itinerary_details": itinerary_data["itinerary_details"],
+        "route_map_url": itinerary_data["route_map_url"],
     }
     result = await db.bookings.insert_one(booking)
     return {"id": str(result.inserted_id), **{key: booking[key] for key in ["booking_code", "tour_ids", "combo_items", "adults", "children", "total_amount", "payment_status", "status", "payment_method", "created_at"]}, "items": combo_items}

@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import hmac
 from datetime import datetime
@@ -11,6 +12,7 @@ from app.db.mongodb import get_db
 from app.routers.deps import get_current_user
 from app.routers.helpers import validate_object_id
 from app.schemas.payment import PaymentCreateRequest, PaymentCreateResponse
+from app.services.email_service import send_contract_email
 
 router = APIRouter()
 
@@ -104,6 +106,10 @@ async def confirm_qr_payment(
         {"_id": booking_oid},
         {"$set": {"payment_status": "paid", "status": "confirmed", "payment_provider": "qr_demo", "paid_at": paid_at}},
     )
+    booking["payment_status"] = "paid"
+    booking["status"] = "confirmed"
+    booking["paid_at"] = paid_at
+    asyncio.create_task(send_contract_email(booking, user_dict=current_user))
     return {"message": "Thanh toán QR demo thành công", "booking_id": payload.booking_id, "paid_at": paid_at}
 
 
@@ -128,15 +134,21 @@ async def vnpay_return(request: Request):
         )
 
     paid = response_code == "00"
+    paid_at = datetime.utcnow().isoformat() if paid else None
     await db.bookings.update_one(
         {"_id": booking["_id"]},
         {"$set": {
             "payment_status": "paid" if paid else "failed",
             "status": "confirmed" if paid else "pending",
             "payment_response_code": response_code,
-            "paid_at": datetime.utcnow().isoformat() if paid else None,
+            "paid_at": paid_at,
         }},
     )
+    if paid:
+        booking["payment_status"] = "paid"
+        booking["status"] = "confirmed"
+        booking["paid_at"] = paid_at
+        asyncio.create_task(send_contract_email(booking))
     result = "success" if paid else "failed"
     return RedirectResponse(
         f"{settings.PAYMENT_FRONTEND_URL}?payment={result}&booking_id={booking['_id']}"

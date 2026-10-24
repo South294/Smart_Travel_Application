@@ -1306,7 +1306,7 @@ function addPlaceRow(place, distanceText, stageTag, isNear) {
     var nearClass = isNear ? ' is-active' : '';
 
     var html = '<button class="place-row' + nearClass + '" data-place-id="' + place.id + '">' +
-        '<img src="' + place.image + '" alt="' + place.name + '" class="place-row-thumb" loading="lazy">' +
+        '<img src="' + place.image + '" alt="' + place.name + '" class="place-row-thumb" loading="lazy" onerror="this.onerror=null;this.src=\'images/hoan_kiem_lake.png\';">' +
         '<div class="place-row-body">' +
         '<div class="place-row-meta">' +
         '<span class="place-tag ' + catClass + '">' + catLabel + '</span>' +
@@ -1413,7 +1413,7 @@ function selectPlace(place) {
     var catLabel = CATEGORY_LABELS[place.category] || place.category;
 
     detail.innerHTML = '<div class="detail-cover">' +
-        '<img src="' + place.image + '" alt="' + place.name + '">' +
+        '<img src="' + place.image + '" alt="' + place.name + '" onerror="this.onerror=null;this.src=\'images/hoan_kiem_lake.png\';">' +
         '<span class="detail-badge">' + catLabel + '</span>' +
         '</div>' +
         '<div class="detail-body">' +

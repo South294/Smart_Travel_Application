@@ -140,7 +140,7 @@ async def seed_database():
             "discount_price": 2800000,
             "rating": 4.8,
             "review_count": 980,
-            "images": ["https://images.unsplash.com/photo-1622300025619-a1b7e4522944?auto=format&fit=crop&w=960&q=80"],
+            "images": ["https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=960&q=80"],
             "tags": ["hot", "best-seller", "mountain", "mộc châu", "sơn la"],
             "is_active": True,
             "lat": 20.8320,
@@ -235,7 +235,7 @@ async def seed_database():
             "discount_price": 1150000,
             "rating": 4.8,
             "review_count": 1850,
-            "images": ["https://images.unsplash.com/photo-1557750255-c76072a7aaeb?auto=format&fit=crop&w=960&q=80"],
+            "images": ["https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=960&q=80"],
             "tags": ["cultural", "sight", "hot", "hội an", "quảng nam"],
             "is_active": True,
             "lat": 15.8801,
@@ -463,7 +463,7 @@ async def seed_database():
             "discount_price": 2750000,
             "rating": 4.8,
             "review_count": 640,
-            "images": ["https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=960&q=80"],
+            "images": ["https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=960&q=80"],
             "tags": ["mountain", "eco", "hot", "măng đen", "kon tum"],
             "is_active": True,
             "lat": 14.6067,
@@ -853,6 +853,59 @@ async def seed_database():
         }
     ]
 
+    DESTINATION_IMAGES = {
+        "hà nội": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=960&q=80",
+        "hạ long": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=960&q=80",
+        "quảng ninh": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=960&q=80",
+        "sapa": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=960&q=80",
+        "sa pa": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=960&q=80",
+        "lào cai": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=960&q=80",
+        "fansipan": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=960&q=80",
+        "ninh bình": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "tràng an": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "hà giang": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "đồng văn": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "mộc châu": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=960&q=80",
+        "sơn la": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=960&q=80",
+        "tam đảo": "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=960&q=80",
+        "vĩnh phúc": "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=960&q=80",
+        "cát bà": "https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=960&q=80",
+        "hải phòng": "https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=960&q=80",
+        "phú quốc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "kiên giang": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "đà nẵng": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=960&q=80",
+        "hội an": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=960&q=80",
+        "quảng nam": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=960&q=80",
+        "huế": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=960&q=80",
+        "nha trang": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "khánh hòa": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "đà lạt": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=960&q=80",
+        "lâm đồng": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=960&q=80",
+        "quy nhơn": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "bình định": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "mũi né": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "phan thiết": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "côn đảo": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "vũng tàu": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=960&q=80",
+        "cần thơ": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "miền tây": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "an giang": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "cao bằng": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "yên bái": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80",
+        "hồ chí minh": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=960&q=80",
+        "sài gòn": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=960&q=80"
+    }
+
+    def resolve_tour_image(tour_data):
+        current = tour_data.get("images", [])
+        if current and current[0] and "loremflickr" not in current[0] and "photo-1622300025619-a1b7e4522944" not in current[0] and "photo-1557750255-c76072a7aaeb" not in current[0] and "photo-1511497584788-87676104235f" not in current[0]:
+            return current[0]
+        query = (tour_data.get("location", "") + " " + tour_data.get("title", "")).lower()
+        for k, v in DESTINATION_IMAGES.items():
+            if k in query:
+                return v
+        return "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80"
+
     def build_extra_tour(title, slug, category, location, duration_days, price, discount_price, image_query, tags, lat, lng):
         return {
             "title": title,
@@ -865,7 +918,7 @@ async def seed_database():
             "discount_price": discount_price,
             "rating": 4.8,
             "review_count": 420,
-            "images": [f"https://loremflickr.com/960/640/{image_query.replace(' ', ',')}?lock={slug}"],
+            "images": [resolve_tour_image({"location": location, "title": title})],
             "tags": tags,
             "is_active": True,
             "lat": lat,
@@ -914,8 +967,7 @@ async def seed_database():
     ])
 
     for tour in tours:
-        image_query = f"{tour['location']} {tour['title'].split(' - ')[0]}".replace(" ", ",")
-        tour["images"] = [f"https://loremflickr.com/960/640/{image_query}?lock={tour['slug']}"]
+        tour["images"] = [resolve_tour_image(tour)]
         tags = [str(tag).lower() for tag in tour.get("tags", [])]
         tour.setdefault("indoor", any(tag in tags for tag in ["indoor", "museum", "food"]))
         tour.setdefault("outdoor", not tour["indoor"])

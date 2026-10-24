@@ -187,6 +187,7 @@ function renderGroupedTours(tours) {
 
 function renderTourCard(tour) {
   var image = tour.images && tour.images[0] ? tour.images[0] : 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80';
+  var duration = tour.duration || ((tour.duration_days ? tour.duration_days + 'N' : '1N') + (tour.duration_nights !== undefined ? tour.duration_nights + 'Đ' : '0Đ'));
   var tags = (tour.tags || []).map(function(tag) { return String(tag).toLowerCase(); });
   var price = Number(tour.discount_price || tour.price || 0);
   var oldPrice = tour.discount_price && Number(tour.discount_price) < Number(tour.price) ? '<span class="tour-card-old-price">' + formatTourCurrency(tour.price) + '</span>' : '';
@@ -197,7 +198,7 @@ function renderTourCard(tour) {
     '&duration=' + encodeURIComponent(duration) +
     '&img=' + encodeURIComponent(image) +
     '&location=' + encodeURIComponent(tour.location || '');
-  return '<article class="tour-api-card"><div class="tour-api-image"><img src="' + escapeTourHTML(image) + '" alt="' + escapeTourHTML(tour.title) + '" loading="lazy">' + badge + '</div><div class="tour-api-body"><div class="tour-api-meta"><span><i class="bx bx-map"></i> ' + escapeTourHTML(tour.location || 'Việt Nam') + '</span><span><i class="bx bx-time-five"></i> ' + duration + '</span></div><h3>' + escapeTourHTML(tour.title) + '</h3><div class="tour-api-rating"><i class="bx bxs-star"></i> ' + Number(tour.rating || 0).toFixed(1) + ' <span>(' + Number(tour.review_count || 0) + ' đánh giá)</span></div><div class="tour-api-footer"><div>' + oldPrice + '<strong>' + formatTourCurrency(price) + '</strong><small>/ khách</small></div><a href="' + bookingUrl + '" class="btn-book-tour"><i class="bx bx-calendar-check"></i> Đặt tour</a></div></div></article>';
+  return '<article class="tour-api-card"><div class="tour-api-image"><img src="' + escapeTourHTML(image) + '" alt="' + escapeTourHTML(tour.title) + '" loading="lazy" onerror="this.onerror=null;this.src=\'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=960&q=80\';">' + badge + '</div><div class="tour-api-body"><div class="tour-api-meta"><span><i class="bx bx-map"></i> ' + escapeTourHTML(tour.location || 'Việt Nam') + '</span><span><i class="bx bx-time-five"></i> ' + duration + '</span></div><h3>' + escapeTourHTML(tour.title) + '</h3><div class="tour-api-rating"><i class="bx bxs-star"></i> ' + Number(tour.rating || 0).toFixed(1) + ' <span>(' + Number(tour.review_count || 0) + ' đánh giá)</span></div><div class="tour-api-footer"><div>' + oldPrice + '<strong>' + formatTourCurrency(price) + '</strong><small>/ khách</small></div><a href="' + bookingUrl + '" class="btn-book-tour"><i class="bx bx-calendar-check"></i> Đặt tour</a></div></div></article>';
 }
 
 function sortTours(tours, sortValue) {

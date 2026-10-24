@@ -13,13 +13,24 @@ print(f'Title: {app.title}')
 print(f'Version: {app.version}')
 print()
 
-print('=== All Routes ===')
+def get_all_routes(routes, prefix=""):
+    collected = []
+    for r in routes:
+        if hasattr(r, 'methods') and hasattr(r, 'path'):
+            collected.append((r.methods, prefix + r.path))
+        elif hasattr(r, 'routes'):
+            collected.extend(get_all_routes(r.routes, prefix))
+        elif hasattr(r, 'original_router') and hasattr(r.original_router, 'routes'):
+            sub_prefix = prefix + (getattr(getattr(r, 'include_context', None), 'prefix', '') or '')
+            collected.extend(get_all_routes(r.original_router.routes, sub_prefix))
+    return collected
+
+all_routes = get_all_routes(app.routes)
 route_paths = set()
-for route in app.routes:
-    if hasattr(route, 'methods') and hasattr(route, 'path'):
-        methods = ', '.join(sorted(route.methods))
-        print(f'  [{methods}] {route.path}')
-        route_paths.add(route.path)
+for methods_set, path in all_routes:
+    methods = ', '.join(sorted(methods_set))
+    print(f'  [{methods}] {path}')
+    route_paths.add(path)
 
 required_routes = {
     '/api/auth/login',
@@ -37,13 +48,12 @@ print()
 print('=== Key New Routes ===')
 new_routes = ['/api/guides/assign', '/api/guides/unassigned-tours', '/api/guides/{id}/assign-tour', '/api/admin/guides/assign']
 checked = set()
-for route in app.routes:
-    if hasattr(route, 'methods') and hasattr(route, 'path'):
-        for nr in new_routes:
-            if route.path == nr and nr not in checked:
-                methods = ', '.join(sorted(route.methods))
-                print(f'  [{methods}] {route.path}')
-                checked.add(nr)
+for methods_set, path in all_routes:
+    for nr in new_routes:
+        if path == nr and nr not in checked:
+            methods = ', '.join(sorted(methods_set))
+            print(f'  [{methods}] {path}')
+            checked.add(nr)
 
 print()
 print('=== Deprecation Check ===')

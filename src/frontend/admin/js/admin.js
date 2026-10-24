@@ -876,7 +876,7 @@ function renderTours(tours) {
             '<tr>' +
             '<td>' +
             '<div class="user-info-table">' +
-            '<img class="tour-thumbnail-img" src="' + escapeHtml(image) + '" alt="' + escapeHtml(tour.title) + '">' +
+            '<img class="tour-thumbnail-img" src="' + escapeHtml(image) + '" alt="' + escapeHtml(tour.title) + '" onerror="this.onerror=null;this.src=\'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=400&q=80\';">' +
             '<div>' +
             '<div class="font-bold text-main">' + escapeHtml(tour.title) + '</div>' +
             '<div class="text-xs text-muted"><i class="bx bx-map-pin"></i> ' + escapeHtml(tour.location || 'Việt Nam') + ' • ' + escapeHtml(duration) + '</div>' +
@@ -1031,7 +1031,10 @@ function openTourDetail(tour) {
 
     var imageEl = document.getElementById('tourDetailImage');
     var image = (tour.images && tour.images[0]) || 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80';
-    if (imageEl) imageEl.src = image;
+    if (imageEl) {
+        imageEl.src = image;
+        imageEl.onerror = function() { this.onerror = null; this.src = 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80'; };
+    }
 
     var categoryName = tour.category === 'sea' ? 'Biển đảo' : (tour.category === 'mountain' ? 'Vùng cao & Trekking' : (tour.category === 'cultural' ? 'Di sản văn hóa' : (tour.category || 'Du lịch khám phá')));
     var duration = tour.duration || ((tour.duration_days ? tour.duration_days + ' ngày ' : '') + (tour.duration_nights ? tour.duration_nights + ' đêm' : '')) || '2 ngày 1 đêm';
