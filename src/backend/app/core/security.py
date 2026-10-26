@@ -11,6 +11,8 @@ def hash_password(password: str) -> str:
     return hashed_password.decode('utf-8')
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    if not plain_password or not hashed_password or not isinstance(hashed_password, str):
+        return False
     password_byte_enc = plain_password.encode('utf-8')
     hashed_password_byte_enc = hashed_password.encode('utf-8')
     return bcrypt.checkpw(password=password_byte_enc, hashed_password=hashed_password_byte_enc)

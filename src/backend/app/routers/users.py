@@ -51,8 +51,10 @@ async def change_user_password(data: ChangePasswordRequest, current_user: dict =
     user = await db.users.find_one({"_id": user_oid})
     if not user:
         raise HTTPException(status_code=404, detail="Người dùng không tồn tại")
-    if not verify_password(data.old_password, user["password_hash"]):
+    if not verify_password(data.old_password, user.get("password_hash", "")):
         raise HTTPException(status_code=400, detail="Mật khẩu hiện tại không chính xác")
+    if data.old_password == data.new_password:
+        raise HTTPException(status_code=400, detail="Mật khẩu mới không được trùng với mật khẩu hiện tại")
     await db.users.update_one(
         {"_id": user_oid},
         {"$set": {"password_hash": hash_password(data.new_password)}}

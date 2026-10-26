@@ -51,7 +51,15 @@
                     </div>
                     <div class="form-error">Mật khẩu phải có ít nhất 6 ký tự</div>
                 </div>
-                <button type="submit" class="btn btn-primary w-full mt-2">Đăng ký</button>
+                <div class="form-group auth-field" id="register-otp-group" style="display: none;">
+                    <div class="input-with-icon">
+                        <i class="bx bx-shield-quarter"></i>
+                        <input type="text" class="form-control register-otp" placeholder="Mã OTP 6 số từ email" maxlength="6">
+                    </div>
+                    <div class="form-error">Vui lòng nhập mã OTP gồm 6 chữ số</div>
+                </div>
+                <button type="button" id="btn-send-register-otp" class="btn btn-outline w-full mt-2" style="font-size: 14px; padding: 10px;">Gửi mã xác thực về Email</button>
+                <button type="submit" id="btn-submit-register" class="btn btn-primary w-full mt-2" style="display: none;">Xác nhận Đăng ký</button>
             </form>
         </div>
 
@@ -205,59 +213,125 @@ if (role === 'admin') {
         }
 
         var registerForm = document.getElementById('register-form');
-        if (registerForm) {
+        var sendOtpBtn = document.getElementById('btn-send-register-otp');
+        var submitRegisterBtn = document.getElementById('btn-submit-register');
+        var otpGroup = document.getElementById('register-otp-group');
+        var otpInput = registerForm ? registerForm.querySelector('.register-otp') : null;
+
+        if (sendOtpBtn && registerForm) {
+            sendOtpBtn.addEventListener('click', async function() {
+                var nameInput = registerForm.querySelector('.register-name');
+                var emailInput = registerForm.querySelector('.register-email');
+                var passInput = registerForm.querySelector('.register-password');
+
+                var fullName = nameInput ? nameInput.value.trim() : '';
+                var email = emailInput ? emailInput.value.trim() : '';
+                var password = passInput ? passInput.value : '';
+
+                if (!fullName) {
+                    showToast('Vui lòng nhập họ và tên của bạn', 'error');
+                    if (nameInput) nameInput.focus();
+                    return;
+                }
+                if (!email || !email.includes('@')) {
+                    showToast('Vui lòng nhập địa chỉ email hợp lệ', 'error');
+                    if (emailInput) emailInput.focus();
+                    return;
+                }
+                if (!password || password.length < 6) {
+                    showToast('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+                    if (passInput) passInput.focus();
+                    return;
+                }
+
+                sendOtpBtn.disabled = true;
+                sendOtpBtn.textContent = 'Đang gửi mã OTP...';
+
+                try {
+                    var apiBase = window.SMART_TRAVEL_API_URL || 'http://localhost:8000';
+                    var res = await fetch(apiBase + '/api/auth/register-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email, full_name: fullName })
+                    });
+                    var data = await res.json();
+                    if (!res.ok) {
+                        showToast(data.detail || 'Không thể gửi mã xác thực', 'error');
+                        sendOtpBtn.disabled = false;
+                        sendOtpBtn.textContent = 'Gửi mã xác thực về Email';
+                        return;
+                    }
+
+                    showToast(data.message || 'Mã xác thực đã được gửi về email của bạn!', 'success');
+                    if (data.otp_demo && otpInput) {
+                        otpInput.value = data.otp_demo;
+                    }
+                    if (otpGroup) otpGroup.style.display = 'block';
+                    if (submitRegisterBtn) submitRegisterBtn.style.display = 'block';
+                    sendOtpBtn.textContent = 'Gửi lại mã OTP';
+                    sendOtpBtn.disabled = false;
+                    if (otpInput) otpInput.focus();
+                } catch (err) {
+                    showToast('Lỗi kết nối khi gửi mã xác thực', 'error');
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.textContent = 'Gửi mã xác thực về Email';
+                }
+            });
+
             registerForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                var valid = true;
-                var fields = this.querySelectorAll('.auth-field');
-                fields.forEach(function(field) {
-                    var input = field.querySelector('input');
-                    if (!input.checkValidity()) {
-                        field.classList.add('has-error');
-                        valid = false;
-                    } else {
-                        field.classList.remove('has-error');
-                    }
-                });
-                if (valid) {
-                    var nameInput = this.querySelector('.register-name');
-                    var emailInput = this.querySelector('.register-email');
-                    var passwordInput = this.querySelector('.register-password');
-                    
-                    var fullName = nameInput ? nameInput.value.trim() : '';
-                    var email = emailInput ? emailInput.value.trim() : '';
-                    var password = passwordInput ? passwordInput.value : '';
-                    
-                    var btn = this.querySelector('button[type="submit"]');
-                    var originalText = btn.textContent;
-                    btn.textContent = 'Đang xử lý...';
-                    btn.disabled = true;
+                var nameInput = this.querySelector('.register-name');
+                var emailInput = this.querySelector('.register-email');
+                var passwordInput = this.querySelector('.register-password');
+                
+                var fullName = nameInput ? nameInput.value.trim() : '';
+                var email = emailInput ? emailInput.value.trim() : '';
+                var password = passwordInput ? passwordInput.value : '';
+                var otp = otpInput ? otpInput.value.trim() : '';
 
-                    try {
-                        const response = await fetch('http://localhost:8000/api/auth/register', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email: email, password: password, full_name: fullName })
-                        });
-                        const data = await response.json();
-                        
-                        if (response.ok) {
-                            showToast('Đăng ký thành công! Đang chuyển hướng đăng nhập...', 'success');
-                            setTimeout(function() { 
-                                container.classList.remove('right-panel-active');
-                                btn.textContent = originalText;
-                                btn.disabled = false;
-                            }, 1500);
-                        } else {
-                            showToast(data.detail || 'Đăng ký thất bại', 'error');
+                if (!otp || otp.length !== 6) {
+                    showToast('Vui lòng nhập đúng mã OTP gồm 6 chữ số từ email', 'error');
+                    if (otpInput) otpInput.focus();
+                    return;
+                }
+
+                var btn = submitRegisterBtn || this.querySelector('button[type="submit"]');
+                var originalText = btn.textContent;
+                btn.textContent = 'Đang xác thực...';
+                btn.disabled = true;
+
+                try {
+                    var apiBase = window.SMART_TRAVEL_API_URL || 'http://localhost:8000';
+                    const response = await fetch(apiBase + '/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email, password: password, full_name: fullName, otp: otp })
+                    });
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showToast('Đăng ký thành công! Đang chuyển hướng đăng nhập...', 'success');
+                        setTimeout(function() { 
+                            container.classList.remove('right-panel-active');
                             btn.textContent = originalText;
                             btn.disabled = false;
+                            if (otpGroup) otpGroup.style.display = 'none';
+                            if (submitRegisterBtn) submitRegisterBtn.style.display = 'none';
+                            sendOtpBtn.textContent = 'Gửi mã xác thực về Email';
+                        }, 1500);
+                    } else {
+                        var errDetail = data.detail;
+                        if (Array.isArray(errDetail) && errDetail[0] && errDetail[0].msg) {
+                            errDetail = errDetail[0].msg;
                         }
-                    } catch (err) {
-                        showToast('Lỗi kết nối máy chủ', 'error');
+                        showToast(errDetail || 'Đăng ký thất bại', 'error');
                         btn.textContent = originalText;
                         btn.disabled = false;
                     }
+                } catch (err) {
+                    showToast('Lỗi kết nối máy chủ', 'error');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
                 }
             });
         }

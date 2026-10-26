@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   await initPromoClaim();
   initAdminSidebar();
   initProfileSave();
+  initChangePasswordAction();
   await initCCCDVerification();
   initGuideRegisterForm();
   initGuideHireActions();
@@ -1397,51 +1398,61 @@ function initProfileSave() {
     });
   }
 
+  initChangePasswordAction();
+}
+
+function initChangePasswordAction() {
   var changePasswordBtn = document.getElementById('btn-change-password');
-  if (changePasswordBtn) {
-    changePasswordBtn.addEventListener('click', async function() {
-      var oldPass = document.getElementById('profile-old-password') ? document.getElementById('profile-old-password').value : '';
-      var newPass = document.getElementById('profile-new-password') ? document.getElementById('profile-new-password').value : '';
-      var confirmPass = document.getElementById('profile-confirm-password') ? document.getElementById('profile-confirm-password').value : '';
+  if (!changePasswordBtn) return;
 
-      if (!oldPass) {
-        showToast('Vui lòng nhập mật khẩu hiện tại', 'error');
-        return;
-      }
-      if (!newPass || newPass.length < 6) {
-        showToast('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
-        return;
-      }
-      if (newPass !== confirmPass) {
-        showToast('Mật khẩu xác nhận không trùng khớp', 'error');
-        return;
-      }
+  changePasswordBtn.addEventListener('click', async function() {
+    var oldPass = document.getElementById('profile-old-password') ? document.getElementById('profile-old-password').value : '';
+    var newPass = document.getElementById('profile-new-password') ? document.getElementById('profile-new-password').value : '';
+    var confirmPass = document.getElementById('profile-confirm-password') ? document.getElementById('profile-confirm-password').value : '';
 
-      changePasswordBtn.disabled = true;
-      changePasswordBtn.classList.add('is-loading');
+    if (!oldPass) {
+      showToast('Vui lòng nhập mật khẩu hiện tại', 'error');
+      return;
+    }
+    if (!newPass || newPass.length < 6) {
+      showToast('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
+      return;
+    }
+    if (newPass !== confirmPass) {
+      showToast('Mật khẩu xác nhận không trùng khớp', 'error');
+      return;
+    }
 
-      try {
-        var res = await fetchApi('/api/users/me/change-password', {
-          method: 'POST',
-          body: JSON.stringify({ old_password: oldPass, new_password: newPass })
-        });
-        var data = await res.json();
-        if (res.ok) {
-          showToast(data.message || 'Đổi mật khẩu thành công!', 'success');
-          if (document.getElementById('profile-old-password')) document.getElementById('profile-old-password').value = '';
-          if (document.getElementById('profile-new-password')) document.getElementById('profile-new-password').value = '';
-          if (document.getElementById('profile-confirm-password')) document.getElementById('profile-confirm-password').value = '';
-        } else {
-          showToast(data.detail || 'Không thể đổi mật khẩu', 'error');
+    changePasswordBtn.disabled = true;
+    changePasswordBtn.classList.add('is-loading');
+
+    try {
+      var res = await fetchApi('/api/users/me/change-password', {
+        method: 'POST',
+        body: JSON.stringify({ old_password: oldPass, new_password: newPass })
+      });
+      var data = await res.json();
+      if (res.ok) {
+        showToast(data.message || 'Đổi mật khẩu thành công!', 'success');
+        if (document.getElementById('profile-old-password')) document.getElementById('profile-old-password').value = '';
+        if (document.getElementById('profile-new-password')) document.getElementById('profile-new-password').value = '';
+        if (document.getElementById('profile-confirm-password')) document.getElementById('profile-confirm-password').value = '';
+      } else {
+        var errorMsg = 'Không thể đổi mật khẩu';
+        if (typeof data.detail === 'string') {
+          errorMsg = data.detail;
+        } else if (Array.isArray(data.detail) && data.detail[0] && data.detail[0].msg) {
+          errorMsg = data.detail[0].msg;
         }
-      } catch (err) {
-        showToast('Lỗi kết nối khi đổi mật khẩu', 'error');
-      } finally {
-        changePasswordBtn.disabled = false;
-        changePasswordBtn.classList.remove('is-loading');
+        showToast(errorMsg, 'error');
       }
-    });
-  }
+    } catch (err) {
+      showToast('Lỗi kết nối khi đổi mật khẩu', 'error');
+    } finally {
+      changePasswordBtn.disabled = false;
+      changePasswordBtn.classList.remove('is-loading');
+    }
+  });
 }
 
 async function initCCCDVerification() {

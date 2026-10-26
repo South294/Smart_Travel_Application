@@ -1,9 +1,15 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
+
+class RegisterOTPRequest(BaseModel):
+    email: EmailStr
+    full_name: Optional[str] = None
 
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6, max_length=128)
     full_name: str = Field(min_length=2, max_length=100)
+    otp: Optional[str] = None
 
 class LoginRequest(BaseModel):
     email: EmailStr

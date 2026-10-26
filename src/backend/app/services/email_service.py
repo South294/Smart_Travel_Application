@@ -309,3 +309,74 @@ async def send_contract_email(
         pass
 
     return True
+
+async def send_otp_email(recipient_email: str, otp_code: str, full_name: Optional[str] = None) -> bool:
+    if not recipient_email or "@" not in recipient_email:
+        return False
+
+    display_name = full_name or "Quý khách"
+    subject = f"[SmartTravel] Mã Xác Thực Đăng Ký Tài Khoản: {otp_code}"
+    html_content = f"""<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Mã Xác Thực SmartTravel</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 24px; color: #0f172a;">
+    <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+        <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; padding: 28px; text-align: center;">
+            <h1 style="margin: 0; font-size: 22px; text-transform: uppercase;">Xác Thực Tài Khoản SmartTravel</h1>
+        </div>
+        <div style="padding: 28px;">
+            <p style="font-size: 15px; color: #334155; line-height: 1.6;">Xin chào <strong>{display_name}</strong>,</p>
+            <p style="font-size: 14px; color: #475569; line-height: 1.6;">Cảm ơn bạn đã lựa chọn tham gia nền tảng du lịch SmartTravel. Dưới đây là mã xác thực OTP dùng để hoàn tất đăng ký tài khoản của bạn:</p>
+            <div style="text-align: center; margin: 28px 0;">
+                <div style="display: inline-block; background: #f0fdf4; border: 2px dashed #16a34a; border-radius: 12px; padding: 14px 32px; font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #166534;">
+                    {otp_code}
+                </div>
+                <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Mã này có hiệu lực trong vòng <strong>10 phút</strong>.</p>
+            </div>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này để bảo vệ an toàn cho hòm thư của bạn.</p>
+        </div>
+        <div style="background: #f8fafc; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0;">
+            © 2026 SmartTravel - Nền tảng Du lịch Thông minh
+        </div>
+    </div>
+</body>
+</html>"""
+
+    smtp_host = os.getenv("SMTP_HOST", "")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_password = os.getenv("SMTP_PASSWORD", "")
+    from_email = os.getenv("SMTP_FROM_EMAIL", smtp_user or "support@smarttravel.vn")
+
+    sent_success = False
+    if smtp_host and smtp_user and smtp_password:
+        def _send():
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = f"SmartTravel Security <{from_email}>"
+            msg["To"] = recipient_email
+            msg.attach(MIMEText(html_content, "html", "utf-8"))
+
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.sendmail(from_email, [recipient_email], msg.as_string())
+            return True
+
+        try:
+            sent_success = await asyncio.to_thread(_send)
+        except Exception:
+            sent_success = False
+
+    try:
+        os.makedirs("sent_emails", exist_ok=True)
+        filename = f"sent_emails/otp_{recipient_email.replace('@', '_at_')}.html"
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(html_content)
+    except Exception:
+        pass
+
+    return sent_success
