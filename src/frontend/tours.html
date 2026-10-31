@@ -355,6 +355,74 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="tourDetailModal">
+        <div class="modal-content modal-lg" style="max-width: 820px; max-height: 90vh; overflow-y: auto;">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b">
+                <h3 class="font-bold text-xl" id="tourDetailTitle">Chi tiết tour du lịch</h3>
+                <button type="button" class="btn btn-icon" id="closeTourDetailBtn"><i class="bx bx-x"></i></button>
+            </div>
+            <div class="tour-detail-modal-body">
+                <div class="mb-4" style="border-radius: 12px; overflow: hidden; max-height: 320px;">
+                    <img id="tourDetailImage" src="" alt="Ảnh tour" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="grid grid-2 gap-4 mb-4">
+                    <div>
+                        <div class="text-sm text-muted mb-1"><i class="bx bx-map"></i> <span id="tourDetailLocation"></span></div>
+                        <div class="text-sm text-muted mb-1"><i class="bx bx-time-five"></i> <span id="tourDetailDuration"></span></div>
+                        <div class="text-sm text-muted"><i class="bx bx-category"></i> <span id="tourDetailCategory"></span></div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-muted">Giá trọn gói / khách</div>
+                        <div class="text-2xl font-bold text-primary" id="tourDetailPrice"></div>
+                        <div class="text-sm text-warning mt-1">
+                            <i class="bx bxs-star"></i> <strong id="tourDetailRating">5.0</strong>
+                            <span class="text-muted" id="tourDetailReviewCount">(0 đánh giá)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-4 mb-4" style="background: #f8fafc;">
+                    <h4 class="font-semibold mb-2 text-primary"><i class="bx bx-info-circle"></i> Giới thiệu hành trình</h4>
+                    <p id="tourDetailDesc" class="text-muted" style="line-height: 1.6;"></p>
+                </div>
+                <div class="tour-reviews-section mt-6 pt-4 border-t">
+                    <h4 class="font-bold text-lg mb-3"><i class="bx bx-message-square-detail"></i> Đánh giá từ du khách</h4>
+                    <div id="tourReviewsList" class="flex flex-col gap-3 mb-4">
+                        <div class="text-muted text-sm">Chưa có đánh giá nào cho tour này.</div>
+                    </div>
+                    <div class="card p-4" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                        <h5 class="font-semibold mb-2 text-success"><i class="bx bx-edit"></i> Gửi đánh giá của bạn</h5>
+                        <form id="tourReviewForm">
+                            <div class="grid grid-2 gap-3 mb-3">
+                                <div>
+                                    <label class="form-label text-sm font-semibold">Chấm điểm sao</label>
+                                    <select class="form-control" id="reviewRatingSelect" required>
+                                        <option value="5">⭐⭐⭐⭐⭐ (5 sao - Tuyệt vời)</option>
+                                        <option value="4">⭐⭐⭐⭐ (4 sao - Rất tốt)</option>
+                                        <option value="3">⭐⭐⭐ (3 sao - Hài lòng)</option>
+                                        <option value="2">⭐⭐ (2 sao - Tạm được)</option>
+                                        <option value="1">⭐ (1 sao - Cần cải thiện)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label text-sm font-semibold">Nhận xét thực tế</label>
+                                <textarea class="form-control" id="reviewCommentInput" rows="3" placeholder="Chia sẻ cảm nhận và trải nghiệm thực tế về chuyến đi..." required></textarea>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-muted" id="reviewAuthHint">Yêu cầu đăng nhập tài khoản trước khi gửi</span>
+                                <button type="submit" class="btn btn-primary" id="submitTourReviewBtn"><i class="bx bx-send"></i> Gửi đánh giá</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mt-6 pt-4 border-t">
+                <button type="button" class="btn btn-outline" id="closeTourDetailBtn2">Đóng</button>
+                <a href="#" class="btn btn-primary" id="tourDetailBookBtn"><i class="bx bx-calendar-check"></i> Đặt tour này ngay</a>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">

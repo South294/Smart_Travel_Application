@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from app.db.mongodb import get_db
-from app.schemas.tour import TourCreate, TourUpdate, TourResponse, TourRecommendationResponse
-from app.routers.deps import get_current_admin_user, get_optional_current_user
+from app.schemas.tour import TourCreate, TourUpdate, TourResponse, TourRecommendationResponse, TourReviewCreate
+from app.routers.deps import get_current_admin_user, get_optional_current_user, get_current_user
 from app.routers.helpers import validate_object_id, serialize_tour
 from typing import List, Optional
 from datetime import datetime
@@ -257,3 +257,48 @@ async def delete_tour(id: str, admin: dict = Depends(get_current_admin_user)):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Không tìm thấy tour")
     return {"message": "Xóa tour thành công"}
+
+@router.get("/{id}/reviews")
+async def get_tour_reviews(id: str):
+    db = get_db()
+    oid = validate_object_id(id)
+    tour = await db.tours.find_one({"_id": oid})
+    if not tour:
+        raise HTTPException(status_code=404, detail="Không tìm thấy tour")
+    return tour.get("reviews", [])
+
+@router.post("/{id}/reviews")
+async def create_tour_review(id: str, payload: TourReviewCreate, current_user: dict = Depends(get_current_user)):
+    db = get_db()
+    oid = validate_object_id(id)
+    tour = await db.tours.find_one({"_id": oid, "is_active": True})
+    if not tour:
+        raise HTTPException(status_code=404, detail="Không tìm thấy tour")
+
+    new_review = {
+        "user_id": current_user["id"],
+        "user_name": current_user.get("full_name") or current_user.get("email") or "Du khách",
+        "rating": float(payload.rating),
+        "comment": payload.comment.strip(),
+        "created_at": datetime.utcnow().isoformat()
+    }
+
+    old_reviews = tour.get("reviews", [])
+    all_reviews = old_reviews + [new_review]
+    new_count = len(all_reviews)
+    new_rating = round(sum(r["rating"] for r in all_reviews) / new_count, 1)
+
+    await db.tours.update_one(
+        {"_id": oid},
+        {
+            "$push": {"reviews": new_review},
+            "$set": {"rating": new_rating, "review_count": new_count}
+        }
+    )
+
+    return {
+        "message": "Đánh giá tour thành công",
+        "rating": new_rating,
+        "review_count": new_count,
+        "review": new_review
+    }

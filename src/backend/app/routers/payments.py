@@ -104,13 +104,13 @@ async def confirm_qr_payment(
     paid_at = datetime.utcnow().isoformat()
     await db.bookings.update_one(
         {"_id": booking_oid},
-        {"$set": {"payment_status": "paid", "status": "confirmed", "payment_provider": "qr_demo", "paid_at": paid_at}},
+        {"$set": {"payment_status": "paid", "status": "confirmed", "payment_provider": "qr_bank_transfer", "paid_at": paid_at}},
     )
     booking["payment_status"] = "paid"
     booking["status"] = "confirmed"
     booking["paid_at"] = paid_at
     asyncio.create_task(send_contract_email(booking, user_dict=current_user))
-    return {"message": "Thanh toán QR demo thành công", "booking_id": payload.booking_id, "paid_at": paid_at}
+    return {"message": "Thanh toán thành công", "booking_id": payload.booking_id, "paid_at": paid_at}
 
 
 @router.get("/vnpay/return")

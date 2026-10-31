@@ -277,29 +277,35 @@
             <div class="payment-qr-header">
                 <div class="payment-qr-icon"><i class="bx bx-qr"></i></div>
                 <div>
-                    <h3 class="font-bold">Quet ma QR de thanh toan</h3>
-                    <p class="text-muted text-sm">Su dung ung dung ngan hang hoac vi dien tu.</p>
+                    <h3 class="font-bold">Quét mã QR để thanh toán</h3>
+                    <p class="text-muted text-sm">Sử dụng ứng dụng ngân hàng hoặc ví điện tử (VietQR / Napas247).</p>
                 </div>
             </div>
             <div class="payment-qr-body">
                 <div class="payment-qr-code">
-                    <img src="images/qr_demo.png" alt="QR demo" class="payment-qr-image" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=400&q=80';">
+                    <img id="paymentQrImage" src="images/qr_demo.png" alt="Mã QR thanh toán" class="payment-qr-image" onerror="this.onerror=null;this.src='images/qr_demo.png';">
                 </div>
                 <div class="payment-qr-summary">
                     <div>
-                        <span class="text-muted text-xs">Ma don</span>
+                        <span class="text-muted text-xs">Mã đơn hàng</span>
                         <strong id="paymentQrOrder">ST-XXXXXX</strong>
                     </div>
                     <div>
-                        <span class="text-muted text-xs">So tien</span>
+                        <span class="text-muted text-xs">Số tiền thanh toán</span>
                         <strong id="paymentQrTotal">--</strong>
                     </div>
                 </div>
-                <p class="text-xs text-muted">Sau khi chuyen khoan thanh cong, bam "Toi da thanh toan".</p>
+                <div class="p-3 rounded text-left w-full" style="background: #f8fafc; border: 1px dashed #cbd5e1; font-size: 13px; text-align: left;">
+                    <div><strong>Ngân hàng:</strong> MB Bank (Quân Đội)</div>
+                    <div><strong>Số tài khoản:</strong> 0912345678</div>
+                    <div><strong>Chủ tài khoản:</strong> SMART TRAVEL VIETNAM</div>
+                    <div><strong>Nội dung CK:</strong> <span id="paymentQrTransferNote" class="text-primary font-bold">ST-XXXXXX</span></div>
+                </div>
+                <p class="text-xs text-muted">Sau khi hoàn tất chuyển khoản, bấm "Tôi đã thanh toán" để xác nhận và nhận vé điện tử.</p>
             </div>
             <div class="payment-success-actions">
-                <button class="btn btn-outline" data-modal-close>Dong</button>
-                <button class="btn btn-primary" id="paymentQrConfirmBtn">Toi da thanh toan</button>
+                <button class="btn btn-outline" data-modal-close>Đóng</button>
+                <button class="btn btn-primary" id="paymentQrConfirmBtn">Tôi đã thanh toán</button>
             </div>
         </div>
     </div>

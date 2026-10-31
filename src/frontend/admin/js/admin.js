@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     initVoucherActions();
     initSettingsToggles();
     initTableFilters();
+    initTourFormActions();
     initAddUserModal();
     initRejectModal();
     initBellNotification();
@@ -886,7 +887,7 @@ function renderTours(tours) {
             '<td><span class="badge badge-info">' + escapeHtml(categoryName) + '</span></td>' +
             '<td><strong class="text-primary">' + formatCurrency(price) + '</strong></td>' +
             '<td>' + statusBadge + '</td>' +
-            '<td><button type="button" class="btn btn-sm btn-tour-detail" data-index="' + index + '"><i class="bx bx-show"></i> Chi tiết</button></td>' +
+            '<td><div class="flex gap-2"><button type="button" class="btn btn-sm btn-tour-detail" data-index="' + index + '"><i class="bx bx-show"></i> Chi tiết</button><button type="button" class="btn btn-sm btn-outline btn-tour-edit" data-index="' + index + '"><i class="bx bx-edit"></i> Sửa</button></div></td>' +
             '</tr>'
         );
     }).join('');
@@ -896,6 +897,14 @@ function renderTours(tours) {
             var index = parseInt(btn.getAttribute('data-index'), 10);
             var tour = tours[index];
             if (tour) openTourDetail(tour);
+        });
+    });
+
+    tbody.querySelectorAll('.btn-tour-edit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var index = parseInt(btn.getAttribute('data-index'), 10);
+            var tour = tours[index];
+            if (tour) openEditTourModal(tour);
         });
     });
 }
@@ -1058,15 +1067,44 @@ function openTourDetail(tour) {
         statusBadge.innerHTML = '<span class="status-dot"></span> ' + (isActive ? 'Đang mở' : 'Tạm dừng');
     }
 
+    var editBtn = document.getElementById('editTourBtn');
+    if (editBtn) {
+        editBtn.onclick = function() {
+            closeModalById('tourDetailModal');
+            openEditTourModal(tour);
+        };
+    }
+
     var toggleBtn = document.getElementById('toggleTourStatusBtn');
     if (toggleBtn) {
         toggleBtn.className = 'btn ' + (isActive ? 'btn-danger-outline' : 'btn-success');
         toggleBtn.innerHTML = '<i class="bx bx-power-off"></i> ' + (isActive ? 'Tạm dừng bán' : 'Kích hoạt mở bán');
-        toggleBtn.onclick = function() {
-            tour.is_active = !isActive;
-            openTourDetail(tour);
-            showToast('Đã ' + (tour.is_active ? 'kích hoạt mở bán' : 'tạm dừng mở bán') + ' tour: ' + tour.title, 'success');
-            loadDemoTours();
+        toggleBtn.onclick = async function() {
+            var tourId = tour.id || tour._id;
+            if (!tourId) {
+                tour.is_active = !isActive;
+                openTourDetail(tour);
+                showToast('Đã ' + (tour.is_active ? 'kích hoạt mở bán' : 'tạm dừng mở bán') + ' tour: ' + tour.title, 'success');
+                loadDemoTours();
+                return;
+            }
+            try {
+                var res = await fetchApi('/api/tours/' + tourId, {
+                    method: 'PUT',
+                    body: JSON.stringify({ is_active: !isActive })
+                });
+                if (res.ok) {
+                    tour.is_active = !isActive;
+                    openTourDetail(tour);
+                    showToast('Đã cập nhật trạng thái tour thành công', 'success');
+                    await loadDemoTours();
+                } else {
+                    var err = await res.json();
+                    showToast(err.detail || 'Không thể cập nhật trạng thái', 'error');
+                }
+            } catch (e) {
+                showToast('Lỗi kết nối máy chủ', 'error');
+            }
         };
     }
 
@@ -1077,6 +1115,125 @@ function openTourDetail(tour) {
     }
 
     modal.classList.add('is-active');
+}
+
+function openAddTourModal() {
+    var modal = document.getElementById('tourFormModal');
+    if (!modal) return;
+    var form = document.getElementById('adminTourForm');
+    if (form) form.reset();
+    var idInput = document.getElementById('tourFormId');
+    if (idInput) idInput.value = '';
+    var titleEl = document.getElementById('tourFormModalTitle');
+    if (titleEl) titleEl.textContent = 'Thêm tour mới';
+    var activeInput = document.getElementById('tourFormIsActive');
+    if (activeInput) activeInput.checked = true;
+    modal.classList.add('is-active');
+}
+
+function openEditTourModal(tour) {
+    if (!tour) return;
+    var modal = document.getElementById('tourFormModal');
+    if (!modal) return;
+    var idInput = document.getElementById('tourFormId');
+    var titleInput = document.getElementById('tourFormTitle');
+    var locInput = document.getElementById('tourFormLocation');
+    var catInput = document.getElementById('tourFormCategory');
+    var priceInput = document.getElementById('tourFormPrice');
+    var discountInput = document.getElementById('tourFormDiscountPrice');
+    var daysInput = document.getElementById('tourFormDurationDays');
+    var nightsInput = document.getElementById('tourFormDurationNights');
+    var imgInput = document.getElementById('tourFormImage');
+    var descInput = document.getElementById('tourFormDesc');
+    var activeInput = document.getElementById('tourFormIsActive');
+    var titleEl = document.getElementById('tourFormModalTitle');
+
+    if (idInput) idInput.value = tour.id || tour._id || '';
+    if (titleEl) titleEl.textContent = 'Chỉnh sửa thông tin tour';
+    if (titleInput) titleInput.value = tour.title || '';
+    if (locInput) locInput.value = tour.location || '';
+    if (catInput) catInput.value = tour.category || 'sea';
+    if (priceInput) priceInput.value = tour.price || '';
+    if (discountInput) discountInput.value = tour.discount_price || '';
+    if (daysInput) daysInput.value = tour.duration_days || 1;
+    if (nightsInput) nightsInput.value = tour.duration_nights || 0;
+    if (imgInput) imgInput.value = (tour.images && tour.images[0]) || '';
+    if (descInput) descInput.value = tour.description || '';
+    if (activeInput) activeInput.checked = tour.is_active !== false;
+
+    modal.classList.add('is-active');
+}
+
+function initTourFormActions() {
+    var addBtn = document.getElementById('openAddTourModalBtn');
+    if (addBtn) addBtn.addEventListener('click', openAddTourModal);
+
+    var form = document.getElementById('adminTourForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var tourId = document.getElementById('tourFormId').value.trim();
+        var title = document.getElementById('tourFormTitle').value.trim();
+        var location = document.getElementById('tourFormLocation').value.trim();
+        var category = document.getElementById('tourFormCategory').value;
+        var price = Number(document.getElementById('tourFormPrice').value);
+        var discountPriceVal = document.getElementById('tourFormDiscountPrice').value;
+        var discountPrice = discountPriceVal ? Number(discountPriceVal) : null;
+        var durationDays = Number(document.getElementById('tourFormDurationDays').value) || 1;
+        var durationNights = Number(document.getElementById('tourFormDurationNights').value) || 0;
+        var imageUrl = document.getElementById('tourFormImage').value.trim();
+        var description = document.getElementById('tourFormDesc').value.trim();
+        var isActive = document.getElementById('tourFormIsActive').checked;
+
+        var payload = {
+            title: title,
+            location: location,
+            category: category,
+            price: price,
+            duration_days: durationDays,
+            duration_nights: durationNights,
+            images: [imageUrl],
+            description: description,
+            is_active: isActive
+        };
+        if (discountPrice !== null && !isNaN(discountPrice) && discountPrice > 0) {
+            payload.discount_price = discountPrice;
+        }
+
+        var saveBtn = document.getElementById('saveTourFormBtn');
+        var originalBtnText = saveBtn ? saveBtn.innerHTML : '';
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="bx bx-loader-alt"></i> Đang lưu...';
+        }
+
+        try {
+            var url = tourId ? ('/api/tours/' + tourId) : '/api/tours';
+            var method = tourId ? 'PUT' : 'POST';
+            var res = await fetchApi(url, {
+                method: method,
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                showToast((tourId ? 'Cập nhật' : 'Thêm mới') + ' tour thành công', 'success');
+                closeModalById('tourFormModal');
+                form.reset();
+                await loadDemoTours();
+            } else {
+                var err = await res.json();
+                showToast(err.detail || 'Không thể lưu tour', 'error');
+            }
+        } catch (err) {
+            showToast('Lỗi kết nối máy chủ', 'error');
+        } finally {
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalBtnText;
+            }
+        }
+    });
 }
 
 

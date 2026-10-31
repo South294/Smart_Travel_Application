@@ -425,6 +425,7 @@
                                 <option value="mountain">Vùng cao & Trekking</option>
                                 <option value="cultural">Di sản văn hóa</option>
                             </select>
+                            <button class="btn btn-success btn-sm" id="openAddTourModalBtn"><i class="bx bx-plus"></i> Thêm Tour mới</button>
                             <button class="btn btn-primary btn-sm" id="reloadToursBtn"><i class="bx bx-refresh"></i> Làm mới</button>
                         </div>
                     </div>
@@ -644,6 +645,9 @@
                 <div class="tour-detail-footer flex justify-between items-center pt-4 mt-6 border-t">
                     <button type="button" class="btn btn-outline" data-modal-close>Đóng</button>
                     <div class="flex gap-2">
+                        <button type="button" class="btn btn-outline" id="editTourBtn">
+                            <i class="bx bx-edit"></i> Chỉnh sửa
+                        </button>
                         <button type="button" class="btn btn-warning-outline" id="toggleTourStatusBtn">
                             <i class="bx bx-power-off"></i> Đổi trạng thái
                         </button>
@@ -728,6 +732,73 @@
                     <button type="button" class="btn btn-primary" id="cccdModalApproveBtn">Duyệt hồ sơ này</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="tourFormModal">
+        <div class="modal-content modal-lg" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b">
+                <h3 class="font-bold text-xl" id="tourFormModalTitle">Thêm tour mới</h3>
+                <button type="button" class="btn btn-icon" data-modal-close><i class="bx bx-x"></i></button>
+            </div>
+            <form id="adminTourForm">
+                <input type="hidden" id="tourFormId">
+                <div class="form-group mb-3">
+                    <label class="form-label font-semibold">Tên tour du lịch</label>
+                    <input type="text" class="form-control" id="tourFormTitle" placeholder="VD: Khám phá Vịnh Hạ Long 3N2Đ Siêu Cấp" required>
+                </div>
+                <div class="grid grid-2 gap-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label font-semibold">Điểm đến / Địa điểm</label>
+                        <input type="text" class="form-control" id="tourFormLocation" placeholder="VD: Quảng Ninh, Việt Nam" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label font-semibold">Danh mục</label>
+                        <select class="form-control" id="tourFormCategory" required>
+                            <option value="sea">Biển đảo</option>
+                            <option value="mountain">Vùng cao & Trekking</option>
+                            <option value="cultural">Di sản văn hóa</option>
+                            <option value="sight">Thắng cảnh & Ẩm thực</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-2 gap-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label font-semibold">Giá gốc (VNĐ)</label>
+                        <input type="number" class="form-control" id="tourFormPrice" placeholder="VD: 3500000" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label font-semibold">Giá khuyến mãi (VNĐ, nếu có)</label>
+                        <input type="number" class="form-control" id="tourFormDiscountPrice" placeholder="VD: 2800000" min="0">
+                    </div>
+                </div>
+                <div class="grid grid-2 gap-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label font-semibold">Số ngày</label>
+                        <input type="number" class="form-control" id="tourFormDurationDays" placeholder="VD: 3" min="1" value="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label font-semibold">Số đêm</label>
+                        <input type="number" class="form-control" id="tourFormDurationNights" placeholder="VD: 2" min="0" value="2" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label font-semibold">Đường dẫn hình ảnh (URL)</label>
+                    <input type="url" class="form-control" id="tourFormImage" placeholder="VD: https://images.unsplash.com/..." required>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label font-semibold">Mô tả hành trình</label>
+                    <textarea class="form-control" id="tourFormDesc" rows="4" placeholder="Mô tả chi tiết các trải nghiệm, dịch vụ bao gồm, điểm tham quan..." required></textarea>
+                </div>
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="checkbox" id="tourFormIsActive" checked>
+                    <label for="tourFormIsActive" class="form-label mb-0 font-semibold">Kích hoạt mở bán tour này ngay</label>
+                </div>
+                <div class="flex justify-end gap-2 pt-4 border-t">
+                    <button type="button" class="btn btn-outline" data-modal-close>Hủy</button>
+                    <button type="submit" class="btn btn-primary" id="saveTourFormBtn"><i class="bx bx-save"></i> Lưu thông tin tour</button>
+                </div>
+            </form>
         </div>
     </div>
 

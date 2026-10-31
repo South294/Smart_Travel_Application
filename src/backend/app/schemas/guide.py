@@ -38,3 +38,6 @@ class GuideRequestCreate(BaseModel):
     destination: str = Field(min_length=1)
     note: Optional[str] = None
     customer_phone: Optional[str] = None
+
+class TripStatusUpdate(BaseModel):
+    status: str = Field(min_length=1)

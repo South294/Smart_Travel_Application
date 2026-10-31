@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.db.mongodb import get_db
-from app.schemas.guide import GuideCreate, GuideResponse, GuideUpdate, GuideRequestCreate
+from app.schemas.guide import GuideCreate, GuideResponse, GuideUpdate, GuideRequestCreate, TripStatusUpdate
 from app.routers.deps import get_current_user, get_current_admin_user
 from app.routers.helpers import validate_object_id, serialize_guide
 from typing import List, Optional
@@ -92,13 +92,14 @@ async def get_guide_dashboard(current_user: dict = Depends(get_current_user)):
             total_earnings_month += float(doc.get("earning", 0))
         trip = {
             "id": str(doc.get("_id")),
+            "tour_id": str(doc.get("tour_id", "")),
             "tour_title": doc.get("tour_title", "Tour"),
             "destination": doc.get("destination", ""),
             "trip_date": trip_date,
             "earning": doc.get("earning", 0),
             "status": status
         }
-        if status in ("assigned", "in_progress"):
+        if status in ("assigned", "in_progress", "departed"):
             active_trips.append(trip)
         elif status == "completed":
             trips.append(trip)
@@ -190,7 +191,6 @@ async def reject_guide(id: str, admin: dict = Depends(get_current_admin_user)):
 
 @router.get("/unassigned-tours")
 async def get_unassigned_tours(admin: dict = Depends(get_current_admin_user)):
-    """Admin: List tours not assigned to any guide"""
     db = get_db()
     cursor = db.tours.find({"guide_id": {"$exists": False}})
     tours = []
@@ -203,3 +203,124 @@ async def get_unassigned_tours(admin: dict = Depends(get_current_admin_user)):
             "location": doc.get("location", "")
         })
     return tours
+
+@router.get("/assignments/{assignment_id}/passengers")
+async def get_assignment_passengers(assignment_id: str, current_user: dict = Depends(get_current_user)):
+    db = get_db()
+    guide = await db.guides.find_one({"user_id": current_user["id"], "status": "approved"})
+    if not guide and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Tài khoản chưa được duyệt hướng dẫn viên")
+
+    assign_oid = validate_object_id(assignment_id)
+    assignment = await db.guide_assignments.find_one({"_id": assign_oid})
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Không tìm thấy chuyến đi được phân công")
+
+    if current_user.get("role") != "admin" and str(assignment.get("guide_id")) != str(guide["_id"]):
+        raise HTTPException(status_code=403, detail="Bạn không phụ trách chuyến đi này")
+
+    tour_id_val = str(assignment.get("tour_id"))
+    trip_date = assignment.get("trip_date")
+    query = {
+        "status": {"$in": ["confirmed", "pending"]},
+        "$or": [
+            {"tour_id": tour_id_val},
+            {"combo_items.tour_id": tour_id_val}
+        ]
+    }
+    if trip_date:
+        query["travel_date"] = trip_date
+
+    cursor = db.bookings.find(query)
+    passengers = []
+    async for doc in cursor:
+        passengers.append({
+            "booking_id": str(doc["_id"]),
+            "booking_code": doc.get("booking_code") or ("ST-" + str(doc["_id"])[-6:].upper()),
+            "customer_name": doc.get("contact_name") or "Khách hàng",
+            "customer_phone": doc.get("contact_phone", ""),
+            "customer_email": doc.get("contact_email", ""),
+            "adults": doc.get("adults", 1),
+            "children": doc.get("children", 0),
+            "checked_in": doc.get("checked_in", False),
+            "checkin_time": doc.get("checkin_time"),
+            "payment_status": doc.get("payment_status", "pending"),
+            "status": doc.get("status", "pending")
+        })
+
+    return {
+        "assignment_id": assignment_id,
+        "tour_title": assignment.get("tour_title", "Tour"),
+        "trip_date": trip_date,
+        "status": assignment.get("status", "assigned"),
+        "passengers": passengers,
+        "total_passengers": len(passengers),
+        "checked_in_count": sum(1 for p in passengers if p["checked_in"])
+    }
+
+@router.post("/checkin/{booking_id}")
+async def checkin_passenger(booking_id: str, current_user: dict = Depends(get_current_user)):
+    db = get_db()
+    guide = await db.guides.find_one({"user_id": current_user["id"], "status": "approved"})
+    if not guide and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Tài khoản chưa được duyệt hướng dẫn viên")
+
+    b_oid = validate_object_id(booking_id)
+    booking = await db.bookings.find_one({"_id": b_oid})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Không tìm thấy đơn đặt của hành khách")
+
+    now_str = datetime.utcnow().isoformat()
+    await db.bookings.update_one(
+        {"_id": b_oid},
+        {"$set": {"checked_in": True, "checkin_time": now_str}}
+    )
+
+    return {
+        "message": "Điểm danh hành khách thành công",
+        "booking_id": booking_id,
+        "checked_in": True,
+        "checkin_time": now_str
+    }
+
+@router.patch("/assignments/{assignment_id}/status")
+async def update_trip_status(assignment_id: str, payload: TripStatusUpdate, current_user: dict = Depends(get_current_user)):
+    if payload.status not in ("assigned", "in_progress", "departed", "completed"):
+        raise HTTPException(status_code=400, detail="Trạng thái chuyến đi không hợp lệ")
+
+    db = get_db()
+    guide = await db.guides.find_one({"user_id": current_user["id"], "status": "approved"})
+    if not guide and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Tài khoản chưa được duyệt hướng dẫn viên")
+
+    assign_oid = validate_object_id(assignment_id)
+    assignment = await db.guide_assignments.find_one({"_id": assign_oid})
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Không tìm thấy chuyến đi được phân công")
+
+    if current_user.get("role") != "admin" and str(assignment.get("guide_id")) != str(guide["_id"]):
+        raise HTTPException(status_code=403, detail="Bạn không phụ trách chuyến đi này")
+
+    await db.guide_assignments.update_one(
+        {"_id": assign_oid},
+        {"$set": {"status": payload.status, "updated_at": datetime.utcnow().isoformat()}}
+    )
+
+    if payload.status == "completed":
+        tour_id_val = str(assignment.get("tour_id"))
+        trip_date = assignment.get("trip_date")
+        query = {
+            "$or": [
+                {"tour_id": tour_id_val},
+                {"combo_items.tour_id": tour_id_val}
+            ]
+        }
+        if trip_date:
+            query["travel_date"] = trip_date
+        await db.bookings.update_many(query, {"$set": {"status": "completed"}})
+
+    return {
+        "message": "Cập nhật trạng thái chuyến đi thành công",
+        "assignment_id": assignment_id,
+        "status": payload.status
+    }

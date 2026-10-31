@@ -31,6 +31,7 @@ class TourBase(BaseModel):
     lng: Optional[float] = None
     geo_location: Optional[LocationInfo] = None
     guide_id: Optional[str] = None
+    reviews: List[dict] = []
 
 class TourCreate(TourBase):
     pass
@@ -59,3 +60,7 @@ class TourRecommendationResponse(TourResponse):
     match_score: Optional[float] = None
     match_reason: Optional[str] = None
     match_percentage: Optional[int] = None
+
+class TourReviewCreate(BaseModel):
+    rating: float = Field(ge=1, le=5)
+    comment: str = Field(min_length=1, max_length=1000)

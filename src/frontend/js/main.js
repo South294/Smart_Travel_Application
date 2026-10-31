@@ -1135,11 +1135,38 @@ function initCheckoutPayment() {
     showToast('Không xác thực được kết quả thanh toán', 'error');
   }
 
+  var currentPendingBookingId = null;
+
   if (qrConfirmBtn) {
-    qrConfirmBtn.addEventListener('click', function() {
-      closeModal('paymentQrModal');
-      openModal('paymentSuccessModal');
-      showToast('Thanh toan QR mo phong thanh cong', 'success');
+    qrConfirmBtn.addEventListener('click', async function() {
+      if (!currentPendingBookingId) {
+        showToast('Không tìm thấy thông tin đơn hàng cần xác nhận', 'error');
+        return;
+      }
+      qrConfirmBtn.disabled = true;
+      var originalText = qrConfirmBtn.textContent;
+      qrConfirmBtn.textContent = 'Đang xác nhận...';
+      try {
+        var qrConfirmRes = await fetchApi('/api/payments/qr/confirm', {
+          method: 'POST',
+          body: JSON.stringify({ booking_id: currentPendingBookingId })
+        });
+        var qrConfirmData = await qrConfirmRes.json();
+        if (!qrConfirmRes.ok) {
+          showToast(qrConfirmData.detail || 'Không thể xác nhận thanh toán', 'error');
+          return;
+        }
+        closeModal('paymentQrModal');
+        var successTitle = document.getElementById('paymentSuccessTitle');
+        if (successTitle) successTitle.textContent = 'Thanh toán thành công';
+        openModal('paymentSuccessModal');
+        showToast('Thanh toán thành công! Hợp đồng du lịch đã được gửi đến email của bạn.', 'success');
+      } catch (err) {
+        showToast('Lỗi kết nối khi xác nhận thanh toán', 'error');
+      } finally {
+        qrConfirmBtn.disabled = false;
+        qrConfirmBtn.textContent = originalText;
+      }
     });
   }
 
@@ -1201,6 +1228,8 @@ function initCheckoutPayment() {
 
       await submitSelectedGuideRequest();
 
+      currentPendingBookingId = data.id;
+
       var selectedOption = document.querySelector('.payment-option.selected');
       var method = selectedOption ? selectedOption.getAttribute('data-method') : '';
       var orderCode = data.booking_code || (data.id ? String(data.id).slice(-6).toUpperCase() : generateOrderCode());
@@ -1209,11 +1238,18 @@ function initCheckoutPayment() {
       var totalModal = document.getElementById('paymentTotal');
       var qrOrderEl = document.getElementById('paymentQrOrder');
       var qrTotalEl = document.getElementById('paymentQrTotal');
+      var qrTransferNote = document.getElementById('paymentQrTransferNote');
+      var qrImageEl = document.getElementById('paymentQrImage');
 
       if (orderEl) orderEl.textContent = orderCode;
       if (totalModal) totalModal.textContent = totalText;
       if (qrOrderEl) qrOrderEl.textContent = orderCode;
       if (qrTotalEl) qrTotalEl.textContent = totalText;
+      if (qrTransferNote) qrTransferNote.textContent = orderCode;
+      if (qrImageEl) {
+        var cleanAmt = Math.round(Number(data.total_amount) || 0);
+        qrImageEl.src = 'https://img.vietqr.io/image/MB-0912345678-compact2.png?amount=' + cleanAmt + '&addInfo=' + encodeURIComponent(orderCode) + '&accountName=SMART%20TRAVEL%20VIETNAM';
+      }
 
       if (data.is_free) {
         var freeTitle = document.getElementById('paymentSuccessTitle');
@@ -1223,20 +1259,9 @@ function initCheckoutPayment() {
         return;
       }
 
-      if (method === 'qr') {
-        var qrConfirmRes = await fetchApi('/api/payments/qr/confirm', {
-          method: 'POST',
-          body: JSON.stringify({ booking_id: data.id })
-        });
-        var qrConfirmData = await qrConfirmRes.json();
-        if (!qrConfirmRes.ok) {
-          showToast(qrConfirmData.detail || 'Không thể xác nhận thanh toán QR', 'error');
-          return;
-        }
-        var qrTitle = document.getElementById('paymentSuccessTitle');
-        if (qrTitle) qrTitle.textContent = 'Thanh toán QR demo thành công';
-        openModal('paymentSuccessModal');
-        showToast('Đặt tour và thanh toán QR demo thành công', 'success');
+      if (method === 'qr' || method === 'bank_transfer') {
+        openModal('paymentQrModal');
+        showToast('Vui lòng quét mã QR để chuyển khoản thanh toán', 'info');
         return;
       }
 
@@ -1246,17 +1271,13 @@ function initCheckoutPayment() {
         body: JSON.stringify({ booking_id: data.id })
       });
       var paymentData = await paymentRes.json();
-      if (!paymentRes.ok) {
-        showToast(paymentData.detail || 'Chưa thể khởi tạo thanh toán VNPay', 'error');
-        return;
-      }
-      if (paymentData.payment_url) {
+      if (paymentRes.ok && paymentData.payment_url) {
         window.location.href = paymentData.payment_url;
         return;
       }
 
-      openModal('paymentSuccessModal');
-      showToast('Đặt tour thành công, đang chờ xác nhận', 'success');
+      openModal('paymentQrModal');
+      showToast('Cổng VNPay chưa được cấu hình, chuyển sang thanh toán QR / Chuyển khoản', 'warning');
     } catch (e) {
       showToast('Lỗi kết nối máy chủ', 'error');
     } finally {
@@ -1912,11 +1933,164 @@ function renderGuideActiveTrips(list) {
     return;
   }
   container.innerHTML = list.map(function(item) {
-    return '<div class="guide-trip-item"><h4>' + escapeHtml(item.tour_title || 'Tour') + '</h4>' +
-      '<p><i class="bx bx-map"></i> ' + escapeHtml(item.destination || '--') + '</p>' +
-      '<p><i class="bx bx-calendar"></i> ' + escapeHtml(item.trip_date || '--') + '</p>' +
-      '<strong>' + (item.status === 'in_progress' ? 'Đang thực hiện' : 'Đã được phân công') + '</strong></div>';
+    var statusText = item.status === 'departed' ? 'Đã khởi hành' : (item.status === 'in_progress' ? 'Đang thực hiện' : 'Đã được phân công');
+    var statusBadgeClass = item.status === 'departed' ? 'badge badge-primary' : (item.status === 'in_progress' ? 'badge badge-warning' : 'badge badge-info');
+    return (
+      '<div class="guide-trip-item" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 10px; background: #fff;">' +
+      '<div class="flex items-center justify-between mb-1">' +
+      '<h4 class="font-bold text-sm" style="margin: 0;">' + escapeHtml(item.tour_title || 'Tour') + '</h4>' +
+      '<span class="' + statusBadgeClass + '" style="font-size: 11px;">' + statusText + '</span>' +
+      '</div>' +
+      '<p class="text-xs text-muted mb-1"><i class="bx bx-map"></i> ' + escapeHtml(item.destination || '--') + '</p>' +
+      '<p class="text-xs text-muted mb-2"><i class="bx bx-calendar"></i> ' + escapeHtml(item.trip_date || '--') + '</p>' +
+      '<button type="button" class="btn btn-primary btn-sm w-full btn-guide-passengers" data-assignment-id="' + escapeHtml(item.id) + '">' +
+      '<i class="bx bx-user-check"></i> Điểm danh đoàn khách' +
+      '</button>' +
+      '</div>'
+    );
   }).join('');
+
+  container.querySelectorAll('.btn-guide-passengers').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var aid = this.getAttribute('data-assignment-id');
+      if (aid) openGuideCheckinModal(aid);
+    });
+  });
+}
+
+async function openGuideCheckinModal(assignmentId) {
+  var modal = document.getElementById('guideCheckinModal');
+  var titleEl = document.getElementById('guideCheckinTourTitle');
+  var subEl = document.getElementById('guideCheckinTourSub');
+  var statusBadge = document.getElementById('guideCheckinTripStatusBadge');
+  var tbody = document.getElementById('guidePassengersTableBody');
+  var statsNote = document.getElementById('guideCheckinStatsNote');
+  var startBtn = document.getElementById('btnGuideStartTrip');
+  var completeBtn = document.getElementById('btnGuideCompleteTrip');
+  if (!modal || !tbody) return;
+
+  tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted"><i class="bx bx-loader-alt bx-spin"></i> Đang tải danh sách du khách...</td></tr>';
+  openModal('guideCheckinModal');
+
+  try {
+    var res = await fetchApi('/api/guides/assignments/' + encodeURIComponent(assignmentId) + '/passengers');
+    if (!res.ok) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-danger">Không thể tải danh sách du khách</td></tr>';
+      return;
+    }
+
+    var data = await res.json();
+    if (titleEl) titleEl.textContent = data.tour_title || 'Danh sách đoàn khách';
+    if (subEl) subEl.textContent = 'Ngày khởi hành: ' + (data.trip_date || '--') + ' | Điểm danh: ' + data.checked_in_count + '/' + data.total_passengers;
+    if (statsNote) statsNote.textContent = 'Tổng số đơn đặt: ' + data.total_passengers + ' | Đã điểm danh: ' + data.checked_in_count;
+
+    var statusMap = {
+      assigned: { text: 'Đã phân công', badgeClass: 'badge badge-info' },
+      in_progress: { text: 'Đang thực hiện', badgeClass: 'badge badge-warning' },
+      departed: { text: 'Đã khởi hành', badgeClass: 'badge badge-primary' },
+      completed: { text: 'Đã hoàn thành', badgeClass: 'badge badge-success' }
+    };
+    var currentStatusInfo = statusMap[data.status] || { text: data.status, badgeClass: 'badge badge-info' };
+    if (statusBadge) {
+      statusBadge.textContent = currentStatusInfo.text;
+      statusBadge.className = currentStatusInfo.badgeClass;
+    }
+
+    if (startBtn) {
+      startBtn.style.display = data.status === 'completed' ? 'none' : 'inline-flex';
+      startBtn.onclick = async function() {
+        startBtn.disabled = true;
+        try {
+          var updateRes = await fetchApi('/api/guides/assignments/' + encodeURIComponent(assignmentId) + '/status', {
+            method: 'PATCH',
+            body: JSON.stringify({ status: 'departed' })
+          });
+          if (updateRes.ok) {
+            showToast('Chuyến đi đã chuyển sang trạng thái: Đã khởi hành!', 'success');
+            await openGuideCheckinModal(assignmentId);
+            await initGuideDashboard();
+          } else {
+            showToast('Không thể cập nhật trạng thái', 'error');
+          }
+        } catch (e) {
+          showToast('Lỗi kết nối', 'error');
+        } finally {
+          startBtn.disabled = false;
+        }
+      };
+    }
+
+    if (completeBtn) {
+      completeBtn.style.display = data.status === 'completed' ? 'none' : 'inline-flex';
+      completeBtn.onclick = async function() {
+        completeBtn.disabled = true;
+        try {
+          var updateRes = await fetchApi('/api/guides/assignments/' + encodeURIComponent(assignmentId) + '/status', {
+            method: 'PATCH',
+            body: JSON.stringify({ status: 'completed' })
+          });
+          if (updateRes.ok) {
+            showToast('Chúc mừng! Chuyến đi đã hoàn thành xuất sắc!', 'success');
+            await openGuideCheckinModal(assignmentId);
+            await initGuideDashboard();
+          } else {
+            showToast('Không thể cập nhật trạng thái', 'error');
+          }
+        } catch (e) {
+          showToast('Lỗi kết nối', 'error');
+        } finally {
+          completeBtn.disabled = false;
+        }
+      };
+    }
+
+    var list = data.passengers || [];
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted">Chưa có hành khách nào đặt chỗ cho chuyến đi này.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(function(p) {
+      var checkinBadge = p.checked_in
+        ? '<span class="badge badge-success" style="font-size:12px;"><i class="bx bx-check"></i> Đã có mặt</span>'
+        : '<button type="button" class="btn btn-primary btn-sm btn-action-checkin" data-booking-id="' + escapeHtml(p.booking_id) + '"><i class="bx bx-check-circle"></i> Điểm danh</button>';
+      var guestsCount = p.adults + ' người lớn' + (p.children ? ', ' + p.children + ' trẻ em' : '');
+      return (
+        '<tr style="border-bottom: 1px solid var(--border-color);">' +
+        '<td style="padding: 10px;"><strong class="text-primary">' + escapeHtml(p.booking_code) + '</strong></td>' +
+        '<td style="padding: 10px;"><strong>' + escapeHtml(p.customer_name) + '</strong><br><span class="text-xs text-muted">' + escapeHtml(p.customer_email || '') + '</span></td>' +
+        '<td style="padding: 10px;">' + escapeHtml(p.customer_phone || '--') + '</td>' +
+        '<td style="padding: 10px;">' + escapeHtml(guestsCount) + '</td>' +
+        '<td style="padding: 10px;">' + checkinBadge + '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    tbody.querySelectorAll('.btn-action-checkin').forEach(function(cBtn) {
+      cBtn.addEventListener('click', async function() {
+        var bid = this.getAttribute('data-booking-id');
+        if (!bid) return;
+        cBtn.disabled = true;
+        cBtn.textContent = 'Đang xử lý...';
+        try {
+          var cRes = await fetchApi('/api/guides/checkin/' + encodeURIComponent(bid), { method: 'POST' });
+          if (cRes.ok) {
+            showToast('Điểm danh du khách thành công!', 'success');
+            await openGuideCheckinModal(assignmentId);
+          } else {
+            showToast('Không thể điểm danh du khách này', 'error');
+            cBtn.disabled = false;
+            cBtn.innerHTML = '<i class="bx bx-check-circle"></i> Điểm danh';
+          }
+        } catch (e) {
+          showToast('Lỗi kết nối máy chủ', 'error');
+          cBtn.disabled = false;
+        }
+      });
+    });
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-danger">Lỗi kết nối máy chủ khi tải danh sách</td></tr>';
+  }
 }
 
 function renderGuideHistory(list) {
