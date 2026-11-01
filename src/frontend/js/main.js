@@ -3023,3 +3023,28 @@ async function initPersonalizedRecommendations() {
 
   await fetchAndRenderRecommendations();
 }
+
+window.copyTextToClipboard = function(text, label) {
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('Đã sao chép ' + (label || '') + ': ' + text, 'success');
+    }).catch(function() {
+      showToast('Không thể sao chép tự động', 'warning');
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Đã sao chép ' + (label || '') + ': ' + text, 'success');
+  }
+};
+
+window.copyTransferNote = function() {
+  var noteEl = document.getElementById('paymentQrTransferNote');
+  var val = noteEl ? noteEl.textContent.trim() : '';
+  copyTextToClipboard(val, 'Nội dung chuyển khoản');
+};

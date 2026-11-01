@@ -261,7 +261,7 @@ async def send_contract_email(
         def _send_smtp():
             msg = MIMEMultipart("alternative")
             msg["Subject"] = subject
-            msg["From"] = f"SmartTravel Hợp Đồng Du Lịch <{from_email}>"
+            msg["From"] = f"SmartTravel <{from_email}>"
             msg["To"] = target_email
             msg.attach(MIMEText(html_content, "html", "utf-8"))
 

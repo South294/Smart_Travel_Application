@@ -333,3 +333,121 @@
   background: rgba(10, 169, 130, 0.06);
   border: 1px dashed rgba(10, 169, 130, 0.35);
 }
+
+.bank-transfer-card {
+  background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  width: 100%;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.bank-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.bank-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bank-badge i {
+  color: var(--primary-color, #0aa982);
+  font-size: 1.1rem;
+}
+
+.bank-tag {
+  background: rgba(10, 169, 130, 0.12);
+  color: var(--primary-color, #0aa982);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.bank-card-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.bank-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.bank-row-label {
+  color: #64748b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.bank-row-value {
+  color: #0f172a;
+  font-size: 0.875rem;
+}
+
+.bank-row-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-copy-chip {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-chip:hover {
+  background: var(--primary-color, #0aa982);
+  color: #ffffff;
+  border-color: var(--primary-color, #0aa982);
+}
+
+.highlight-row {
+  background: rgba(10, 169, 130, 0.06);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(10, 169, 130, 0.25);
+}
+
+.highlight-text {
+  color: var(--primary-color, #0aa982);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.highlight-btn {
+  background: var(--primary-color, #0aa982);
+  color: #ffffff;
+  border-color: var(--primary-color, #0aa982);
+}
+
+.highlight-btn:hover {
+  filter: brightness(0.9);
+}

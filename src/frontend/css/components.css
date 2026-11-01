@@ -728,6 +728,11 @@
   line-height: 1.6;
 }
 
+.alert-box[hidden],
+[hidden] {
+  display: none !important;
+}
+
 .alert-danger {
   background: rgba(239, 68, 68, 0.06);
   border-left: 4px solid var(--danger);

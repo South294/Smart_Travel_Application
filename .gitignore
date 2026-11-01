@@ -45,3 +45,5 @@ build/
 .vscode/
 *.swp
 *.swo
+sent_emails/
+src/backend/sent_emails/

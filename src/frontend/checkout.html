@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script src="/config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Hoàn tất đặt tour du lịch tại SmartTravel - Thanh toán an toàn, bảo mật.">
@@ -295,11 +296,38 @@
                         <strong id="paymentQrTotal">--</strong>
                     </div>
                 </div>
-                <div class="p-3 rounded text-left w-full" style="background: #f8fafc; border: 1px dashed #cbd5e1; font-size: 13px; text-align: left;">
-                    <div><strong>Ngân hàng:</strong> MB Bank (Quân Đội)</div>
-                    <div><strong>Số tài khoản:</strong> 0912345678</div>
-                    <div><strong>Chủ tài khoản:</strong> SMART TRAVEL VIETNAM</div>
-                    <div><strong>Nội dung CK:</strong> <span id="paymentQrTransferNote" class="text-primary font-bold">ST-XXXXXX</span></div>
+                <div class="bank-transfer-card">
+                    <div class="bank-card-header">
+                        <div class="bank-badge">
+                            <i class="bx bxs-bank"></i>
+                            <span>Tài khoản thụ hưởng</span>
+                        </div>
+                        <span class="bank-tag">MB Bank</span>
+                    </div>
+                    <div class="bank-card-rows">
+                        <div class="bank-card-row">
+                            <span class="bank-row-label">Chủ tài khoản</span>
+                            <span class="bank-row-value font-bold">SMART TRAVEL VIETNAM</span>
+                        </div>
+                        <div class="bank-card-row">
+                            <span class="bank-row-label">Số tài khoản</span>
+                            <div class="bank-row-action">
+                                <span class="bank-row-value font-mono font-bold" id="bankAccountNumber">0912345678</span>
+                                <button type="button" class="btn-copy-chip" onclick="copyTextToClipboard('0912345678', 'Số tài khoản')">
+                                    <i class="bx bx-copy"></i> Sao chép
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bank-card-row highlight-row">
+                            <span class="bank-row-label">Nội dung CK</span>
+                            <div class="bank-row-action">
+                                <span class="bank-row-value font-mono highlight-text" id="paymentQrTransferNote">ST-XXXXXX</span>
+                                <button type="button" class="btn-copy-chip highlight-btn" onclick="copyTransferNote()">
+                                    <i class="bx bx-copy"></i> Sao chép
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <p class="text-xs text-muted">Sau khi hoàn tất chuyển khoản, bấm "Tôi đã thanh toán" để xác nhận và nhận vé điện tử.</p>
             </div>
