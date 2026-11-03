@@ -47,3 +47,8 @@ build/
 *.swo
 sent_emails/
 src/backend/sent_emails/
+.agents/
+*.log
+src/backend/log.txt
+AGENTS.md
+GEMINI.md
