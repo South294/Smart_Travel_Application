@@ -930,14 +930,54 @@ function initModals() {
   });
 }
 
+var qrCountdownInterval = null;
+
+function startQrPaymentCountdown() {
+  stopQrPaymentCountdown();
+  var countdownEl = document.getElementById('paymentQrCountdown');
+  if (!countdownEl) return;
+  var remainingSeconds = 15 * 60;
+  countdownEl.textContent = '15:00';
+  qrCountdownInterval = setInterval(function() {
+    remainingSeconds--;
+    if (remainingSeconds <= 0) {
+      clearInterval(qrCountdownInterval);
+      qrCountdownInterval = null;
+      countdownEl.textContent = 'Hết hạn';
+      showToast('Phiên thanh toán đã hết hạn, vui lòng đặt lại tour', 'warning');
+      return;
+    }
+    var m = Math.floor(remainingSeconds / 60);
+    var s = remainingSeconds % 60;
+    countdownEl.textContent = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+  }, 1000);
+}
+
+function stopQrPaymentCountdown() {
+  if (qrCountdownInterval) {
+    clearInterval(qrCountdownInterval);
+    qrCountdownInterval = null;
+  }
+}
+
 function openModal(id) {
   var modal = document.getElementById(id);
-  if (modal) modal.classList.add('is-active');
+  if (modal) {
+    modal.classList.add('is-active');
+    if (id === 'paymentQrModal') {
+      startQrPaymentCountdown();
+    }
+  }
 }
 
 function closeModal(id) {
   var modal = document.getElementById(id);
-  if (modal) modal.classList.remove('is-active');
+  if (modal) {
+    modal.classList.remove('is-active');
+    if (id === 'paymentQrModal') {
+      stopQrPaymentCountdown();
+    }
+  }
 }
 
 function initUploadAreas() {
@@ -1248,7 +1288,17 @@ function initCheckoutPayment() {
       if (qrTransferNote) qrTransferNote.textContent = orderCode;
       if (qrImageEl) {
         var cleanAmt = Math.round(Number(data.total_amount) || 0);
-        qrImageEl.src = 'https://img.vietqr.io/image/MB-0912345678-compact2.png?amount=' + cleanAmt + '&addInfo=' + encodeURIComponent(orderCode) + '&accountName=SMART%20TRAVEL%20VIETNAM';
+        var qrSpinner = document.getElementById('paymentQrSpinner');
+        if (qrSpinner) qrSpinner.classList.add('is-visible');
+        qrImageEl.onload = function() {
+          if (qrSpinner) qrSpinner.classList.remove('is-visible');
+        };
+        qrImageEl.onerror = function() {
+          if (qrSpinner) qrSpinner.classList.remove('is-visible');
+          this.onerror = null;
+          this.src = 'images/qr_demo.png';
+        };
+        qrImageEl.src = 'https://img.vietqr.io/image/MB-0912345678-qr_only.png?amount=' + cleanAmt + '&addInfo=' + encodeURIComponent(orderCode) + '&accountName=SMART%20TRAVEL%20VIETNAM';
       }
 
       if (data.is_free) {
@@ -3024,13 +3074,32 @@ async function initPersonalizedRecommendations() {
   await fetchAndRenderRecommendations();
 }
 
-window.copyTextToClipboard = function(text, label) {
+function setButtonCopiedState(btn) {
+  if (!btn) return;
+  var icon = btn.querySelector('i');
+  var span = btn.querySelector('span');
+  var oldIconClass = icon ? icon.className : '';
+  var oldText = span ? span.textContent : '';
+  btn.classList.add('is-copied');
+  if (icon) icon.className = 'bx bx-check';
+  if (span) span.textContent = 'Đã chép';
+  setTimeout(function() {
+    btn.classList.remove('is-copied');
+    if (icon) icon.className = oldIconClass;
+    if (span) span.textContent = oldText;
+  }, 2000);
+}
+
+window.copyTextToClipboard = function(text, label, triggerBtn) {
   if (!text) return;
+  var btn = triggerBtn || (typeof event !== 'undefined' ? (event.currentTarget || (event.target && event.target.closest('button'))) : null);
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(function() {
+      setButtonCopiedState(btn);
       showToast('Đã sao chép ' + (label || '') + ': ' + text, 'success');
     }).catch(function() {
-      showToast('Không thể sao chép tự động', 'warning');
+      setButtonCopiedState(btn);
+      showToast('Đã sao chép ' + (label || '') + ': ' + text, 'success');
     });
   } else {
     var ta = document.createElement('textarea');
@@ -3039,12 +3108,14 @@ window.copyTextToClipboard = function(text, label) {
     ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
+    setButtonCopiedState(btn);
     showToast('Đã sao chép ' + (label || '') + ': ' + text, 'success');
   }
 };
 
-window.copyTransferNote = function() {
+window.copyTransferNote = function(triggerBtn) {
   var noteEl = document.getElementById('paymentQrTransferNote');
   var val = noteEl ? noteEl.textContent.trim() : '';
-  copyTextToClipboard(val, 'Nội dung chuyển khoản');
+  var btn = triggerBtn || (typeof event !== 'undefined' ? (event.currentTarget || (event.target && event.target.closest('button'))) : null);
+  copyTextToClipboard(val, 'Nội dung chuyển khoản', btn);
 };

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "/home/boies/.local/bin/npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--headless"
+      ],
+      "env": {
+        "PATH": "/home/boies/.local/bin:/usr/local/bin:/usr/bin:/bin"
+      }
+    }
+  }
+}

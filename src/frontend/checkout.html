@@ -276,14 +276,23 @@
     <div class="modal-overlay" id="paymentQrModal">
         <div class="modal-content payment-qr-modal">
             <div class="payment-qr-header">
-                <div class="payment-qr-icon"><i class="bx bx-qr"></i></div>
-                <div>
-                    <h3 class="font-bold">Quét mã QR để thanh toán</h3>
-                    <p class="text-muted text-sm">Sử dụng ứng dụng ngân hàng hoặc ví điện tử (VietQR / Napas247).</p>
+                <div class="payment-qr-title-group">
+                    <div class="payment-qr-icon"><i class="bx bx-qr"></i></div>
+                    <div>
+                        <h3 class="font-bold">Quét mã QR để thanh toán</h3>
+                        <p class="text-muted text-sm">Sử dụng ứng dụng ngân hàng hoặc ví điện tử (VietQR / Napas247).</p>
+                    </div>
+                </div>
+                <div class="payment-qr-timer" id="paymentQrTimerBadge">
+                    <i class="bx bx-time-five"></i>
+                    <span id="paymentQrCountdown">15:00</span>
                 </div>
             </div>
             <div class="payment-qr-body">
-                <div class="payment-qr-code">
+                <div class="payment-qr-code" id="paymentQrBox">
+                    <div class="qr-loading-spinner" id="paymentQrSpinner">
+                        <i class="bx bx-loader-alt bx-spin"></i>
+                    </div>
                     <img id="paymentQrImage" src="images/qr_demo.png" alt="Mã QR thanh toán" class="payment-qr-image" onerror="this.onerror=null;this.src='images/qr_demo.png';">
                 </div>
                 <div class="payment-qr-summary">
@@ -313,8 +322,8 @@
                             <span class="bank-row-label">Số tài khoản</span>
                             <div class="bank-row-action">
                                 <span class="bank-row-value font-mono font-bold" id="bankAccountNumber">0912345678</span>
-                                <button type="button" class="btn-copy-chip" onclick="copyTextToClipboard('0912345678', 'Số tài khoản')">
-                                    <i class="bx bx-copy"></i> Sao chép
+                                <button type="button" class="btn-copy-chip" onclick="copyTextToClipboard('0912345678', 'Số tài khoản', this)">
+                                    <i class="bx bx-copy"></i> <span>Sao chép</span>
                                 </button>
                             </div>
                         </div>
@@ -322,8 +331,8 @@
                             <span class="bank-row-label">Nội dung CK</span>
                             <div class="bank-row-action">
                                 <span class="bank-row-value font-mono highlight-text" id="paymentQrTransferNote">ST-XXXXXX</span>
-                                <button type="button" class="btn-copy-chip highlight-btn" onclick="copyTransferNote()">
-                                    <i class="bx bx-copy"></i> Sao chép
+                                <button type="button" class="btn-copy-chip highlight-btn" onclick="copyTransferNote(this)">
+                                    <i class="bx bx-copy"></i> <span>Sao chép</span>
                                 </button>
                             </div>
                         </div>

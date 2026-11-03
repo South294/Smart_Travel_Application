@@ -127,57 +127,124 @@
 
 .payment-qr-modal {
   max-width: 520px;
+  width: 94%;
+  padding: 24px;
   display: flex;
   flex-direction: column;
+  max-height: 88vh;
   gap: 16px;
+  box-sizing: border-box;
+  background: #ffffff;
 }
 
 .payment-qr-header {
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.payment-qr-title-group {
+  display: flex;
+  gap: 12px;
   align-items: center;
 }
 
+.payment-qr-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
 .payment-qr-icon {
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   border-radius: 14px;
   background: rgba(10, 169, 130, 0.12);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .payment-qr-icon i {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   color: var(--primary-color);
 }
 
 .payment-qr-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
   text-align: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  padding-bottom: 4px;
+}
+
+.payment-qr-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.payment-qr-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 .payment-qr-code {
-  width: 210px;
-  height: 210px;
+  width: 220px;
+  height: 220px;
   background: #ffffff;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color, #e2e8f0);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  position: relative;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+  transition: all 0.25s ease;
+}
+
+.payment-qr-code:hover {
+  border-color: var(--primary-color, #0aa982);
+  box-shadow: 0 12px 30px -5px rgba(10, 169, 130, 0.18);
 }
 
 .payment-qr-image {
-  width: 170px;
-  height: 170px;
+  width: 196px;
+  height: 196px;
   object-fit: contain;
   border-radius: 8px;
+  display: block;
+}
+
+.qr-loading-spinner {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: inherit;
+  font-size: 2rem;
+  color: var(--primary-color, #0aa982);
+  z-index: 2;
+}
+
+.qr-loading-spinner.is-visible {
+  display: flex;
 }
 
 .payment-qr-summary {
@@ -189,6 +256,7 @@
   padding: 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  box-sizing: border-box;
 }
 
 .summary-thumb {
@@ -450,4 +518,18 @@
 
 .highlight-btn:hover {
   filter: brightness(0.9);
+}
+
+.payment-qr-modal .payment-success-actions {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.btn-copy-chip.is-copied {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
 }
